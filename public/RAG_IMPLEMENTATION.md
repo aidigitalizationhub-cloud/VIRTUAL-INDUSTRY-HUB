@@ -8,8 +8,8 @@
 The **University of Ghana Virtual Industry Hub (UG-VIH)** implements a **Hybrid 2-Stage Retrieval-Augmented Generation (RAG)** pipeline connecting research disclosures, institutional partners, and investors.
 
 Instead of relying solely on keyword searches or ungrounded LLM completions, UG-VIH pairs:
-1. **Stage 1 (Dense Vector Retrieval)**: Powered by Google Gemini `text-embedding-004` (768 dimensions) and PostgreSQL `pgvector` similarity functions (`match_profiles` and `match_projects`).
-2. **Stage 2 (Generative Synthesis & Re-ranking)**: Powered by `gemini-3.6-flash`, evaluating top candidate matches for qualitative synergy, skills overlap, and strategic alignment.
+1. **Stage 1 (Dense Vector Retrieval)**: Powered by Google Gemini `gemini-embedding-2-preview` (768 dimensions, proxied through `/api/gemini/embed` — Groq exposes no embeddings endpoint) and PostgreSQL `pgvector` similarity functions (`match_profiles` and `match_projects`).
+2. **Stage 2 (Generative Synthesis & Re-ranking)**: Powered by **Groq-primary `openai/gpt-oss-120b` with Gemini fallback** (`generateWithProviders`). Deterministic local scoring is authoritative; the LLM supplies only qualitative reasoning and alignment labels.
 
 ### Architectural Visual Diagram
 
@@ -60,7 +60,7 @@ Instead of relying solely on keyword searches or ungrounded LLM completions, UG-
   <g filter="url(#shadow)">
     <rect x="250" y="120" width="180" height="110" rx="12" fill="url(#gradTeal)" stroke="#5eead4" stroke-width="2"/>
     <text x="340" y="150" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="800">1. VECTOR EMBEDDING</text>
-    <text x="340" y="172" text-anchor="middle" fill="#f0fdfa" font-size="11">text-embedding-004</text>
+    <text x="340" y="172" text-anchor="middle" fill="#f0fdfa" font-size="11">gemini-embedding-2-preview</text>
     <rect x="275" y="185" width="130" height="24" rx="6" fill="#0f766e"/>
     <text x="340" y="201" text-anchor="middle" fill="#ccfbf1" font-size="11" font-weight="700">768-D Vector Space</text>
   </g>
@@ -71,15 +71,15 @@ Instead of relying solely on keyword searches or ungrounded LLM completions, UG-
     <text x="580" y="150" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="800">2. VECTOR RETRIEVAL</text>
     <text x="580" y="172" text-anchor="middle" fill="#e2e8f0" font-size="11">PostgreSQL pgvector</text>
     <text x="580" y="192" text-anchor="middle" fill="#a5f3fc" font-size="10" font-weight="600">match_projects / profiles</text>
-    <text x="580" y="212" text-anchor="middle" fill="#94a3b8" font-size="10">Cosine Distance &lt; 0.3</text>
+    <text x="580" y="212" text-anchor="middle" fill="#94a3b8" font-size="10">Top-20 (match_threshold 0.0)</text>
   </g>
 
   <!-- Stage 2: Gemini Re-ranker -->
   <g filter="url(#shadow)">
     <rect x="730" y="120" width="140" height="110" rx="12" fill="url(#gradPurple)" stroke="#c084fc" stroke-width="2"/>
     <text x="800" y="150" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="800">3. RE-RANKER</text>
-    <text x="800" y="172" text-anchor="middle" fill="#f3e8ff" font-size="11">Gemini 3.6 Flash</text>
-    <text x="800" y="192" text-anchor="middle" fill="#e9d5ff" font-size="10">Synergy &amp; Rationale</text>
+    <text x="800" y="172" text-anchor="middle" fill="#f3e8ff" font-size="11">Groq (Gemini fb)</text>
+    <text x="800" y="192" text-anchor="middle" fill="#e9d5ff" font-size="10">Deterministic + LLM</text>
   </g>
 
   <!-- Bottom Detailed Subsystems -->
@@ -94,8 +94,8 @@ Instead of relying solely on keyword searches or ungrounded LLM completions, UG-
   <g filter="url(#shadow)">
     <rect x="470" y="310" width="220" height="110" rx="12" fill="url(#gradGold)" stroke="#fde68a" stroke-width="1.5"/>
     <text x="580" y="338" text-anchor="middle" fill="#78350f" font-size="12" font-weight="800">HYBRID SCORE FUSION</text>
-    <text x="580" y="360" text-anchor="middle" fill="#451a03" font-size="11" font-weight="700">S = α · S_LLM + (1 - α) · S_Vec</text>
-    <text x="580" y="380" text-anchor="middle" fill="#78350f" font-size="10">Weighted Qualitative &amp; Distance</text>
+    <text x="580" y="360" text-anchor="middle" fill="#451a03" font-size="11" font-weight="700">Deterministic score authoritative</text>
+    <text x="580" y="380" text-anchor="middle" fill="#78350f" font-size="10">LLM supplies reasoning only</text>
     <text x="580" y="400" text-anchor="middle" fill="#92400e" font-size="9">matchingService.ts</text>
   </g>
 
@@ -109,7 +109,7 @@ Instead of relying solely on keyword searches or ungrounded LLM completions, UG-
 flowchart TD
     subgraph Ingestion & Vector Indexing
         A1[User Profile / Research Disclosure] --> A2[Text Normalization]
-        A2 --> A3[Google text-embedding-004]
+        A2 --> A3[gemini-embedding-2-preview via /api/gemini/embed]
         A3 --> A4[(Supabase Vector DB - pgvector)]
     end
 
@@ -120,8 +120,8 @@ flowchart TD
     end
 
     subgraph Stage 2: Generative Re-ranking
-        B3 --> C1[Gemini 3.6 Flash Ranker]
-        C1 --> C2[Hybrid Weighted Score Fusion]
+        B3 --> C1[Groq-primary LLM Ranker / Gemini fallback]
+        C1 --> C2[Deterministic scores + LLM reasoning]
         C2 --> C3[Ranked Match Results + Rationale]
     end
 ```
@@ -157,12 +157,21 @@ The Stage 1 retrieval objective minimizes cosine distance:
 
 $$\arg\min_{\vec{v} \in \mathcal{D}} d_{\text{cosine}}(\vec{u}, \vec{v})$$
 
-### 3.4 Hybrid Scoring Fusion Formula
-The final compatibility score $S_{\text{final}} \in [0, 100]$ fuses Stage 1 dense vector similarity with Stage 2 LLM qualitative score ($S_{\text{LLM}}$):
+### 3.4 Hybrid Scoring Fusion (as implemented)
 
-$$S_{\text{final}} = \alpha \cdot S_{\text{LLM}} + (1 - \alpha) \cdot \left(100 \times \text{Sim}(\vec{u}, \vec{v})\right)$$
+The final score is **deterministic and authoritative** — the LLM cannot override it:
 
-Where $\alpha = 0.65$ balances qualitative AI reasoning with mathematical vector closeness.
+$$\text{score} = \text{clamp}(50,\ 98,\ \text{round}(\text{similarity} \times 80) + \text{overlap} \times 8)$$
+
+Where `similarity` is the cosine similarity of the query vector to a candidate (`match_profiles`/`match_projects` cosine distance, Stage 1) and `overlap` is the count of domain keywords present in both the user profile and the candidate text (see `lib/scoring.ts`).
+
+| Score | Alignment label |
+|---|---|
+| ≥ 85 | Highly Compatible |
+| ≥ 70 | Strategic Match |
+| otherwise | Compatible Match |
+
+The LLM (Groq-primary, Gemini fallback) contributes only `reasoning` and `alignment_label`; scores always come from the deterministic engine. Every run is recorded in `ai_decisions` (`decision_type: match_ranking`).
 
 ---
 
@@ -171,17 +180,24 @@ Where $\alpha = 0.65$ balances qualitative AI reasoning with mathematical vector
 ### 4.1 Embedding Generation (`services/embeddingService.ts`)
 
 ```typescript
-import { GoogleGenAI } from "@google/genai";
+import { postJson } from '../lib/api';
 
 export const EmbeddingService = {
-  getEmbedding: async (text: string): Promise<number[]> => {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-    const response = await ai.models.embedContent({
-      model: 'text-embedding-004',
-      contents: text,
-    });
-    const values = (response as any).embedding?.values || [];
-    return EmbeddingService.ensureDimension(values, 768);
+  ensureDimension: (arr: number[] | null | undefined, dimension = 768): number[] => {
+    if (!arr) return new Array(dimension).fill(0);
+    if (arr.length === dimension) return arr;
+    if (arr.length > dimension) return arr.slice(0, dimension);
+    return [...arr, ...new Array(dimension - arr.length).fill(0)];
+  },
+
+  getEmbedding: async (text: string): Promise<number[] | null> => {
+    // Proxied through the server: POST /api/gemini/embed uses
+    // gemini-embedding-2-preview (authenticated + throttled).
+    const data = await postJson<{ embedding?: number[] | null }>('/api/gemini/embed', { text });
+    if (data?.embedding && Array.isArray(data.embedding) && data.embedding.length > 0) {
+      return EmbeddingService.ensureDimension(data.embedding, 768);
+    }
+    return null;
   }
 };
 ```
@@ -191,36 +207,46 @@ export const EmbeddingService = {
 ### 4.2 Vector DB Retrieval RPC (`services/storageService.ts`)
 
 ```typescript
-// Stage 1: Vector Search RPC Call
+// Stage 1: Vector Search RPC calls
 getMatches: async (userId: string, embedding: number[]) => {
   const queryVec = EmbeddingService.ensureDimension(embedding, 768);
 
-  const { data: projects } = await supabase.rpc('match_projects', {
-    query_embedding: queryVec,
-    match_threshold: 0.0,
-    match_count: 20
-  });
+  const [profilesRes, projectsRes] = await Promise.all([
+    supabase.rpc('match_profiles', { query_embedding: queryVec, match_threshold: 0.0, match_count: 20 }),
+    supabase.rpc('match_projects', { query_embedding: queryVec, match_threshold: 0.0, match_count: 20 }),
+  ]);
 
-  return filterByVisibility(projects, userId);
+  // match_projects is SECURITY DEFINER — project visibility is enforced
+  // server-side, so no client-side filtering is required.
+  return [...(projectsRes.data ?? []), ...(profilesRes.data ?? [])];
 }
 ```
 
 ---
 
-### 4.3 Generative Re-Ranking Engine (`services/matchingService.ts`)
+### 4.3 Generative Re-Ranking Engine (`services/matchingService.ts` + `server.ts`)
+
+The client calls `POST /api/ai-match`. The server computes the deterministic local rankings first, then enriches them with the LLM (Groq primary, Gemini fallback):
 
 ```typescript
-// Stage 2: Gemini 3.6 Flash Re-ranker
-rankMatches: async (userProfile: AIProfile, candidates: any[]) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  const response = await ai.models.generateContent({
-    model: 'gemini-3.6-flash',
-    contents: `Rank candidates for user profile: ${JSON.stringify(userProfile)}: ${JSON.stringify(candidates.slice(0, 15))}`,
-    config: { responseMimeType: "application/json" }
-  });
-  return JSON.parse(response.text);
-}
+// Server (server.ts, /api/ai-match)
+// 1. Deterministic scores are authoritative.
+const localRankings = computeLocalRankings();
+
+// 2. LLM supplies reasoning/label only (Groq-primary, Gemini fallback).
+const providerOutput = await generateWithProviders(prompt, { json: true });
+
+// 3. Merge: keep deterministic score, use LLM reasoning/label when present.
+const finalRankings = localRankings.map((lr) => ({
+  id: lr.id, index: lr.index, score: lr.score,
+  reasoning: llm?.reasoning || lr.reasoning,
+  alignment_label: llm?.alignment_label || lr.alignment_label,
+}));
+
+// 4. Provenance: recordAiDecision({ decision_type: 'match_ranking', provider, model, ... });
 ```
+
+If the API call fails, `MatchingService.rankMatches` replays the identical local keyword/similarity scorer client-side and caches results in an in-memory `Map` keyed by `userProfile.semantic_summary` prefix + candidate ids.
 
 ---
 

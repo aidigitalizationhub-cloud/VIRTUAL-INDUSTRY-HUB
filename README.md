@@ -1,110 +1,99 @@
-# 🏫 UG Virtual Industry Hub
+# UG Virtual Industry Hub
 
-Welcome to the **University of Ghana (UG) Virtual Industry Hub**, a state-of-the-art full-stack platform designed to connect academic researchers, student innovators, industry partners, investors, and administrative managers to foster collaborative research and commercialization.
+Welcome to the **University of Ghana (UG) Virtual Industry Hub** — a full-stack platform connecting academic researchers, student innovators, industry partners, investors, and administrators to foster collaborative research and commercialization.
 
-This platform bridges the gap between scientific discovery at the **Legon Campus** and real-world market adoption across **Diagnostics**, **Vaccines**, and **Pharmaceuticals**.
-
----
-
-## 🎨 Visual Preview & Design System
-
-The application is built using a custom design system styled to reflect the academic authority of the University of Ghana paired with high-contrast, professional technological interfaces:
-- **UG Navy** (`#1a1a4b`): Branding, headers, and dashboard accents conveying academic credibility and structural stability.
-- **UG Teal** (`#0891b2`): Dynamic actions, hover states, metrics, and highlights designed to emphasize innovation.
-- **Micro-interactions**: Powered by `motion` for smooth card entries, modal transitions, and responsive gestures.
+It bridges scientific discovery at the **Legon Campus** with real-world market adoption across **Diagnostics**, **Vaccines**, and **Pharmaceuticals**.
 
 ---
 
-## 🚀 Key Functional Modules
+## Key Functional Modules
 
-1. **🔬 Research Disclosure Pipeline (Researchers)**
-   - Draft, structure, and submit detailed academic innovations.
-   - Dynamic stage tracking based on the standardized **Technology Readiness Level (TRL 1-9)**.
-   - Upload technical publications and supplemental scientific diagrams securely.
+1. **Research Disclosure Pipeline (Researchers)**
+   - Draft, structure, and submit academic innovations.
+   - Track progress on the standardized **Technology Readiness Level (TRL 1–9)** scale.
+   - Upload technical publications and supplemental documents (`.txt`, `.doc`, `.docx`, ≤15MB, server-validated).
 
-2. **🤖 AI-Powered Intelligence Assistant & Scout (Gemini)**
-   - **Legon Research Assistant**: An AI chat interface designed to answer contextual questions (Diagnostics, vaccines, pharma) with rich, academic history-aware reasoning.
-   - **AI News Scout**: Automatically queries and cross-references global biomedical news feeds (such as Noguchi, WACCBIP, WHO) with current internal research projects to formulate smart suggestions. Includes custom-generated realistic graphic illustrations for each discovery feed.
+2. **AI-Powered Intelligence Assistant, Scout & Decision Ledger**
+   - **Legon Research Assistant**: Context-aware AI chat for Diagnostics / Vaccines / Pharma questions with history-aware reasoning.
+   - **AI News Scout**: Synchronizes vetted global biomedical news sources into a searchable feed with AI-generated summaries.
+   - **AI Decision Provenance Ledger**: Every AI decision (chat, profile extraction, matching, scouting) is recorded with provider, model, and prompt version for auditability.
 
-3. **📊 Dynamic Role Portal Dashboards**
-   - **Researcher Dashboard**: Tracks subbed disclosures, requested edits, AI-driven collaborative suggestions, and recent board interactions.
-   - **Student Dashboard**: Connects students to active lab projects, internship matching boards, and research career directions.
-   - **Partner/Investor Dashboard**: Filterable pipelines showcasing market-ready developments, licensing catalogs, and direct Expression of Interest (EOI) submissions.
-   - **Admin/Director Dashboard**: High-level system metrics, user roles control, disclosure review panels, and logs tracking.
+3. **Dynamic Role Portals**
+   - **Researcher**: disclosures, requested edits, AI collaboration suggestions, interactions.
+   - **Student**: lab projects, internship matching, research career directions.
+   - **Partner / Investor**: filterable pipelines, market-ready developments, Expression of Interest (EOI) submissions.
+   - **Admin / Director**: system metrics, role controls, disclosure review, decision logs.
 
-4. **🛰️ Semantic Similarity Analysis & Partner Matching**
-   - Multi-modal profiling matching the researcher’s technical resume and questionnaire answers to global market funding strategies.
-   - Built-in graceful fallbacks utilizing local keyword density parsing to ensure compatibility indexes calculate perfectly in restricted-key environments.
+4. **Semantic Similarity Analysis & Partner Matching**
+   - Hybrid matching: deterministic local keyword/similarity scoring is **authoritative**; the LLM supplies only qualitative reasoning and alignment labels.
+   - Graceful fallbacks keep matching working in restricted-key environments.
 
----
+5. **Industry Challenges & Challenge Matching**
+   - Partners publish industry challenges; the system matches them to relevant researchers/projects and tracks submissions.
 
-## 🛠️ Technological Stack
-
-- **Frontend Core**: React 19 + TypeScript (strict mode)
-- **Styling**: Tailwind CSS + custom theme configurations
-- **Animations**: `motion`
-- **Backend Architecture**: Node.js + Express (fast-loading bundler proxy using CJS server output)
-- **Database / Auth**: Supabase (PostgreSQL engine + Row Level Security policies)
-- **AI Integration**: `@google/genai` (Gemini model optimization suites) & `groq-sdk`
+6. **Localization & Theming**
+   - Multilingual UI: **English, Français, Twi, Kiswahili** (lazy-loaded bundles).
+   - Light/dark theme switching.
 
 ---
 
-## 📋 Environment Configuration
+## Technological Stack
 
-Please establish a `.env` file at the root or specify these parameters within your hosting environment:
+- **Frontend**: React 19 + TypeScript (strict), Vite 6, Tailwind CSS 4, `motion`, `lucide-react`, React Router (HashRouter), i18next.
+- **Backend**: Node.js + Express 5 (single-file `server.ts`; production bundle via esbuild).
+- **Database / Auth**: Supabase (PostgreSQL + `pgvector` + Row-Level Security). Auth is **Supabase client-side** (email/password, OTP, password reset).
+- **AI Orchestration**: `groq-sdk` is the **primary** provider (default model `openai/gpt-oss-120b`); `@google/genai` is the fallback (`gemini-3.6-flash` family). Server-side embeddings use Gemini `gemini-embedding-2-preview` (768-d) — **Groq has no embeddings endpoint**.
+
+### NPM Scripts
+
+| Script | Command | Purpose |
+|---|---|---|
+| `dev` | `tsx server.ts` | Dev server, binds `0.0.0.0:3000` |
+| `build` | `vite build` + esbuild bundle | Static app + `dist/server.cjs` |
+| `start` | `node dist/server.cjs` | Run production bundle |
+| `preview` | `vite preview` | Preview static build |
+| `lint` | `tsc --noEmit` | Type check |
+| `test` | `vitest run` | Unit tests (27 passing) |
+
+---
+
+## Environment Configuration
+
+Create a `.env` file at the project root (see `.env.example`):
 
 ```env
-# Supabase Backend Configuration
+# Supabase
 VITE_SUPABASE_URL=your-supabase-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key   # server-only; bypasses RLS
 
-# AI Orchestration Keys
+# AI keys
 GEMINI_API_KEY=your-gemini-api-key
-VITE_GROQ_API_KEY=your-groq-api-key
+GROQ_API_KEY=your-groq-api-key                    # server-only; used for profile extraction and matching
+GROQ_MODEL=openai/gpt-oss-120b
+
+# CORS allowlist (comma-separated)
+CORS_ORIGINS=http://localhost:3000
 ```
 
 ---
 
-## ⚙️ How to Get Started
+## How to Get Started
 
-### 1. Database Setup
-Ensure that the PostgreSQL tables are configured cleanly inside your Supabase SQL Editor. Locate and run the setup commands listed in `/supabase_setup.sql`. This script optimizes:
-- Profile generation tables (`profiles`)
-- Research indexes (`projects`)
-- Expression of interest triggers (`eois`)
-- Global Scout discovery cache (`news`)
-
-### 2. Installations
-Install the required packages:
-```bash
-npm install
-```
-
-### 3. Running Locally
-Run the server side compiler:
-```bash
-npm run dev
-```
-The server will boot up and bind to host `0.0.0.0` at port `3000`.
-
-### 4. Compiling Production Builds
-Build and package the production files:
-```bash
-npm run build
-```
-This script compiles the static React build, then wraps the backend `server.ts` into a self-contained bundle with high compatibility.
+1. **Database setup** — run `supabase_setup.sql` in the Supabase SQL editor, then validate with `supabase_rls_verify.sql`. This creates `profiles`, `projects`, `eois`, `student_profiles`, `researcher_profiles`, `investor_profiles`, `industry_profiles`, `ai_decisions`, `interaction_logs`, `bookmarks`, `news`, `industry_challenges`, `challenge_matches`, and the `pgvector`/matching functions.
+2. **Install** — `npm install`
+3. **Run locally** — `npm run dev` → server binds to `0.0.0.0:3000`
+4. **Production build** — `npm run build` then `npm start`
 
 ---
 
-## 🛡️ RLS & Security Policy Safeguards
+## Security
 
-The database is built on top of high-integrity **Row-Level Security (RLS)** statements to restrict read/write authorization:
-- **Public Select**: Anyone can browse approved, public projects or synchronized global intelligence news.
-- **Self Profiles**: Users are permitted to edit or update their own user profiles.
-- **Admin Elevation**: System Admins are granted full query scopes (`public.projects`, `public.profiles`) to control role elevations and disclosure approval states safely.
+- **Row-Level Security**: public select on approved public projects/news; self-write on own profiles; admin-only scopes; `ai_decisions` read/write restricted to admins; `SECURITY DEFINER` matching functions enforce visibility server-side.
+- **Server-side secret handling**: service-role and Groq keys are never exposed to the browser; the browser uses anon key + `VITE_`-prefixed keys only.
+- **HTTP hardening**: CORS allowlist, `X-Content-Type-Options`, `X-Frame-Options: DENY`, HSTS, CSP, and Permissions-Policy headers on all responses.
+- **Upload validation**: extension + MIME + size whitelist enforced on the server.
 
 ---
 
 *Designed and engineered in alignment with the University of Ghana Office of Research, Innovation, and Development (ORID) directives.*
-
-# VIRTUAL-INDUSTRY-HUB

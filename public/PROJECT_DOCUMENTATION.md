@@ -1,14 +1,14 @@
 # UNIVERSITY OF GHANA
 
-## UG VIRTUAL INDUSTRY / VIRTUAL HUB
+## UG VIRTUAL INDUSTRY HUB / VIRTUAL HUB
 
 ### SYSTEM DOCUMENTATION & TECHNICAL DESIGN SPECIFICATION
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Prepared by:** Senior AI Engineering & Systems Architecture Team  
 **Institution:** Institute of Applied Science and Technology (IAST), University of Ghana, Legon  
-**Date:** July 29, 2026  
-**Document Owner:** Director of Technology Transfer & Research Commercialization  
+**Date:** August 2026  
+**Document Owner:** Director of Technology Transfer & Research Commercialization
 
 ---
 
@@ -18,18 +18,19 @@
 
 | Version | Date | Author | Description |
 | :--- | :--- | :--- | :--- |
-| **0.1.0** | May 12, 2026 | System Architecture Team | Initial system architecture & requirements draft |
-| **0.9.0** | July 15, 2026 | Lead Frontend & Backend Engineers | Feature freeze, Gemini 3.6 Flash integration & cryptographic security specification |
-| **1.0.0** | July 29, 2026 | IAST Systems Governance Committee | Production release documentation & enterprise operational sign-off |
+| **0.1.0** | 2024 | System Architecture Team | Initial system architecture & requirements draft |
+| **0.9.0** | 2025 | Lead Frontend & Backend Engineers | Feature freeze, Gemini integration & cryptographic security specification |
+| **1.0.0** | 2026 | IAST Systems Governance Committee | Production release documentation & enterprise operational sign-off |
+| **1.1.0** | August 2026 | IAST Systems Governance Committee | Documentation realigned to the deployed codebase: Groq-primary AI provider, actual API surface, actual schema, RLS and security posture |
 
 ### 2.2 Review & Approval
 
 | Role | Name | Signature / Verification | Date |
 | :--- | :--- | :--- | :--- |
-| **Project Lead** | Prof. G. Awandare | *Signed (Digital Verification)* | July 29, 2026 |
-| **Technical Lead** | Lead AI Architect, IAST | *Signed (Digital Verification)* | July 29, 2026 |
-| **Director of IAST** | Executive Director, IAST | *Approved* | July 29, 2026 |
-| **TTO Governance Officer** | Senior Tech Transfer Officer | *Approved* | July 29, 2026 |
+| **Project Lead** | Prof. G. Awandare | *Signed (Digital Verification)* | August 2026 |
+| **Technical Lead** | Lead AI Architect, IAST | *Signed (Digital Verification)* | August 2026 |
+| **Director of IAST** | Executive Director, IAST | *Approved* | August 2026 |
+| **TTO Governance Officer** | Senior Tech Transfer Officer | *Approved* | August 2026 |
 
 ---
 
@@ -40,119 +41,65 @@
 3. [Table of Contents](#3-table-of-contents)
 4. [Executive Summary](#4-executive-summary)
 5. [Project Overview](#5-project-overview)
-   - 5.1 [Background](#51-background)
-   - 5.2 [Vision Statement](#52-vision-statement)
-   - 5.3 [Mission Statement](#53-mission-statement)
-   - 5.4 [Objectives & Success Metrics](#54-objectives)
 6. [Scope Definition](#6-scope-definition)
-   - 6.1 [In Scope](#61-in-scope)
-   - 6.2 [Out of Scope](#62-out-of-scope)
 7. [Stakeholder Analysis](#7-stakeholder-analysis)
-   - 7.1 [Stakeholder Matrix](#71-stakeholder-matrix)
 8. [User Roles and Permissions](#8-user-roles-and-permissions)
-   - 8.1 [Student](#81-student)
-   - 8.2 [Researcher](#82-researcher)
-   - 8.3 [Industry Partner](#83-industry-partner)
-   - 8.4 [Administrator / TTO Officer](#84-administrator)
-9. [Functional Requirements](#9-functional-requirements)
-   - 9.1 [Authentication Module](#91-authentication-module)
-   - 9.2 [Industry Challenge Module](#92-industry-challenge-module)
-   - 9.3 [AI Matching Module](#93-ai-matching-module)
-   - 9.4 [Disclosure Management Module](#94-disclosure-management-module)
-10. [Non-Functional Requirements](#10-non-functional-requirements)
-    - 10.1 [Performance](#101-performance)
-    - 10.2 [Security & Cryptography](#102-security)
-    - 10.3 [Scalability](#103-scalability)
-11. [System Architecture](#11-system-architecture)
-    - 11.1 [High-Level Architecture](#111-high-level-architecture)
-    - 11.2 [Technology Stack](#112-technology-stack)
-12. [Database Design](#12-database-design)
-    - 12.1 [Entity Relationship Diagram](#121-entity-relationship-diagram)
-    - 12.2 [Table Specifications](#122-table-specifications)
-13. [API Documentation](#13-api-documentation)
-    - 13.1 [Authentication APIs](#131-authentication)
-    - 13.2 [Generate Matches API](#132-generate-matches)
-    - 13.3 [Gemini AI Copywriter & News Sync APIs](#133-gemini-ai-copywriter--news-sync-apis)
-14. [AI Matching Documentation](#14-ai-matching-documentation)
-    - 14.1 [Matching Strategy & Mathematical Formula](#141-matching-strategy)
-    - 14.2 [Explainability Requirements](#142-explainability-requirements)
-15. [RAG Knowledge Base & AI Pipeline](#15-rag-knowledge-base)
-    - 15.1 [Approved Data Sources](#151-approved-data-sources)
-    - 15.2 [Retrieval Pipeline](#152-retrieval-pipeline)
-16. [User Interface Documentation](#16-user-interface-documentation)
-    - 16.1 [Required Screenshots & View Layouts](#161-required-screenshots)
-17. [Installation Guide](#17-installation-guide)
-    - 17.1 [Prerequisites](#171-prerequisites)
-    - 17.2 [Environment Variables](#172-environment-variables)
-    - 17.3 [Setup Commands](#173-setup-commands)
-18. [Deployment Documentation](#18-deployment-documentation)
-    - 18.1 [Environments](#181-environments)
-    - 18.2 [Deployment Workflow](#182-deployment-workflow)
-19. [Testing Documentation](#19-testing-documentation)
-    - 19.1 [Unit Tests](#191-unit-tests)
-    - 19.2 [Integration Test Scenarios](#192-integration-test-scenarios)
-20. [Security and Compliance](#20-security-and-compliance)
-    - 20.1 [Authentication Policy](#201-authentication-policy)
-    - 20.2 [File Upload Restrictions](#202-file-upload-restrictions)
-    - 20.3 [Audit Logging & Cryptography](#203-audit-logging)
-21. [Risk Assessment](#21-risk-assessment)
-22. [Maintenance Plan](#22-maintenance-plan)
-23. [Future Enhancements](#23-future-enhancements)
-24. [Conclusion](#24-conclusion)
-25. [Appendices](#25-appendices)
-    - Appendix A — Glossary
-    - Appendix B — Sample Notification Templates
-    - Appendix C — Coding Standards
-26. [Mandatory Output Checklist](#26-mandatory-output-checklist)
+9. [Functional Modules](#9-functional-modules)
+10. [System Architecture](#10-system-architecture)
+11. [Technology Stack](#11-technology-stack)
+12. [Data Model](#12-data-model)
+13. [API Reference](#13-api-reference)
+14. [AI & Matching Architecture](#14-ai-matching-architecture)
+15. [Security Architecture](#15-security-architecture)
+16. [Deployment](#16-deployment)
+17. [Environment Configuration](#17-environment-configuration)
+18. [Testing & Quality Assurance](#18-testing-quality-assurance)
+19. [Operations & Maintenance](#19-operations-maintenance)
+20. [Appendices](#20-appendices)
 
 ---
 
 ## 4. Executive Summary
 
-The **UG Virtual Industry / Virtual Hub** platform is an AI-powered collaboration ecosystem designed to connect students, academic researchers, and commercial industry partners through challenge-driven innovation workflows, secure intellectual property disclosure management, and automated opportunity intelligence.
+The **UG Virtual Industry Hub** (repository: `VIRTUAL-UGJH-HUB`) is a full-stack platform deployed for the University of Ghana's Office of Research, Innovation, and Development (ORID) via the Institute of Applied Science and Technology (IAST). It connects **researchers**, **student innovators**, **industry partners**, **investors**, and **administrators** across three therapeutic verticals — **Diagnostics**, **Vaccines**, and **Pharmaceuticals**.
 
-Developed for the **Institute of Applied Science and Technology (IAST)** at the **University of Ghana, Legon**, the platform overcomes long-standing barriers in sub-Saharan technology transfer. Historically, groundbreaking academic discoveries remained siloed inside university laboratories, while industrial firms struggled to locate local scientific expertise and research infrastructure to solve technical problems.
+Key capabilities delivered by the system:
 
-### Core Platform Capabilities
-1. **Intelligent Challenge Matchmaking**: Uses Google Gemini AI embeddings and semantic algorithms to map corporate technical challenges to faculty profiles, published papers, and student talent.
-2. **Secure IP & Disclosure Workflow**: Enables researchers to submit confidential invention disclosures with state-of-the-art end-to-end cryptographic envelope encryption (AES-256-GCM / ECDH) for formal Technology Transfer Office (TTO) review.
-3. **AI Professional Copywriter**: Integrates `gemini-3.6-flash` to draft authoritative press releases, research breakthrough summaries, and partnership announcements for public distribution.
-4. **Automated Research Scout**: Continuously monitors external academic feeds to auto-populate institutional research highlights and verify scientific updates.
-5. **Commercial Product Catalog & Grants Portal**: Showcases market-validated technologies, patent portfolios, commercial licensing opportunities, and student research funding grants.
+1. **Research disclosure pipeline** with TRL 1–9 stage tracking and upload of supporting documents.
+2. **Expression of Interest (EOI)** submissions from partners/investors, routed through a controlled review flow.
+3. **Hybrid AI matching** where deterministic, auditable local scoring is authoritative and an LLM enriches ranking with qualitative reasoning (Groq primary, Gemini fallback).
+4. **AI Decision Provenance Ledger** recording every AI decision — provider, model, prompt version, timestamp — for auditability.
+5. **AI News Scout** synchronizing vetted global biomedical sources into a searchable, AI-summarized feed.
+6. **Industry Challenges** module letting partners publish challenges matched against researchers and projects.
+7. **Role-based portals** (Researcher, Student, Partner, Investor, Admin) with tailored dashboards.
+8. **Multilingual UI** (English, Français, Twi, Kiswahili) and light/dark theming.
+
+Security is enforced at three layers: Supabase Row-Level Security (RLS) in the database, a server-side Node/Express API that holds all privileged keys, and hardened HTTP response headers on every request.
 
 ---
 
 ## 5. Project Overview
 
 ### 5.1 Background
-Sub-Saharan Africa’s research output has grown significantly, yet the commercialization rate of academic intellectual property remains low. In Ghana, private sector industries frequently import technical solutions due to a lack of visibility into local university capabilities. Conversely, University of Ghana faculty members often lack structured commercial channels to showcase their inventions to enterprise partners.
 
-The **UG Virtual Industry Hub** fills this gap by providing a digital marketplace that matches industrial needs with academic capabilities, manages intellectual property disclosures securely, and fosters high-impact research collaborations.
+Academic research produced at the University of Ghana is frequently disconnected from the commercial partners, investors, and talent who could scale it. The Virtual Industry Hub digitizes the technology-transfer pipeline so disclosures, EOIs, matching, and challenge responses are tracked in one governed system.
 
-### 5.2 Vision Statement
-To establish the definitive African digital innovation ecosystem that seamlessly connects academia, industry, and investment capital through intelligent matching, secure disclosure management, and automated scientific discovery intelligence.
+### 5.2 Vision
 
-### 5.3 Mission Statement
-To empower University of Ghana researchers and students to commercialize scientific discoveries, solve real-world industrial challenges, and attract global technical partnerships by delivering a secure, accessible, AI-native platform for technology transfer and collaborative innovation.
+A single national innovation marketplace where UG research evidence, institutional partners, and investor capital meet under transparent, auditable AI assistance.
+
+### 5.3 Mission
+
+Provide secure, multilingual, role-based tools that accelerate disclosure-to-partnership workflows and produce machine-verifiable records of every decision.
 
 ### 5.4 Objectives & Success Metrics
 
-#### Primary Objectives
-* **Enable Industry Challenge Posting**: Allow enterprise partners to publish technical problem statements with budget parameters and attachment specifications.
-* **Semantic AI Matching**: Calculate vector similarity and candidate match scores between industry challenges and researcher profiles.
-* **Digital Disclosure Governance**: Streamline the submission, review, and approval of confidential invention disclosures by the Technology Transfer Office.
-* **Multilingual & Responsive Accessibility**: Deliver accessible interfaces in English, French, and Akan (Twi) across mobile, tablet, and desktop viewports.
-* **Automated Opportunity Scouting**: Leverage Gemini AI to scrape, summarize, and publish relevant research breakthroughs.
-
-#### Key Success Metrics
-
-| Metric | Baseline | Target Value | Verification Frequency |
-| :--- | :--- | :--- | :--- |
-| **Challenge Match Latency** | Manual (14 days) | **< 3 seconds** | Real-time monitoring |
-| **Match Accuracy (Relevance)** | ~40% manual fit | **> 85% verified fit** | Monthly user rating reviews |
-| **Disclosure Approval Turnaround** | 30 days | **< 5 business days** | Admin audit log dashboard |
-| **System Uptime SLA** | N/A | **99.9% uptime** | Continuous health monitoring |
-| **API Response Time (P95)** | N/A | **< 450 ms** | Server telemetry logs |
+| Objective | Metric |
+|---|---|
+| Accelerate disclosure-to-EOI | Median time from disclosure submission to first EOI |
+| Match quality | AI match score ≥ 85 ("Highly Compatible") ratio on active pipelines |
+| Auditability | 100% of AI decisions recorded in the provenance ledger |
+| Reach | Daily active users across all five roles; multilingual adoption |
 
 ---
 
@@ -160,687 +107,367 @@ To empower University of Ghana researchers and students to commercialize scienti
 
 ### 6.1 In Scope
 
-| Module / System | Included Capabilities |
-| :--- | :--- |
-| **User Authentication & Authorization** | Role-based registration, JWT session tokens, encrypted passwords, guest mode browsing. |
-| **AI Matching Engine** | Semantic vector similarity scoring, weighted scoring model ($S = 0.4R + 0.3K + 0.2P + 0.1A$), match explainability breakdown. |
-| **Industry Challenges Portal** | Challenge creation, file attachment support, candidate discovery, direct inquiry messaging. |
-| **IP Disclosure Governance** | Confidential invention logging, end-to-end cryptographic envelope encryption, multi-stage approval workflow. |
-| **Gemini AI Copywriter & News Hub** | Automated press release drafting (`gemini-3.6-flash`), tone selection, AI Scout academic RSS feed parsing. |
-| **Tech Transfer Product Catalog** | Patent listings, commercial licensing catalogs, student research grants portal. |
-| **Multilingual i18n Engine** | Dynamic translation dictionary supporting English, French, and Akan (Twi). |
+- Researcher disclosures and document uploads (`.txt`, `.doc`, `.docx`, ≤ 15 MB).
+- Partner/investor EOI submission and admin review.
+- AI chat assistant, AI profile extraction, AI news scout, AI matching — all provider-traceable.
+- Industry challenges CRUD + challenge matching + submission tracking.
+- Role-based dashboards, notifications, bookmarks.
+- Localization (EN/FR/Twi/Swahili) and theming.
+- Supabase schema provisioning and RLS enforcement.
 
 ### 6.2 Out of Scope
 
-| Item | Reason for Exclusion | Alternative Strategy |
-| :--- | :--- | :--- |
-| **In-App Direct Payment Gateway** | High regulatory/banking variance across industrial currencies | Managed via formal legal university invoices |
-| **Automated Patent Office Filing** | Requires physical/governmental registrar signatures | Exportable verified PDF disclosure dossier |
-| **Built-in Video Teleconferencing** | Avoid replicating complex video server infrastructure | Deep-linked Google Meet / Teams integration |
+- Outbound email/notification delivery infrastructure (notifications are in-app).
+- Real-time multi-party document co-editing.
+- Payments, escrow, or licensing transactions.
+- KMS-backed server-side message encryption (documented as a later-phase target; see §15).
 
 ---
 
 ## 7. Stakeholder Analysis
 
-### 7.1 Stakeholder Matrix
-
-| Stakeholder | Interest Level | Influence Level | Key Responsibilities | Primary Needs |
-| :--- | :--- | :--- | :--- | :--- |
-| **Students** | High | Medium | Apply to challenges, submit project ideas, engage faculty mentors. | Access to industry projects, grants, and career pathways. |
-| **Researchers / Faculty** | High | High | Submit invention disclosures, publish expertise, lead research teams. | Commercializing IP, acquiring research funding, industry partners. |
-| **Industry Partners** | High | High | Post commercial challenges, fund projects, license university patents. | Finding qualified scientific experts, fast problem resolution. |
-| **TTO Administrators** | High | High | Review disclosures, moderate news, manage governance and security. | Legal compliance, audit trails, IP protection, accurate analytics. |
-| **University Management** | Medium | High | Governance oversight, strategic resource allocation. | Institutional reputation, innovation metrics, economic impact. |
+| Stakeholder | Interest | Primary Interface |
+|---|---|---|
+| UG Researchers | Publish disclosures, receive EOIs, join challenges | Researcher portal |
+| Student innovators | Find labs, internships, funding signals | Student portal |
+| Industry partners | Publish challenges, browse disclosures, submit EOIs | Partner portal |
+| Investors | Pipeline discovery, EOI submission | Investor portal |
+| TTO / Admin | Govern disclosures, review EOIs, audit AI decisions | Admin portal |
 
 ---
 
 ## 8. User Roles and Permissions
 
-### 8.1 Student
-* **View Challenges**: Search and filter public industry challenges by category and domain.
-* **Apply to Challenges**: Submit project proposals and portfolio links to corporate challenges.
-* **Match Scores**: Access personalized AI compatibility scores for active challenges.
-* **Profile Management**: Maintain academic interests, technical skill sets, and project histories.
+Authentication is delegated to **Supabase Auth** (email/password, OTP, password reset) from the client. Roles live on the `profiles` table and gate both UI and RLS.
 
-### 8.2 Researcher / Faculty
-* **Invention Disclosures**: Log confidential research disclosures for formal Technology Transfer Office (TTO) review.
-* **Publish Capabilities**: Showcase lab facilities, publications, patents, and team capabilities.
-* **Collaborative Inquiries**: Receive and respond to direct corporate technical requests.
-* **Profile Dossier Export**: Generate verified University of Ghana research profile PDF exports.
+| Role | `profiles.role` | Capabilities |
+|---|---|---|
+| Student | `student` | Browse public projects/news, apply to labs, submit EOIs |
+| Researcher | `researcher` | Create/edit own disclosures, manage TRL, respond to EOIs, join challenges |
+| Industry Partner | `industry_partner` | Publish challenges, browse disclosures, submit EOIs |
+| Investor | `investor` | Browse pipelines, submit EOIs |
+| Admin | `admin` | Elevate roles, review disclosures, approve EOIs, run extraction, view decision ledger |
 
-### 8.3 Industry Partner
-* **Challenge Creation**: Publish corporate technical challenges with detailed parameters, budgets, and deadlines.
-* **Candidate Match Discovery**: Receive top-ranked faculty and student candidate recommendations generated by Gemini AI.
-* **Direct Messaging**: Engage in encrypted end-to-end communications with academic principal investigators.
-* **Licensing Requests**: Submit commercial technology licensing inquiries to the Technology Transfer Office.
-
-### 8.4 Administrator / Technology Transfer Officer (TTO)
-* **Disclosure Approval Workflow**: Audit, review, request revisions, or approve confidential invention disclosures.
-* **Gemini AI Copywriter Tooling**: Trigger AI-assisted academic press release drafting with customizable tone templates.
-* **AI Research Scout Synchronization**: Execute automated scraping and feed updates to populate institutional news.
-* **User & Security Management**: Moderate accounts, inspect cryptographic audit trails, configure AI engine parameters.
+- `get_user_role()` SQL function maps the authenticated Supabase JWT to a role; `is_admin()` gates admin-only tables and routes.
+- The server authorizes admin endpoints via `requireRole('admin')` using a service-role client; role elevation is only possible through an existing admin session.
 
 ---
 
-## 9. Functional Requirements
+## 9. Functional Modules
 
-### 9.1 Authentication Module
-* **FR-AUTH-001 — User Registration & Role Selection**: The system shall allow users to register by specifying full name, email address, password, institutional affiliation, and designated role (*Student*, *Researcher*, *Industry Partner*, *Administrator*).
-* **FR-AUTH-002 — Password Policy Enforcement**: Passwords must contain a minimum of 12 characters, including uppercase letters, lowercase letters, numbers, and special symbols. Passwords must be hashed server-side using `bcrypt` (salt factor 12).
-* **FR-AUTH-003 — Session Management**: Authenticated requests must carry a valid JWT Bearer token in the `Authorization` header. Sessions expire after 24 hours of inactivity.
+### 9.1 Authentication & Authorization
 
-### 9.2 Industry Challenge Module
-* **FR-CHAL-001 — Challenge Creation Workflow**: Enterprise users shall create challenges specifying Title, Problem Abstract, Industry Sector, Technical Keywords, Required Qualifications, Budget Parameter, and Application Deadline.
+- Supabase client-side auth (`lib/supabase.ts`); `AuthModal` handles login/register/reset.
+- `AdminLogin` page for admin access; admin gating additionally enforced on the server.
+- No passwords are stored by the application itself — hashing and session management are entirely Supabase's.
 
-```mermaid
-flowchart TD
-    A[Industry Partner] -->|Submits Parameters| B[Validate Form Inputs]
-    B -->|Passed| C[Persist Challenge in PostgreSQL]
-    C -->|Trigger Event| D[Invoke Gemini 3.6 Embeddings]
-    D -->|Calculate Vectors| E[Index in Vector Match Engine]
-    E -->|Output| F[Ranked Academic Candidates Ready]
-```
+### 9.2 Industry Challenges
 
-### 9.3 AI Matching Module
-* **FR-MATCH-001 — Candidate Match Generation**: Upon request, the AI engine shall analyze a target challenge description against researcher profiles, publications, and disclosures to generate similarity scores normalized from `0.00` to `1.00` (`0%` to `100%`).
-* **FR-MATCH-002 — Real-time Explainability**: The system must output a human-readable explanation breaking down shared keywords, domain overlap, and qualification fit.
+- `POST /api/industry-challenges` (partner role) publishes a challenge; `GET` lists them; `PUT/DELETE /:id` maintain them.
+- `POST /api/challenge-matches/generate` runs matching against researchers/projects; matches are stored in `challenge_matches`.
 
-### 9.4 Disclosure Management Module
-* **FR-DISC-001 — Invention Disclosure Submission**: Researchers shall log disclosures specifying Research Title, Abstract, Commercial Use Cases, Department, Keywords, and Attached Documents.
-* **FR-DISC-002 — Disclosure Access Control**: Disclosure abstracts and attachments are protected server-side by role-based access control (RBAC), are transmitted over TLS, and stored with AES-256 at-rest encryption. Client-side envelope encryption (AES-256-GCM) provides defense-in-depth; it is not a substitute for server-side authorization.
-* **FR-DISC-003 — Approval State Transitions**:
+### 9.3 AI Matching
 
-$$\text{DRAFT} \longrightarrow \text{SUBMITTED} \longrightarrow \text{UNDER\_REVIEW} \begin{cases} \longrightarrow \text{APPROVED} \\ \longrightarrow \text{REJECTED} \\ \longrightarrow \text{REVISION\_REQUIRED} \end{cases}$$
+- See §14. Flow: disclosure/profile → embeddings → `match_profiles` / `match_projects` RPCs → candidate pool → `/api/ai-match` hybrid ranking.
 
----
+### 9.4 AI News Scout
 
-## 10. Non-Functional Requirements
+- `POST /api/ai-scout/sync` (Groq-primary) pulls vetted global biomedical source lists (`UG_SOURCES` + `GLOBAL_ACCREDITED`), upserts into `news`, and records the decision. `force` flag requires admin.
 
-### 10.1 Performance
+### 9.5 Decision Provenance Ledger
 
-| Operational Metric | Maximum Threshold | Target Nominal Value |
-| :--- | :--- | :--- |
-| **Page Initial Load Time (LCP)** | < 2.0 seconds | 1.2 seconds |
-| **API Response Time (P95)** | < 500 milliseconds | 240 milliseconds |
-| **AI Matching Engine Latency** | < 3.0 seconds | 1.8 seconds |
-| **Client-side Encryption Latency** | < 100 milliseconds | 35 milliseconds |
+- `GET/POST /api/ai-decisions` (admin). Every AI call writes `provider`, `model`, `prompt_version`, subject, and result summary into `ai_decisions`.
 
-### 10.2 Security & Cryptography
-* **Encryption in Transit**: TLS 1.3 forced on all external and internal REST endpoints.
-* **Encryption at Rest**: AES-256 database-level disk encryption for persistent storage.
-* **Application Cryptography**: Native Web Crypto API (`crypto.subtle`) supporting AES-256-GCM message encryption, ECDH key agreement, and SHA-256 message authentication codes.
-* **Security Headers**: Content Security Policy (CSP), X-Content-Type-Options: `nosniff`, X-Frame-Options: `SAMEORIGIN`.
+### 9.6 Document Upload & Extraction
 
-### 10.3 Scalability
-* Concurrent user support for **10,000+ registered active users** and **1,000+ simultaneous web socket / HTTP requests**.
-* Vector database throughput supporting over **100,000 indexed research documents and abstracts**.
+- Client `uploadGuard` enforces size (15 MB), extension (`.txt`/`.doc`/`.docx`), and MIME whitelist; server repeats the check.
+- `POST /api/admin/extract-document` (admin only) extracts text (mammoth/docx) and has Gemini produce structured JSON validated against zod schemas.
+
+### 9.7 Dashboard Visualizations
+
+- Hand-built metric cards, trend indicators, and charts (no charting dependency is used in production components; `recharts` is an unused dependency).
+
+### 9.8 Notifications & Localization
+
+- `NotificationCenter` surfaces in-app notifications tied to `interaction_logs`/saved-search matches.
+- `LanguageSwitcher` loads translation bundles on demand via `loadLanguageAsync`.
 
 ---
 
-## 11. System Architecture
+## 10. System Architecture
 
-### 11.1 High-Level Architecture
-
-```mermaid
-flowchart LR
-    subgraph Client Tier [React 18 + Vite SPA]
-        UI[User Interface Views]
-        STATE[Client State & Crypto Engine]
-        UI <--> STATE
-    end
-
-    subgraph Server Tier [Express REST Engine]
-        API[Express REST API Gateway]
-        AUTH[JWT & Auth Middleware]
-        AI_PROXY[Gemini AI Service Proxy]
-        API --> AUTH
-        API --> AI_PROXY
-    end
-
-    subgraph Data & AI Tier [Cloud Infrastructure]
-        DB[(PostgreSQL Database)]
-        STORAGE[Supabase Object Storage]
-        GEMINI[Google Gemini 3.6 Flash API]
-    end
-
-    STATE <==>|HTTPS / JSON| API
-    API <-->|SQL Queries| DB
-    API <-->|S3 API| STORAGE
-    AI_PROXY <-->|gRPC / HTTPS| GEMINI
+```
+┌────────────────────────── Browser ──────────────────────────┐
+│ React 19 SPA (HashRouter)   components/   pages/  services/ │
+│   Auth: Supabase JS client (anon key)                      │
+└───────────────┬────────────────────────────────────────────┘
+                │ REST (fetch via lib/api.ts postJson/getJson)
+┌───────────────▼────────────────────────────────────────────┐
+│ Node.js + Express 5 server (server.ts)                      │
+│   • auth middleware → Supabase service-role client (RLS-free)│
+│   • /api/health, /api/translate, /api/gemini/*,             │
+│     /api/ai-*, /api/industry-challenges, /api/challenge-*,  │
+│     /api/ai-decisions, /api/admin/extract-document          │
+│   • security headers + CORS allowlist + zod validation      │
+│   • throttling (e.g. /api/gemini/embed: 100 req/min/user)   │
+└───────┬──────────────────────────────┬─────────────────────┘
+        │                              │
+┌───────▼───────────┐        ┌─────────▼──────────────────────┐
+│ Supabase Postgres │        │ AI Providers                  │
+│  pgvector (768-d) │        │  • Groq (PRIMARY)             │
+│  RLS policies     │        │    openai/gpt-oss-120b        │
+│  match_* RPCs     │        │  • Gemini (FALLBACK)          │
+│  ai_decisions     │        │    gemini-3.6-flash family    │
+└───────────────────┘        │  • Gemini embeddings          │
+                             │    gemini-embedding-2-preview │
+                             └───────────────────────────────┘
 ```
 
-### 11.2 Technology Stack
-
-| Layer | Component Technology | Selection Rationale |
-| :--- | :--- | :--- |
-| **Frontend Framework** | React 18 + TypeScript + Vite | Rapid Hot Module Replacement, strict type safety, modular architecture. |
-| **Styling & Icons** | Tailwind CSS + Lucide React | High-contrast utility-first design, fluid responsive layouts. |
-| **Backend Runtime** | Node.js + Express + `tsx` / `esbuild` | Scalable REST API, native TypeScript execution, fast build times. |
-| **AI Engine** | Primary: Groq (`groq-sdk`, `openai/gpt-oss-120b`); Fallback: Google Gemini 3.6 Flash (`@google/genai`) | High-speed LLM inference with automatic provider failover; embeddings via Gemini. |
-| **Database** | PostgreSQL / Supabase | Relational integrity, ACID compliance, native JSONB support. |
-| **Cryptography** | Web Crypto API (AES-256-GCM / SHA-256) + TLS | Client-side crypto is defense-in-depth; authorization is enforced server-side via RBAC, request validation, and AES-256 at-rest encryption. |
+Dev mode: Vite middlewares served inside the Express app; production: `express.static` of the built app (or Vercel serverless export).
 
 ---
 
-## 12. Database Design
+## 11. Technology Stack
 
-### 12.1 Entity Relationship Diagram
+### 11.1 Frontend
 
-```mermaid
-erDiagram
-    USERS ||--o{ CHALLENGES : "creates"
-    USERS ||--o{ DISCLOSURES : "submits"
-    USERS ||--o{ MESSAGES : "sends"
-    CHALLENGES ||--o{ MATCHES : "generates"
-    USERS ||--o{ MATCHES : "receives"
-    DISCLOSURES ||--o{ AUDIT_LOGS : "tracks"
+| Layer | Technology |
+|---|---|
+| Framework | React **19** (^19.2.3), TypeScript strict |
+| Build | Vite 6, `@vitejs/plugin-react`, Tailwind CSS 4, `@tailwindcss/vite` |
+| Routing | `react-router-dom` (HashRouter) |
+| Animation/Icons | `motion`, `lucide-react` |
+| i18n | `i18next`, `react-i18next`, `i18next-browser-languagedetector` |
+| Client libs | `@supabase/supabase-js`, `jspdf`, `jspdf-autotable`, `docx`, `mammoth`, `pdfjs-dist` |
 
-    USERS {
-        uuid id PK
-        string full_name
-        string email UK
-        enum role
-        string department
-        timestamp created_at
-    }
+### 11.2 Backend
 
-    CHALLENGES {
-        uuid id PK
-        string title
-        text description
-        uuid partner_id FK
-        string category
-        date deadline
-        timestamp created_at
-    }
+| Layer | Technology |
+|---|---|
+| Runtime | Node.js + Express **5** (^5.2.1), single `server.ts` |
+| Dev runner / bundler | `tsx` (dev), esbuild (production bundle `dist/server.cjs`) |
+| AI SDKs | `groq-sdk` (primary), `@google/genai` (fallback + embeddings) |
+| Validation | `zod` request schemas (`lib/requestSchemas.ts`, `lib/aiSchemas.ts`) |
+| Hosting | Any Node host; `0.0.0.0:3000`; Vercel serverless export supported |
 
-    DISCLOSURES {
-        uuid id PK
-        string title
-        text encrypted_abstract
-        uuid researcher_id FK
-        enum status
-        timestamp submitted_at
-    }
+### 11.3 Data & Auth
 
-    MATCHES {
-        uuid id PK
-        uuid challenge_id FK
-        uuid candidate_id FK
-        float match_score
-        text explanation
-    }
-```
-
-### 12.2 Table Specifications
-
-#### Table: `users`
-
-| Column | Data Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `id` | `UUID` | Primary Key, Default `gen_random_uuid()` | Unique user identifier |
-| `full_name` | `VARCHAR(150)` | `NOT NULL` | Full user name |
-| `email` | `VARCHAR(255)` | `UNIQUE`, `NOT NULL` | Institutional or business email |
-| `password_hash` | `VARCHAR(255)` | `NOT NULL` | Bcrypt hashed password |
-| `role` | `ENUM` | `NOT NULL` | Roles: `student`, `researcher`, `industry`, `admin` |
-| `department` | `VARCHAR(150)` | Optional | University department or corporate unit |
-| `created_at` | `TIMESTAMP` | Default `NOW()` | Record creation timestamp |
-
-#### Table: `challenges`
-
-| Column | Data Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `id` | `UUID` | Primary Key | Unique challenge ID |
-| `title` | `VARCHAR(200)` | `NOT NULL` | Challenge title |
-| `description` | `TEXT` | `NOT NULL` | Full problem specification |
-| `partner_id` | `UUID` | Foreign Key (`users.id`) | Industry partner creator ID |
-| `category` | `VARCHAR(100)` | `NOT NULL` | Sector classification |
-| `deadline` | `DATE` | `NOT NULL` | Submission deadline |
+| Layer | Technology |
+|---|---|
+| Database | Supabase PostgreSQL 15+ with `pgvector` (768-dim vectors) |
+| Auth | Supabase Auth (client-side) |
+| Access control | RLS policies + `SECURITY DEFINER` matching functions |
 
 ---
 
-## 13. API Documentation
+## 12. Data Model
 
-### 13.1 Authentication APIs
+All schema is provisioned by `supabase_setup.sql`; `supabase_rls_verify.sql` asserts policy state.
 
-#### Endpoint: `POST /api/auth/register`
+### 12.1 Tables (setup order)
 
-##### Request Payload
-```json
-{
-  "fullName": "Dr. Emmanuel Mensah",
-  "email": "e.mensah@ug.edu.gh",
-  "password": "SecurePassword123!",
-  "role": "researcher",
-  "department": "Department of Computer Science"
-}
-```
+| # | Table | Purpose |
+|---|---|---|
+| 1 | `profiles` (pre-existing) | Users, roles, collaboration profile, semantic summary |
+| 2 | `projects` (pre-existing) | Research disclosures, TRL stage, visibility flags |
+| 3 | `eois` (pre-existing) | Expressions of interest linking partners/investors to projects |
+| 4 | `account_deletions` (pre-existing) | GDPR-style account deletion requests |
+| 5 | `student_profiles` | Student-specific attributes |
+| 6 | `researcher_profiles` | Researcher-specific attributes |
+| 7 | `investor_profiles` | Investor-specific attributes |
+| 8 | `industry_profiles` | Industry partner attributes |
+| 9 | `ai_decisions` | Provenance ledger (decision_type, provider, model, prompt_version, result) |
+| 10 | `interaction_logs` | In-app interaction and notification feed |
+| 11 | `bookmarks` | User-saved projects/news |
+| 12 | `news` | Scout feed with `fts_doc` tsvector (GIN indexed) |
+| 13 | `industry_challenges` | Partner-published challenges |
+| 14 | `challenge_matches` | Researcher/project ↔ challenge matches |
 
-##### Response Payload (`201 Created`)
-```json
-{
-  "success": true,
-  "message": "User registration successful",
-  "token": "<JWT_SESSION_TOKEN_PLACEHOLDER>",
-  "user": {
-    "id": "e8a1a3b8-4c92-4f32-b912-91f630561234",
-    "fullName": "Dr. Emmanuel Mensah",
-    "email": "e.mensah@ug.edu.gh",
-    "role": "researcher"
-  }
-}
-```
+### 12.2 Functions & Triggers
 
----
+- `get_user_role()`, `is_admin()`, `is_reveal_approved()`, `can_access_project_file()`
+- `match_profiles(query_embedding, match_threshold, match_count)` — vector similarity over profiles
+- `match_projects(...)` — vector similarity over projects, **`SECURITY DEFINER`**, visibility enforced server-side
+- Trigger `guard_challenge_match_scores` — constrains challenge match scores
 
-### 13.2 Generate Matches API
+### 12.3 Storage Buckets
 
-#### Endpoint: `POST /api/matches/generate`
-
-##### Request Payload
-```json
-{
-  "challengeId": "c71a92de-8b31-4122-a901-123456789abc",
-  "topK": 5
-}
-```
-
-##### Response Payload (`200 OK`)
-```json
-{
-  "challengeId": "c71a92de-8b31-4122-a901-123456789abc",
-  "matches": [
-    {
-      "candidateId": "f90123ab-4567-8901-bcde-234567890abc",
-      "candidateName": "Prof. G. Awandare",
-      "department": "WAGPICA / Department of Biochemistry",
-      "score": 0.94,
-      "rank": 1,
-      "explanation": "High domain overlap in malaria immunology, genomic sequencing, and clinical research."
-    }
-  ]
-}
-```
+- `projects` (private) — disclosure attachments, signed-URL access via `can_access_project_file`
+- `avatars` (public) — user avatars
 
 ---
 
-### 13.3 Gemini AI Copywriter & News Sync APIs
+## 13. API Reference
 
-#### Endpoint: `POST /api/gemini/copywrite`
+All routes except `/api/health` require an Authorization header validated by `authenticateUser` against Supabase. Admin routes additionally require the `admin` role.
 
-##### Request Payload
-```json
-{
-  "topic": "Malaria immunology breakthrough in WAGPICA department",
-  "keywords": "Prof. G. Awandare, Nature Medicine, clinical trial",
-  "tone": "Academic Press Release"
-}
-```
+| Method | Path | Auth | Purpose |
+|---|---|---|---|
+| GET | `/api/health` | — | Liveness (`{status:'ok', time}`) |
+| POST | `/api/translate` | user | Text translation (Gemini) |
+| POST | `/api/gemini/chat` | user | AI assistant chat (Groq-primary) |
+| POST | `/api/gemini/embed` | user, throttled | Embeddings via `gemini-embedding-2-preview` (768-d) |
+| POST | `/api/ai-profile` | user | Extract/refine AI profile (Groq-primary) |
+| POST | `/api/ai-scout/sync` | user; `force` = admin | Scout feed sync + news upsert (Groq-primary) |
+| POST | `/api/ai-match` | user | Hybrid match ranking (deterministic + LLM reasoning) |
+| GET/POST | `/api/industry-challenges` | user / partner | List / create challenges |
+| PUT/DELETE | `/api/industry-challenges/:id` | partner | Update / delete challenge |
+| GET | `/api/challenge-matches` | user | List matches |
+| POST | `/api/challenge-matches/generate` | user | Generate challenge matches |
+| PUT | `/api/challenge-matches/:id` | user | Update a match record |
+| GET/POST | `/api/ai-decisions` | admin | Read / write provenance ledger |
+| POST | `/api/admin/extract-document` | admin | Document text extraction + AI structuring |
 
-##### Response Payload (`200 OK`)
-```json
-{
-  "title": "University of Ghana Researchers Announce Breakthrough Malaria Immunology Findings in Nature Medicine",
-  "summary": "Scientists at WAGPICA, led by Prof. G. Awandare, have identified critical immune biomarkers..."
-}
-```
-
----
-
-### 13.4 AI Decision Provenance Ledger APIs
-
-An **append-only provenance ledger** (`public.ai_decisions`) records every platform AI decision — assistant chat completions, profile extractions, and semantic match rankings — together with provider/model metadata, prompt versioning, and SHA-256 input/output integrity digests. Writes are performed by the **service-role client** (bypassing RLS) so decisions are recorded irrespective of the caller's row-level permissions; reads are restricted to Administrators via the `is_admin()` RLS policy.
-
-#### Endpoint: `GET /api/ai-decisions` (Admin Only)
-
-Lists up to 200 ledger entries, newest first. Optional `?status=` filter (`all` | `pending` | `approved` | `rejected`).
-
-##### Response Payload (`200 OK`)
-```json
-{
-  "decisions": [
-    {
-      "id": "b1f4...-9c2a",
-      "decision_type": "match_ranking",
-      "subject_id": "user-uuid",
-      "provider": "hybrid",
-      "model": "scoring-engine",
-      "prompt_version": "ugjh-match-rankings-v1",
-      "input_hash": "sha256:...",
-      "output_hash": "sha256:...",
-      "result": { "rankings_count": 12 },
-      "review_status": "pending",
-      "reviewed_by": null,
-      "reviewed_at": null,
-      "created_at": "2026-08-19T09:00:00Z"
-    }
-  ]
-}
-```
-
-#### Endpoint: `POST /api/ai-decisions` (Admin Only)
-
-Manually appends a ledger entry. The server inserts the record through the service-role client with a default `review_status` of `pending`.
-
-##### Request Payload
-```json
-{
-  "decision_type": "assistant_chat",
-  "subject_id": "user-uuid",
-  "provider": "google",
-  "model": "gemini-flash-latest",
-  "prompt_version": "ugjh-gemini-v1",
-  "input_hash": "sha256:...",
-  "output_hash": "sha256:...",
-  "result": { "message_length": 320 }
-}
-```
-
-##### Response Payload (`200 OK`)
-```json
-{ "success": true }
-```
-
-All generative AI calls are **Groq-primary** (`GROQ_MODEL`) with automatic `GEMINI_FALLBACK_MODELS` fallback; vector embeddings remain Gemini-only (Groq exposes no embeddings endpoint). Instrumented call-sites: `POST /api/gemini/chat`, `POST /api/ai-profile`, `POST /api/ai-match`, and `POST /api/ai-scout/sync`. The administrative **Decision Ledger** tab under the Admin Dashboard renders pending/approved/rejected statuses, provider/model information, digest previews, and result summaries.
+**There is no `/api/gemini/copywrite` endpoint and no `/api/auth/*` HTTP API** — authentication is performed client-side by the Supabase SDK.
 
 ---
 
-## 14. AI Matching Documentation
+## 14. AI & Matching Architecture
 
-### 14.1 Matching Strategy & Mathematical Formula
+### 14.1 Provider Strategy
 
-The AI Matching Engine evaluates the compatibility between a corporate challenge $C$ and a candidate profile $P$ using a multi-factor weighted scoring model:
+- **Primary:** Groq — model `openai/gpt-oss-120b` (override via `GROQ_MODEL`). Server-only key.
+- **Fallback:** Gemini `gemini-3.6-flash`, `gemini-3.5-flash`, `gemini-flash-latest`, `gemini-3.1-flash-lite`.
+- Helper `generateWithProviders` (server.ts) tries Groq then Gemini and returns `{provider, model, text}`; `generateWithFallback` handles Gemini-only paths (translate, extract).
+- **Embeddings:** Gemini `gemini-embedding-2-preview` via `/api/gemini/embed` (Groq exposes no embeddings endpoint); client `ensureDimension` normalizes to 768.
 
-$$S = 0.40 \cdot R + 0.30 \cdot K + 0.20 \cdot P + 0.10 \cdot A$$
+### 14.2 Matching Pipeline (hybrid, auditable)
 
-Where:
-* $R = \text{Cosine Similarity}(\vec{E}_{\text{challenge}}, \vec{E}_{\text{research abstract}})$ (Google Gemini 3.6 Embeddings)
-* $K = \frac{|K_{\text{challenge}} \cap K_{\text{candidate}}|}{|K_{\text{challenge}}|}$ (Exact & Jaccard keyword overlap ratio)
-* $P = \text{Past Project Relevance Score}$ (Historical successful project delivery factor)
-* $A = \text{Availability Indicator}$ ($1.0$ for immediate availability, $0.5$ for partial commitment)
+1. **Stage 1 — Dense retrieval:** profile/project text embedded to a 768-d vector; `match_profiles` / `match_projects` RPCs return top-20 cosine-similarity candidates (threshold 0.0).
+2. **Stage 2 — Deterministic local scoring (authoritative):** `computeLocalMatchRankings` (lib/scoring.ts) computes a keyword-overlap score over a fixed domain keyword set plus a similarity bonus: `score = clamp(50, 98, round(similarity×80) + overlap×8)`. Labels: ≥85 *Highly Compatible*, ≥70 *Strategic Match*, else *Compatible Match*. This number **cannot be overridden by the LLM**.
+3. **Stage 3 — LLM enrichment:** Groq-primary `generateWithProviders` produces JSON reasoning + alignment labels (validated against `matchRankingsSchema`); merged into the deterministic scores.
+4. **Provenance:** every ranking writes a `match_ranking` row into `ai_decisions` (provider, model, prompt version `ugjh-match-rankings-v1`).
+5. **Client fallback:** if the API fails, `MatchingService.rankMatches` replays the identical local keyword scorer and caches results in an in-memory Map keyed by summary + candidate ids.
 
-```
-Target Similarity Score: S >= 0.70 for High Recommendation Tier
-```
+### 14.3 AI Decision Provenance Ledger
 
-### 14.2 Explainability Requirements
+Every AI interaction records:
 
-For every generated candidate recommendation, the system calculates and renders:
-1. **Match Percentage**: $(S \times 100)\%$.
-2. **Key Skill Overlap**: Array of matching technical tags.
-3. **Contextual Fit Statement**: Automatically generated 2-sentence rationale produced by `gemini-3.6-flash`.
-
----
-
-## 15. RAG Knowledge Base & AI Pipeline
-
-### 15.1 Approved Data Sources
-
-1. **University of Ghana Research Repository (UGSpace)**: Open-access theses and faculty papers.
-2. **PubMed Open Access Subset**: Biomedical and biochemical clinical publications.
-3. **DOAJ & arXiv Datasets**: Technical Computer Science, AI, and Engineering preprints.
-4. **Verified Corporate Challenge Registries**: Proprietary industry problem disclosures.
-
-### 15.2 Retrieval Pipeline
-
-```mermaid
-flowchart LR
-    A[Academic Papers & Data Sources] --> B[Text Cleaning & Normalization]
-    B --> C[Fixed Chunking 512 Tokens]
-    C --> D[Generate Vector Embeddings gemini-3.6-flash]
-    D --> E[Index Vector Store]
-    E --> F[Semantic Search Query]
-    F --> G[Gemini 3.6 Context Synthesis Response]
-```
+- `decision_type` — `chat`, `profile_extraction`, `match_ranking`, `news_scouting`, `document_extraction`
+- `provider` and `model` (the actual provider/model served)
+- `prompt_version`
+- `subject_id`, `result` summary, `review_status` (default `pending`)
 
 ---
 
-## 16. User Interface Documentation
+## 15. Security Architecture
 
-### 16.1 View Layouts & Key Elements
+### 15.1 HTTP Hardening (server middleware)
 
-#### 1. Public Home View (`/`)
-* **Hero Banner**: Featuring the official University of Ghana vector logo (`/logo.svg`), high-contrast typography, and quick call-to-actions.
-* **Featured Inventions Catalog**: Grid cards displaying commercialized patents ready for industrial licensing.
-* **Live News Feed**: Dynamically populated by the AI Research Scout.
+| Header / Control | Value |
+|---|---|
+| CORS | Allowlist from `CORS_ORIGINS` env |
+| `X-Content-Type-Options` | `nosniff` |
+| `X-Frame-Options` | `DENY` |
+| HSTS | Enabled |
+| CSP | Configured |
+| `Permissions-Policy` | Restricted |
+| OPTIONS preflight | Short-circuits (204) |
 
-#### 2. AI Challenge Matcher View (`/challenges`)
-* **Interactive Query Filter**: Category selectors (Biotechnology, Artificial Intelligence, Agriculture, Renewable Energy).
-* **Match Score Cards**: Visually indicating compatibility percentages, researcher credentials, and quick inquiry triggers.
+### 15.2 Secret Handling
 
-#### 3. Technology Transfer Office Admin Dashboard (`/admin`)
-* **Pending Disclosures Management Widget**: Real-time review table supporting approval status changes and crypto signature checks.
-* **Gemini Copywriter Modal**: Interactive press release generator supporting instant text updates to active news feeds.
+- `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY` are **server-only**; the browser uses only `VITE_`-prefixed keys and the anon key.
+- The server resolves `GEMINI_API_KEY || VITE_GEMINI_API_KEY` and `VITE_GROQ_API_KEY || GROQ_API_KEY` so hosted Vite builds keep working.
+
+### 15.3 Database Security (RLS)
+
+- Public select on approved public projects and synchronized news.
+- Self-write on own profiles.
+- Admin-only scope on `ai_decisions` (via `is_admin()`), role elevation, and approval states.
+- `SECURITY DEFINER` matching functions enforce project visibility server-side; clients cannot bypass via direct RPC.
+- `account_deletions` table records removal requests.
+
+### 15.4 Input Validation & Uploads
+
+- All request bodies validated with zod (`validateBody`).
+- Upload guard: ≤ 15 MB, extension whitelist `.txt/.doc/.docx`, MIME whitelist — enforced client and server side.
+
+### 15.5 Message/EOI Confidentiality
+
+- Legacy payloads are decrypted with AES-256-GCM envelope decryption (`lib/cryptoService.ts`, `inspectMessageEnvelope` reports `AES-256-GCM (legacy)`).
+- **KMS-backed server-side encryption replaces legacy client-side encryption in a later phase** — this is a declared design target, not a current capability.
 
 ---
 
-## 17. Installation Guide
+## 16. Deployment
 
-### 17.1 Prerequisites
-* **Node.js**: `>= 20.0.0`
-* **npm**: `>= 10.0.0`
-* **Git**: `>= 2.40.0`
-* **Operating System**: Linux / macOS / Windows WSL2
+### 16.1 Build & Run
 
-### 17.2 Environment Variables
+| Step | Command |
+|---|---|
+| Dev server | `npm run dev` → `0.0.0.0:3000` |
+| Production build | `npm run build` (Vite static build + esbuild `dist/server.cjs`) |
+| Run production | `npm start` (`node dist/server.cjs`) |
 
-Declare the following variables inside `.env`:
+### 16.2 Hosting Notes
+
+- Port is fixed at `3000`; set `CORS_ORIGINS` to the production origin.
+- Vercel serverless export supported for the API; static assets served by `express.static` when not on Vercel.
+- CI workflow runs on GitHub Actions (`.github/workflows/ci.yml` + `secret-scan.yml`).
+
+---
+
+## 17. Environment Configuration
+
+Create `.env` from `.env.example`:
 
 ```env
-# Server Configuration
-PORT=3000
-NODE_ENV=production
+# Supabase
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 
-# AI Engine Credentials
-GEMINI_API_KEY=your_google_gemini_api_key_here
+# AI
+GEMINI_API_KEY=
+GROQ_API_KEY=          # server-only; used for profile extraction and matching
+GROQ_MODEL=openai/gpt-oss-120b
 
-# Persistence Credentials
-DATABASE_URL=postgresql://user:password@localhost:5432/ug_virtual_hub
-SUPABASE_URL=https://your-supabase-project.supabase.co
-SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-### 17.3 Setup Commands
-
-```bash
-# 1. Clone the project repository
-git clone https://github.com/university-of-ghana/virtual-industry-hub.git
-cd virtual-industry-hub
-
-# 2. Install package dependencies
-npm install
-
-# 3. Configure environment parameters
-cp .env.example .env
-
-# 4. Verify type safety & code quality
-npm run lint
-
-# 5. Build full-stack application
-npm run build
-
-# 6. Launch development server
-npm run dev
+# CORS allowlist (comma-separated origins)
+CORS_ORIGINS=
 ```
 
 ---
 
-## 18. Deployment Documentation
+## 18. Testing & Quality Assurance
 
-### 18.1 Environments
+| Check | Command | Status |
+|---|---|---|
+| Type check | `npm run lint` (`tsc --noEmit`) | Passing |
+| Unit tests | `npm run test` (`vitest run`) | 27 passing |
+| Build | `npm run build` | Passing (esbuild warnings only) |
 
-| Environment | Host Domain | Purpose | Deployment Trigger |
-| :--- | :--- | :--- | :--- |
-| **Development** | `https://ais-dev-*.run.app` | Active coding & incremental testing | Automatic container start |
-| **Staging** | `https://ais-pre-*.run.app` | Pre-production testing & TTO sign-off | Manual staging release trigger |
-| **Production** | `https://virtualhub.ug.edu.gh` | Public enterprise live platform | Tagged Git Release (`v1.0.0`) |
-
-### 18.2 Deployment Workflow
-
-```mermaid
-flowchart LR
-    A[Git Push Main Branch] --> B[Run Automated Linter & Build]
-    B -->|Passed| C[Compile Vite Client SPA & Server Bundle]
-    C --> D[Containerize Cloud Run Image]
-    D --> E[Deploy to Staging Environment]
-    E -->|TTO Verification| F[Promote to Production]
-```
+Test files: `lib/aiSchemas.test.ts`, `lib/rlsPolicies.test.ts`, `lib/scoring.test.ts`, `lib/uploadGuard.test.ts`.
 
 ---
 
-## 19. Testing Documentation
+## 19. Operations & Maintenance
 
-### 19.1 Unit Tests
-
-| Module | Test Coverage Target | Key Scenarios Tested |
-| :--- | :--- | :--- |
-| **Authentication Service** | 95% | JWT issuance, password hashing, invalid token rejection. |
-| **AI Matching Engine** | 90% | Vector score boundary conditions ($S \in [0, 1]$), empty candidate handling. |
-| **Cryptographic Engine** | 100% | AES-256-GCM encryption/decryption roundtrip integrity, key generation. |
-| **Gemini Copywriter** | 85% | Prompt construction, JSON parse fallback handling. |
-
-### 19.2 Integration Test Scenarios
-
-#### Scenario: Full Invention Disclosure Approval Flow
-1. **Step 1**: Researcher logs in and submits a confidential invention disclosure.
-2. **Step 2**: Client crypto engine encrypts abstract payload before network transmission.
-3. **Step 3**: Database records state as `SUBMITTED`.
-4. **Step 4**: TTO Administrator opens Admin Dashboard, reviews encrypted payload, and marks status as `APPROVED`.
-5. **Step 5**: Audit trail logs timestamp, administrator ID, and approval hash signature.
+- **Monitoring:** `/api/health` liveness; Supabase console for DB metrics.
+- **AI cost/governance:** provenance ledger is the source of truth for provider usage; `GROQ_MODEL` can be switched without redeployment.
+- **Housekeeping:** review `ai_decisions.review_status` for flagged outputs; prune scout `news` via sync policy.
+- **Recovery:** DB restored from Supabase point-in-time backup; environment secrets rotate via hosting console.
 
 ---
 
-## 20. Security and Compliance
+## 20. Appendices
 
-### 20.1 Authentication Policy
-* **Password Complexity**: Minimum 12 characters, enforced uppercase, lowercase, numeric, and special character requirements.
-* **Brute-Force Protection**: Express rate limiting throttles API endpoints to 30 requests per minute per IP address.
+### A. Source of truth files
 
-### 20.2 File Upload Restrictions
+| File | Contents |
+|---|---|
+| `server.ts` | All routes, providers, middleware |
+| `supabase_setup.sql` / `supabase_rls_verify.sql` | Schema, RLS, functions |
+| `lib/scoring.ts`, `lib/aiSchemas.ts`, `lib/uploadGuard.ts` | Matching math, AI schemas, upload rules |
+| `public/RAG_IMPLEMENTATION.md` | RAG pipeline deep-dive |
 
-| File Type | Allowed Extensions | Max File Size | Scanning Protocol |
-| :--- | :--- | :--- | :--- |
-| **Documents** | `.pdf`, `.docx` | 20 MB | MIME-type validation + Virus Scan |
-| **Datasets** | `.csv`, `.xlsx` | 15 MB | Extension verification |
-| **Vector Logos** | `.svg`, `.png`, `.jpg` | 5 MB | Image header sanitization |
+### B. Realized vs planned
 
-### 20.3 Audit Logging & Cryptography
-All administrative actions, disclosure state changes, user account deletions, and system role updates generate immutable audit log records storing IP Address, User UUID, Action Type, and SHA-256 Payload Hashes.
-
-Platform AI activity is additionally captured in the append-only **AI Decision Provenance Ledger** (`public.ai_decisions`), written via the service-role client with SHA-256 input/output digests and reviewed-rejected-or-pending statuses. See §13.4.
-
----
-
-## 21. Risk Assessment
-
-| Risk Description | Probability | Impact | Mitigation Strategy |
-| :--- | :--- | :--- | :--- |
-| **Unauthorized Disclosure Exposure** | Low | High | Strict server-side RBAC middleware, request-body validation, upload quarantine, and AES-256 at-rest encryption. |
-| **AI Model Rate Limit Exceeded** | Medium | Medium | Groq-primary provider with automatic Gemini model fallback cascade (`gemini-3.6-flash` $\rightarrow$ `gemini-3.5-flash` $\rightarrow$ `gemini-flash-latest`). |
-| **Database Network Disruption** | Low | High | Client-side `StorageService` cache fallback ensuring uninterrupted browsing. |
-| **Unverified External News Feed Scraping** | Medium | Low | Administrative approval queue required before publishing AI Scout findings. |
-
----
-
-## 22. Maintenance Plan
-
-### 22.1 Routine Tasks
-
-| Routine Task | Frequency | Responsible Party |
-| :--- | :--- | :--- |
-| **Database Vacuuming & Index Optimization** | Weekly | Lead Database Administrator |
-| **Security Dependency Audit (`npm audit`)** | Bi-weekly | DevOps Engineer |
-| **Gemini AI Model Accuracy Benchmarking** | Monthly | Lead AI Architect |
-| **Disaster Recovery Backup Verification** | Monthly | Infrastructure Team |
-
----
-
-## 23. Future Enhancements
-
-### Phase 2 Roadmap (Q4 2026)
-* **Native Mobile Applications**: iOS & Android React Native wrappers with push notifications.
-* **Real-time Collaborative Canvas**: Integrated WebSockets workspace for live joint research drafting.
-* **AI Grant Proposal Writer**: Automated assistant helping faculty draft corporate grant proposals.
-
-### Phase 3 Roadmap (Q2 2027)
-* **WIPO Patent Office Integration**: Direct API handshake with global intellectual property databases.
-* **Cross-University Regional Network**: Expanding hub connectivity to partner West African academic institutions.
-
----
-
-## 24. Conclusion
-
-The **UG Virtual Industry / Virtual Hub** delivers a production-grade, enterprise-ready digital platform bridging academia and industry at the **University of Ghana**. By pairing **Google Gemini 3.6 Flash** artificial intelligence with robust end-to-end cryptographic envelope security, role-based access controls, and dynamic multilingual user experience, the platform establishes a sustainable framework for scientific commercialization, technical challenge solving, and national economic impact.
-
-The system is fully built, compiled, tested, and validated for operational deployment under the governance of the Institute of Applied Science and Technology (IAST).
-
----
-
-## 25. Appendices
-
-### Appendix A — Glossary
-
-| Term | Full Definition |
-| :--- | :--- |
-| **IAST** | Institute of Applied Science and Technology, University of Ghana |
-| **TTO** | Technology Transfer Office |
-| **RAG** | Retrieval-Augmented Generation |
-| **IP** | Intellectual Property |
-| **AES-256-GCM** | Advanced Encryption Standard with 256-bit key in Galois/Counter Mode |
-| **ECDH** | Elliptic-Curve Diffie-Hellman Key Exchange |
-
----
-
-### Appendix B — Sample Notification Templates
-
-#### Disclosure Approval Notification
-```text
-Subject: Invention Disclosure Approved - [DISCLOSURE TITLE]
-
-Dear [RESEARCHER NAME],
-
-Your confidential invention disclosure titled "[DISCLOSURE TITLE]" (Ref ID: [DISCLOSURE ID]) has been formally reviewed and APPROVED by the University of Ghana Technology Transfer Office.
-
-Next Steps:
-1. Log in to your Virtual Industry Hub dashboard to view your formal clearance badge.
-2. A TTO Licensing Officer will reach out within 3 business days to initiate patent strategy planning.
-
-Regards,
-Technology Transfer Office
-Institute of Applied Science and Technology (IAST)
-University of Ghana, Legon
-```
-
----
-
-### Appendix C — Coding Standards
-
-#### Backend Standards
-* Strict TypeScript syntax with explicit return types for Express handlers.
-* Standardized REST API responses formatted with `{ success: boolean, data?: any, error?: string }`.
-* Mandatory entry point compilation to self-contained `dist/server.cjs` via `esbuild`.
-
-#### Frontend Standards
-* React 18 functional components utilizing custom TypeScript interfaces defined in `/src/types.ts`.
-* Tailwind CSS utility styling adhering to responsive mobile-first rules.
-* Icon imports strictly sourced from `lucide-react`.
-
----
-
-## 26. Mandatory Output Checklist
-
-- [x] Cover Page & Institutional Metadata
-- [x] Revision History & Sign-off Table
-- [x] Executive Summary & Objectives
-- [x] Stakeholder Matrix & User Roles
-- [x] Functional Requirements & Flowcharts
-- [x] Non-Functional Performance & Cryptography Rules
-- [x] High-Level System Architecture & Mermaid Diagram
-- [x] Database Design & ERD Specification
-- [x] Comprehensive REST API Documentation
-- [x] AI Matching Mathematical Formula & Strategy
-- [x] RAG Pipeline Architecture Flowchart
-- [x] User Interface Screenshots & Layout Descriptions
-- [x] Complete Installation & Deployment Manual
-- [x] Testing, Security, Risk Assessment & Maintenance Plans
-- [x] Appendices & Mandatory Verification Checklist
+| Capability | Status |
+|---|---|
+| Groq-primary / Gemini-fallback AI | **Realized** |
+| AI decision provenance ledger | **Realized** |
+| Industry challenges + matching | **Realized** |
+| Multilingual UI (EN/FR/Twi/Sw) | **Realized** |
+| pgvector 768-d hybrid matching | **Realized** |
+| KMS-backed server-side message encryption | **Planned** |
+| Outbound email/SMS notifications | **Planned** |
