@@ -1,0 +1,161 @@
+{
+  "nav": {
+    "brand": "Ndwuma Bea",
+    "home": "Fie",
+    "projects": "Akyi Nsɛm",
+    "products": "Nneɛma",
+    "news": "Asem Foforɔ",
+    "dashboard": "Dwumadibea",
+    "myDashboard": "Me Dwumadibea",
+    "login": "Kɔ Mu / Kyerɛw Dzin",
+    "logout": "Firi Mu"
+  },
+  "common": {
+    "loading": "Ɛrenya kwan...",
+    "save": "Kora",
+    "cancel": "Gyae",
+    "delete": "Popa",
+    "edit": "Sesa",
+    "submit": "Mane",
+    "search": "Hwehwɛ...",
+    "filter": "Yi mu",
+    "close": "To mu",
+    "back": "San akyi",
+    "actions": "Dwumadi",
+    "view": "Hwɛ",
+    "status": "Ateetee",
+    "error": "Mfomso bi aba",
+    "success": "Ɛyɛɛ yie",
+    "all": "Ne nyinaa",
+    "welcome": "Akwaaba",
+    "details": "Mu Nsɛm",
+    "confirm": "Gye to mu"
+  },
+  "auth": {
+    "login": "Kɔ Mu",
+    "register": "Kyerɛw Wo Dzin",
+    "email": "Imeel Kuraa",
+    "password": "Asofi Sem",
+    "forgotPassword": "Werɛ afi wo asofi sem?",
+    "resetPassword": "Sesa Asofi Sem",
+    "welcomeBack": "Akwaaba Bio",
+    "signUp": "Bue Akaont",
+    "signOut": "Firi Mu",
+    "role": "Akaont Dwumadi",
+    "roles": {
+      "partner": "Ndwumakuw Hwɛfo",
+      "researcher": "Nhwehwɛmufo",
+      "student": "Suafo Nyansafo",
+      "admin": "Sofo Hwɛfo"
+    }
+  },
+  "dashboard": {
+    "overview": "Sua Mu",
+    "matches": "Me Mmɔdenbɔ",
+    "messages": "Nkrato",
+    "profile": "Me Su",
+    "settings": "Nhyehyɛe",
+    "challenges": "Ndwuma Mbɔdenbɔ",
+    "disclosures": "Nhwehwɛmu Nsɛm",
+    "analytics": "Akontaa & Nkyerɛkyerɛmu",
+    "metrics": "Nkyerɛkyerɛmu",
+    "users": "Adwumayɛfo",
+    "logs": "Nsɛm Nhyehyɛe",
+    "commercialChallenges": "Gua Mu Mbɔdenbɔ",
+    "postNewChallenge": "Twerɛ Mbɔdenbɔ Foforɔ",
+    "trackChallenges": "Hwɛ Gua Mu Mbɔdenbɔ",
+    "talentMatches": "Nyansafo Mmɔdenbɔ",
+    "venturePortfolio": "Ndwuma Nhyehyɛe",
+    "watchlist": "Nneɛma a Wɛrehwɛ",
+    "noChallenges": "Ennya Mbɔdenbɔ Biara",
+    "welcomeBanner": "Ghana Suapɔn Virtual Industry Hub"
+  },
+  "projects": {
+    "title": "Akyi Nsɛm",
+    "searchProjects": "Hwehwɛ nhwehwɛmu dwuma...",
+    "filterByCategory": "Kyɛ Mu pɛpɛɛpɛ",
+    "commercializationStage": "Gua Mu Mpuntuo",
+    "publicDisclosures": "Eguadwa Nsɛm",
+    "stage": "Gyinaa",
+    "abstract": "Nsɛm Tiatia",
+    "viewDetails": "Hwɛ Mu Nsɛm",
+    "contactResearcher": "Frɛ Nhwehwɛmufo",
+    "addToWatchlist": "Fa Ka Nneɛma a Wo Hwɛ Ho",
+    "removeFromWatchlist": "Yi Firi Nneɛma a Wo Hwɛ Ho"
+  },
+  "products": {
+    "title": "Nneɛma",
+    "marketReadyProducts": "Nneɛma a Awie Gua Mu",
+    "searchProducts": "Hwehwɛ eguadwa nneɛma...",
+    "category": "Ekuw",
+    "price": "Eguadwa Nhyehyɛe",
+    "viewProduct": "Hwɛ Nneɛma Mu Nsɛm",
+    "industrySolutions": "Ndwumakuw Mmoa"
+  },
+  "news": {
+    "title": "Nsɛm Foforɔ",
+    "latestNews": "Nyansahu & Nhwehwɛmu Foforɔ",
+    "readMore": "Kenkan Asem No Nyinaa",
+    "publishedOn": "Akyerɛw no",
+    "category": "Ekuw"
+  },
+  "challenges": {
+    "title": "Ndwuma Mbɔdenbɔ",
+    "createChallenge": "Mane Gua Mu Mbɔdenbɔ",
+    "challengeTitle": "Mbɔdenbɔ Dzin",
+    "domain": "Ndwuma Ekuw",
+    "summary": "Nsɛm Tiatia",
+    "specifications": "Mu Nkyerɛkyerɛmu Pɛpɛɛpɛ",
+    "skills": "Nyansa a Ɛho Hia",
+    "collaborationFramework": "Bom Yɛ Adwuma Nhyehyɛe",
+    "budget": "Sika Ahyɛde",
+    "deadline": "Da a Ɛtwam",
+    "location": "Bea / Gua",
+    "submitProposal": "Mane Adwuma Proposal",
+    "status": {
+      "open": "Abebue",
+      "inReview": "Wɔrehwɛ Mu",
+      "completed": "Awie",
+      "closed": "Eto Mu"
+    }
+  },
+  "researcher": {
+    "portfolio": "Nhwehwɛmufo Nsɛm",
+    "publications": "Akyerɛw",
+    "patents": "Nyansa Bɔso",
+    "contact": "Frɛ Panin Nhwehwɛmufo",
+    "department": "Ofese",
+    "university": "Ghana Suapɔn (UG)"
+  },
+  "student": {
+    "scout": "Suafo Nyansafu Kuw",
+    "skills": "Nimdeɛ Hiafo",
+    "degree": "Adesua Gyinabea",
+    "matchScore": "Nsɛso Nkonta",
+    "connect": "Bisam Bom Yɛ"
+  },
+  "aiScout": {
+    "title": "AI Scout Afiri",
+    "description": "AI a Ɛbɔ suapɔn nhwehwɛmu ne ndwuma ahyɛde nkɔm.",
+    "findMatches": "Hwehwɛ Nsɛso",
+    "recommendation": "AI Afotu",
+    "generateProposal": "Yɛ Proposal Nhyehyɛe"
+  },
+  "admin": {
+    "portal": "Panyin Dwumadibea",
+    "systemMetrics": "Afiri Akontaa",
+    "userManagement": "Akyerɛwfo Dzin",
+    "disclosureLedger": "IP Disclosures Buka",
+    "systemLogs": "Nsɛm Abakōsɛm",
+    "approve": "Gye to mu",
+    "reject": "Po"
+  },
+  "footer": {
+    "allRightsReserved": "Hwee nni hɔ a wɔakora",
+    "privacyPolicy": "Asose Nhyehyɛe",
+    "termsOfService": "Mmara & Nhyehyɛe",
+    "universityOfGhana": "Ghana Suapɔn Virtual Industry Hub",
+    "contactUs": "Frɛ Yɛn",
+    "quickLinks": "Links Nteante"
+  }
+}

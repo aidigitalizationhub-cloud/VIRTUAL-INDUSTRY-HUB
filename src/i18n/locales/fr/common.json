@@ -1,0 +1,161 @@
+{
+  "nav": {
+    "brand": "Hub Industriel",
+    "home": "Accueil",
+    "projects": "Projets",
+    "products": "Produits",
+    "news": "Actualités",
+    "dashboard": "Tableau de bord",
+    "myDashboard": "Mon Tableau de bord",
+    "login": "Connexion / Inscription",
+    "logout": "Déconnexion"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "submit": "Soumettre",
+    "search": "Rechercher...",
+    "filter": "Filtrer",
+    "close": "Fermer",
+    "back": "Retour",
+    "actions": "Actions",
+    "view": "Afficher",
+    "status": "Statut",
+    "error": "Une erreur s'est produite",
+    "success": "Opération réussie",
+    "all": "Tous",
+    "welcome": "Bienvenue",
+    "details": "Détails",
+    "confirm": "Confirmer"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "S'inscrire",
+    "email": "Adresse E-mail",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "welcomeBack": "Bon retour",
+    "signUp": "Créer un compte",
+    "signOut": "Se déconnecter",
+    "role": "Rôle du compte",
+    "roles": {
+      "partner": "Partenaire Industriel",
+      "researcher": "Chercheur Académique",
+      "student": "Étudiant Innovateur",
+      "admin": "Administrateur Système"
+    }
+  },
+  "dashboard": {
+    "overview": "Aperçu",
+    "matches": "Mes Correspondances",
+    "messages": "Messages",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "challenges": "Défis Industriels",
+    "disclosures": "Divulgations PI",
+    "analytics": "Analyses & Métriques",
+    "metrics": "Métriques",
+    "users": "Utilisateurs",
+    "logs": "Journaux Système",
+    "commercialChallenges": "Défis Commerciaux",
+    "postNewChallenge": "Publier un Nouveau Défi",
+    "trackChallenges": "Suivre les Défis Commerciaux",
+    "talentMatches": "Correspondances de Talents",
+    "venturePortfolio": "Portefeuille d'Entreprises",
+    "watchlist": "Liste de Veille",
+    "noChallenges": "Aucun Défi Trouvé",
+    "welcomeBanner": "Hub Industriel Virtuel de l'Université du Ghana"
+  },
+  "projects": {
+    "title": "Projets",
+    "searchProjects": "Rechercher des projets de recherche et divulgations...",
+    "filterByCategory": "Filtrer par Catégorie",
+    "commercializationStage": "Stade de Commercialisation",
+    "publicDisclosures": "Divulgations Publiques",
+    "stage": "Stade",
+    "abstract": "Résumé",
+    "viewDetails": "Voir les Détails du Projet",
+    "contactResearcher": "Contacter le Chercheur",
+    "addToWatchlist": "Ajouter à la Liste de Veille",
+    "removeFromWatchlist": "Retirer de la Liste de Veille"
+  },
+  "products": {
+    "title": "Produits",
+    "marketReadyProducts": "Technologies Prêtes pour le Marché",
+    "searchProducts": "Rechercher des produits commerciaux...",
+    "category": "Catégorie",
+    "price": "Conditions Commerciales",
+    "viewProduct": "Voir les Détails Techniques",
+    "industrySolutions": "Solutions Industrielles"
+  },
+  "news": {
+    "title": "Actualités & Mises à Jour",
+    "latestNews": "Dernières Innovations & Annonces",
+    "readMore": "Lire l'Article Complet",
+    "publishedOn": "Publié le",
+    "category": "Catégorie"
+  },
+  "challenges": {
+    "title": "Défis Industriels",
+    "createChallenge": "Publier un Défi Commercial",
+    "challengeTitle": "Titre du Défi",
+    "domain": "Domaine / Catégorie",
+    "summary": "Bref Résumé",
+    "specifications": "Spécifications Techniques Détailées",
+    "skills": "Compétences Techniques Requises",
+    "collaborationFramework": "Cadre de Collaboration",
+    "budget": "Budget / Fourchette d'Allocation",
+    "deadline": "Date Limite de Candidature",
+    "location": "Lieu / Marché Cible",
+    "submitProposal": "Soumettre une Proposition",
+    "status": {
+      "open": "Ouvert",
+      "inReview": "En Révision",
+      "completed": "Terminé",
+      "closed": "Fermé"
+    }
+  },
+  "researcher": {
+    "portfolio": "Portfolio du Chercheur",
+    "publications": "Publications",
+    "patents": "Brevets & PI",
+    "contact": "Contacter le Chercheur Principal",
+    "department": "Département",
+    "university": "Université du Ghana"
+  },
+  "student": {
+    "scout": "Recrutement d'Étudiants Talentueux",
+    "skills": "Compétences Clés",
+    "degree": "Programme d'Études",
+    "matchScore": "Score de Correspondance",
+    "connect": "Demander une Collaboration"
+  },
+  "aiScout": {
+    "title": "Moteur d'Eclaireur IA",
+    "description": "Mise en correspondance autonome de la propriété intellectuelle et des besoins industriels.",
+    "findMatches": "Générer des Correspondances",
+    "recommendation": "Recommandation IA",
+    "generateProposal": "Générer un Projet de Proposition"
+  },
+  "admin": {
+    "portal": "Panneau d'Administration",
+    "systemMetrics": "Télémétrie de la Plateforme",
+    "userManagement": "Annuaire des Utilisateurs",
+    "disclosureLedger": "Registre des Divulgations PI",
+    "systemLogs": "Journaux d'Activité",
+    "approve": "Approuver",
+    "reject": "Rejeter"
+  },
+  "footer": {
+    "allRightsReserved": "Tous droits réservés",
+    "privacyPolicy": "Politique de Confidentialité",
+    "termsOfService": "Conditions d'Utilisation",
+    "universityOfGhana": "Hub Industriel Virtuel de l'Université du Ghana",
+    "contactUs": "Nous Contacter",
+    "quickLinks": "Liens Rapides"
+  }
+}

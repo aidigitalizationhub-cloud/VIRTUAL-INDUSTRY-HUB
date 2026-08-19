@@ -1,0 +1,161 @@
+{
+  "nav": {
+    "brand": "Industry Hub",
+    "home": "Home",
+    "projects": "Projects",
+    "products": "Products",
+    "news": "News",
+    "dashboard": "Dashboard",
+    "myDashboard": "My Dashboard",
+    "login": "Login / Register",
+    "logout": "Logout"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "submit": "Submit",
+    "search": "Search...",
+    "filter": "Filter",
+    "close": "Close",
+    "back": "Back",
+    "actions": "Actions",
+    "view": "View",
+    "status": "Status",
+    "error": "An error occurred",
+    "success": "Operation successful",
+    "all": "All",
+    "welcome": "Welcome",
+    "details": "Details",
+    "confirm": "Confirm"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email Address",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "welcomeBack": "Welcome Back",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "role": "Account Role",
+    "roles": {
+      "partner": "Industry Partner",
+      "researcher": "Academic Researcher",
+      "student": "Student Innovator",
+      "admin": "System Administrator"
+    }
+  },
+  "dashboard": {
+    "overview": "Overview",
+    "matches": "My Matches",
+    "messages": "Messages",
+    "profile": "Profile",
+    "settings": "Settings",
+    "challenges": "Industry Challenges",
+    "disclosures": "IP Disclosures",
+    "analytics": "Analytics & Metrics",
+    "metrics": "Metrics",
+    "users": "Users",
+    "logs": "System Logs",
+    "commercialChallenges": "Commercial Challenges",
+    "postNewChallenge": "Post New Challenge",
+    "trackChallenges": "Track Commercial Challenges",
+    "talentMatches": "Talent Matches",
+    "venturePortfolio": "Venture Portfolio",
+    "watchlist": "Watchlist",
+    "noChallenges": "No Challenges Found",
+    "welcomeBanner": "University of Ghana Virtual Industry Hub"
+  },
+  "projects": {
+    "title": "Projects",
+    "searchProjects": "Search research projects & disclosures...",
+    "filterByCategory": "Filter by Category",
+    "commercializationStage": "Commercialization Stage",
+    "publicDisclosures": "Public Disclosures",
+    "stage": "Stage",
+    "abstract": "Abstract",
+    "viewDetails": "View Project Details",
+    "contactResearcher": "Contact Researcher",
+    "addToWatchlist": "Add to Watchlist",
+    "removeFromWatchlist": "Remove from Watchlist"
+  },
+  "products": {
+    "title": "Products",
+    "marketReadyProducts": "Market-Ready Technologies",
+    "searchProducts": "Search commercial products...",
+    "category": "Category",
+    "price": "Commercial Terms",
+    "viewProduct": "View Tech Details",
+    "industrySolutions": "Industry Solutions"
+  },
+  "news": {
+    "title": "News & Updates",
+    "latestNews": "Latest Innovations & Announcements",
+    "readMore": "Read Full Article",
+    "publishedOn": "Published on",
+    "category": "Category"
+  },
+  "challenges": {
+    "title": "Industry Challenges",
+    "createChallenge": "Post Commercial Challenge",
+    "challengeTitle": "Challenge Title",
+    "domain": "Industry Domain / Category",
+    "summary": "Brief One-Line Summary",
+    "specifications": "Detailed Scope & Technical Specifications",
+    "skills": "Required Technical Skills",
+    "collaborationFramework": "Collaboration Framework",
+    "budget": "Budget / Grant Range",
+    "deadline": "Application Deadline",
+    "location": "Location / Market Focus",
+    "submitProposal": "Submit Solution Proposal",
+    "status": {
+      "open": "Open",
+      "inReview": "In-Review",
+      "completed": "Completed",
+      "closed": "Closed"
+    }
+  },
+  "researcher": {
+    "portfolio": "Researcher Portfolio",
+    "publications": "Publications",
+    "patents": "Patents & IP",
+    "contact": "Contact Lead Investigator",
+    "department": "Department",
+    "university": "University of Ghana"
+  },
+  "student": {
+    "scout": "Student Talent Scout",
+    "skills": "Key Competencies",
+    "degree": "Degree Program",
+    "matchScore": "Matching Score",
+    "connect": "Request Collaboration"
+  },
+  "aiScout": {
+    "title": "AI Scout Engine",
+    "description": "Autonomous matching of academic IP with corporate industry briefs.",
+    "findMatches": "Generate Candidate Matches",
+    "recommendation": "AI Match Recommendation",
+    "generateProposal": "Generate Proposal Draft"
+  },
+  "admin": {
+    "portal": "Admin Control Panel",
+    "systemMetrics": "Platform Telemetry",
+    "userManagement": "User Directory",
+    "disclosureLedger": "IP Disclosures Ledger",
+    "systemLogs": "Activity Logs",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "universityOfGhana": "University of Ghana Virtual Industry Hub",
+    "contactUs": "Contact Us",
+    "quickLinks": "Quick Links"
+  }
+}

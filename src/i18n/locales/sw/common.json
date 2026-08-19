@@ -1,0 +1,161 @@
+{
+  "nav": {
+    "brand": "Kituo cha Sekta",
+    "home": "Nyumbani",
+    "projects": "Miradi",
+    "products": "Bidhaa",
+    "news": "Habari",
+    "dashboard": "Lango Kuu",
+    "myDashboard": "Lango Langu",
+    "login": "Ingia / Jisajili",
+    "logout": "Ondoka"
+  },
+  "common": {
+    "loading": "Inapakia...",
+    "save": "Hifadhi",
+    "cancel": "Ghairi",
+    "delete": "Futa",
+    "edit": "Hariri",
+    "submit": "Wasilisha",
+    "search": "Tafuta...",
+    "filter": "Chuja",
+    "close": "Funga",
+    "back": "Rudi",
+    "actions": "Vitendo",
+    "view": "Tazama",
+    "status": "Hali",
+    "error": "Hitilafu imetokea",
+    "success": "Imefanikiwa",
+    "all": "Zote",
+    "welcome": "Karibu",
+    "details": "Maelezo",
+    "confirm": "Thibitisha"
+  },
+  "auth": {
+    "login": "Ingia",
+    "register": "Jisajili",
+    "email": "Anwani ya Barua Pepe",
+    "password": "Nenosiri",
+    "forgotPassword": "Umesahau Nenosiri?",
+    "resetPassword": "Weka Upya Nenosiri",
+    "welcomeBack": "Karibu Tena",
+    "signUp": "Fungua Akaunti",
+    "signOut": "Ondoka",
+    "role": "Wajibu wa Akaunti",
+    "roles": {
+      "partner": "Mshirika wa Sekta",
+      "researcher": "Mtafiti wa Kitaaluma",
+      "student": "Mwanafunzi Mvumbuzi",
+      "admin": "Msimamizi wa Mfumo"
+    }
+  },
+  "dashboard": {
+    "overview": "Muhtasari",
+    "matches": "Orodha Yangu",
+    "messages": "Ujumbe",
+    "profile": "Profaili",
+    "settings": "Mipangilio",
+    "challenges": "Changamoto za Sekta",
+    "disclosures": "Ufichuzi wa Miliki Ubunifu",
+    "analytics": "Uchambuzi na Takwimu",
+    "metrics": "Vipimo",
+    "users": "Watumiaji",
+    "logs": "Kumbukumbu za Mfumo",
+    "commercialChallenges": "Changamoto za Biashara",
+    "postNewChallenge": "Tuma Changamoto Mpya",
+    "trackChallenges": "Fuatilia Changamoto za Biashara",
+    "talentMatches": "Talanta Zilizooana",
+    "venturePortfolio": "Kumbukumbu za Miradi",
+    "watchlist": "Orodha ya Ufuatiliaji",
+    "noChallenges": "Hakuna Changamoto Zilizopatikana",
+    "welcomeBanner": "Kituo cha Sekta cha Chuo Kikuu cha Ghana"
+  },
+  "projects": {
+    "title": "Miradi",
+    "searchProjects": "Tafuta miradi ya utafiti na ufichuzi...",
+    "filterByCategory": "Chuja kwa Kitengo",
+    "commercializationStage": "Hatua ya Biashara",
+    "publicDisclosures": "Ufichuzi wa Umma",
+    "stage": "Hatua",
+    "abstract": "Muhtasari",
+    "viewDetails": "Tazama Maelezo ya Mradi",
+    "contactResearcher": "Mawasiliano ya Mtafiti",
+    "addToWatchlist": "Ongeza kwenye Ufuatiliaji",
+    "removeFromWatchlist": "Odoa kwenye Ufuatiliaji"
+  },
+  "products": {
+    "title": "Bidhaa",
+    "marketReadyProducts": "Teknolojia Zilizotayari Sokoni",
+    "searchProducts": "Tafuta bidhaa za biashara...",
+    "category": "Kitengo",
+    "price": "Masharti ya Biashara",
+    "viewProduct": "Tazama Maelezo ya Kitufiti",
+    "industrySolutions": "Ufumbuzi wa Sekta"
+  },
+  "news": {
+    "title": "Habari na Taarifa",
+    "latestNews": "Ubunifu Mpya na Matangazo",
+    "readMore": "Soma Makala Kamili",
+    "publishedOn": "Ilichapishwa mnamo",
+    "category": "Kitengo"
+  },
+  "challenges": {
+    "title": "Changamoto za Sekta",
+    "createChallenge": "Tuma Changamoto ya Biashara",
+    "challengeTitle": "Anwani ya Changamoto",
+    "domain": "Sekta / Kitengo",
+    "summary": "Muhtasari Mfupi",
+    "specifications": "Uainisho wa Kitufiti na Wigo",
+    "skills": "Ujuzi Unaoitajika",
+    "collaborationFramework": "Mfumo wa Ushirikiano",
+    "budget": "Bajeti / Fungu la Fedha",
+    "deadline": "Mwisho wa Kutuma Maombi",
+    "location": "Eneo / Soko Linalolengwa",
+    "submitProposal": "Wasilisha Pendekezo",
+    "status": {
+      "open": "Wazi",
+      "inReview": "Inakaguliwa",
+      "completed": "Imekamilika",
+      "closed": "Imefungwa"
+    }
+  },
+  "researcher": {
+    "portfolio": "Kumbukumbu za Mtafiti",
+    "publications": "Machapisho",
+    "patents": "Hati miliki na Miliki Ubunifu",
+    "contact": "Wasiliana na Mtafiti Mkuu",
+    "department": "Idara",
+    "university": "Chuo Kikuu cha Ghana"
+  },
+  "student": {
+    "scout": "Tafuta Talanta za Wanafunzi",
+    "skills": "Ujuzi Mkuu",
+    "degree": "Kiwango cha Elimu",
+    "matchScore": "Alama za Oanisho",
+    "connect": "Omba Ushirikiano"
+  },
+  "aiScout": {
+    "title": "Injini ya AI Scout",
+    "description": "Kuoanisha papo hapo miliki ubunifu za kitaaluma na mahitaji ya sekta.",
+    "findMatches": "Tafuta Wanaooana",
+    "recommendation": "Pendekezo la AI",
+    "generateProposal": "Tengeneza Rasimu ya Pendekezo"
+  },
+  "admin": {
+    "portal": "Lango la Utawala",
+    "systemMetrics": "Takwimu za Mfumo",
+    "userManagement": "Orodha ya Watumiaji",
+    "disclosureLedger": "Daftari la Ufichuzi wa Miliki Ubunifu",
+    "systemLogs": "Kumbukumbu za Mfumo",
+    "approve": "Thibitisha",
+    "reject": "Kataa"
+  },
+  "footer": {
+    "allRightsReserved": "Haki zote zimehifadhiwa",
+    "privacyPolicy": "Sera ya Faragha",
+    "termsOfService": "Vigezo na Masharti",
+    "universityOfGhana": "Kituo cha Sekta cha Chuo Kikuu cha Ghana",
+    "contactUs": "Wasiliana Nasi",
+    "quickLinks": "Viungo vya Haraka"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "UG Virtual Industry Hub",
+  "description": "A full-stack platform connecting researchers, industry partners, investors, and students for collaborative innovation at the University of Ghana.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
