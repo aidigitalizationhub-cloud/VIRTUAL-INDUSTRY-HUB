@@ -27,10 +27,10 @@
 
 | Role | Name | Signature / Verification | Date |
 | :--- | :--- | :--- | :--- |
-| **Project Lead** | Prof. G. Awandare | *Signed (Digital Verification)* | August 2026 |
-| **Technical Lead** | Lead AI Architect, IAST | *Signed (Digital Verification)* | August 2026 |
+| **Project Lead** | Project lead | *Signed (Digital Verification)* | August 2026 |
+| **Technical Lead** | project lead , IAST | *Signed (Digital Verification)* | August 2026 |
 | **Director of IAST** | Executive Director, IAST | *Approved* | August 2026 |
-| **TTO Governance Officer** | Senior Tech Transfer Officer | *Approved* | August 2026 |
+| **TTO Governance Officer** | project team | *Approved* | August 2026 |
 
 ---
 
