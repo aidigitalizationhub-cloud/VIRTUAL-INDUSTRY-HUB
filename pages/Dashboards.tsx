@@ -11,7 +11,7 @@ import {
   ChevronRight, ChevronDown, ChevronUp, Globe, Lock, X, Check, Award, GraduationCap, Eye, Search, Loader2, Star, Trash, Inbox, Archive, MoreVertical, CornerUpLeft, Paperclip, Maximize2, Minimize2, ChevronLeft, UserPlus,
   Briefcase, BookOpen, Handshake, Image as ImageIcon, Upload, DollarSign, FileCode,
   Home as HomeIcon,
-  ShoppingBag, Bookmark, ArrowRight, User as UserIcon, Link as LinkIcon, Camera, AlertCircle, AlertTriangle, Info,
+  ShoppingBag, Bookmark, ArrowRight, User as UserIcon, Link as LinkIcon, Camera, AlertCircle, AlertTriangle, Info, Fingerprint,
   Pencil, Trash2, FileUp, MessageSquare, MailOpen, Clock, Zap, Send as SendIcon, Calendar, File, LayoutGrid, Target, Sparkles, LogOut, Rocket, Activity, FileSpreadsheet
 } from 'lucide-react';
 import { useToast } from '../App';
@@ -85,8 +85,8 @@ const Sidebar: React.FC<{
   setActiveTab: (t: any) => void; 
   role: UserRole; 
   user: User | null;
-  adminSubTab?: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs';
-  setAdminSubTab?: (t: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs') => void;
+  adminSubTab?: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions';
+  setAdminSubTab?: (t: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions') => void;
   isCollapsed: boolean;
   setIsCollapsed: (c: boolean) => void;
 }> = ({ activeTab, setActiveTab, role, user, adminSubTab = 'metrics', setAdminSubTab, isCollapsed, setIsCollapsed }) => {
@@ -104,6 +104,7 @@ const Sidebar: React.FC<{
     { id: 'projects', icon: ShieldCheck, label: 'Project Screener' },
     { id: 'news', icon: Globe, label: 'News Curator' },
     { id: 'logs', icon: Activity, label: 'Governance Audit' },
+    { id: 'decisions', icon: Fingerprint, label: 'Decision Ledger' },
   ] as const;
 
   const getPortalTitle = () => {
@@ -1790,7 +1791,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'overview' | 'matches' | 'messages' | 'profile'>('overview');
-  const [adminSubTab, setAdminSubTab] = useState<'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs'>('metrics');
+  const [adminSubTab, setAdminSubTab] = useState<'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions'>('metrics');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [localUser, setLocalUser] = useState<User | null>(user);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);

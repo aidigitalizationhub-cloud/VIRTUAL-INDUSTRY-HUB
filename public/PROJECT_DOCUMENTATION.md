@@ -487,6 +487,64 @@ erDiagram
 
 ---
 
+### 13.4 AI Decision Provenance Ledger APIs
+
+An **append-only provenance ledger** (`public.ai_decisions`) records every platform AI decision — assistant chat completions, profile extractions, and semantic match rankings — together with provider/model metadata, prompt versioning, and SHA-256 input/output integrity digests. Writes are performed by the **service-role client** (bypassing RLS) so decisions are recorded irrespective of the caller's row-level permissions; reads are restricted to Administrators via the `is_admin()` RLS policy.
+
+#### Endpoint: `GET /api/ai-decisions` (Admin Only)
+
+Lists up to 200 ledger entries, newest first. Optional `?status=` filter (`all` | `pending` | `approved` | `rejected`).
+
+##### Response Payload (`200 OK`)
+```json
+{
+  "decisions": [
+    {
+      "id": "b1f4...-9c2a",
+      "decision_type": "match_ranking",
+      "subject_id": "user-uuid",
+      "provider": "hybrid",
+      "model": "scoring-engine",
+      "prompt_version": "ugjh-match-rankings-v1",
+      "input_hash": "sha256:...",
+      "output_hash": "sha256:...",
+      "result": { "rankings_count": 12 },
+      "review_status": "pending",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "created_at": "2026-08-19T09:00:00Z"
+    }
+  ]
+}
+```
+
+#### Endpoint: `POST /api/ai-decisions` (Admin Only)
+
+Manually appends a ledger entry. The server inserts the record through the service-role client with a default `review_status` of `pending`.
+
+##### Request Payload
+```json
+{
+  "decision_type": "assistant_chat",
+  "subject_id": "user-uuid",
+  "provider": "google",
+  "model": "gemini-flash-latest",
+  "prompt_version": "ugjh-gemini-v1",
+  "input_hash": "sha256:...",
+  "output_hash": "sha256:...",
+  "result": { "message_length": 320 }
+}
+```
+
+##### Response Payload (`200 OK`)
+```json
+{ "success": true }
+```
+
+Instrumented call-sites: `POST /api/gemini/chat`, `POST /api/ai-profile`, and `POST /api/ai-match`. The administrative **Decision Ledger** tab under the Admin Dashboard renders pending/approved/rejected statuses, provider/model information, digest previews, and result summaries.
+
+---
+
 ## 14. AI Matching Documentation
 
 ### 14.1 Matching Strategy & Mathematical Formula
@@ -668,6 +726,8 @@ flowchart LR
 
 ### 20.3 Audit Logging & Cryptography
 All administrative actions, disclosure state changes, user account deletions, and system role updates generate immutable audit log records storing IP Address, User UUID, Action Type, and SHA-256 Payload Hashes.
+
+Platform AI activity is additionally captured in the append-only **AI Decision Provenance Ledger** (`public.ai_decisions`), written via the service-role client with SHA-256 input/output digests and reviewed-rejected-or-pending statuses. See §13.4.
 
 ---
 

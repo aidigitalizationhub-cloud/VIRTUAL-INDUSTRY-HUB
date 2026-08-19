@@ -346,3 +346,19 @@ export interface AccountDeletionRecord {
   deleted_at: string;
 }
 
+export interface AiDecision {
+  id: string;
+  decision_type: string;
+  subject_id?: string | null;
+  provider?: string | null;
+  model?: string | null;
+  prompt_version?: string | null;
+  input_hash?: string | null;
+  output_hash?: string | null;
+  result?: any;
+  review_status: string;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+  created_at: string;
+}
+

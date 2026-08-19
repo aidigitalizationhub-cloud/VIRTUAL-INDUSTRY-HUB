@@ -9,7 +9,7 @@ import {
   Calendar, Tag, Globe, Zap, Maximize2, Minimize2, Mail, Copy, Building2, GraduationCap, Microscope, Briefcase, UserCheck, FileDown, FolderGit2,
   ShieldAlert, Fingerprint, FileCheck
 } from 'lucide-react';
-import { User, Project, NewsItem, UserRole, ProjectStatus, Visibility, ResearchArea, DisclosureStatus, AccountDeletionRecord } from '../types';
+import { User, Project, NewsItem, UserRole, ProjectStatus, Visibility, ResearchArea, DisclosureStatus, AccountDeletionRecord, AiDecision } from '../types';
 import { StorageService } from '../services/storageService';
 import { supabase } from '../lib/supabase';
 import { useToast } from '../App';
@@ -22,8 +22,8 @@ import { ReportCenter } from './ReportCenter';
 interface AdminDashboardProps {
   user: User | null;
   onRefresh?: () => void;
-  activeSubTab?: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs';
-  setActiveSubTab?: (tab: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs') => void;
+  activeSubTab?: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions';
+  setActiveSubTab?: (tab: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions') => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
@@ -33,10 +33,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   setActiveSubTab: externalSetActiveSubTab
 }) => {
   const { showToast } = useToast();
-  const [internalActiveSubTab, setInternalActiveSubTab] = useState<'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs'>('metrics');
+  const [internalActiveSubTab, setInternalActiveSubTab] = useState<'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions'>('metrics');
   
   const activeSubTab = externalActiveSubTab !== undefined ? externalActiveSubTab : internalActiveSubTab;
-  const setActiveSubTab = (tab: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs') => {
+  const setActiveSubTab = (tab: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions') => {
     if (externalSetActiveSubTab) {
       externalSetActiveSubTab(tab);
     } else {
@@ -50,6 +50,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [news, setNews] = useState<NewsItem[]>([]);
   const [eois, setEois] = useState<any[]>([]);
   const [accountDeletions, setAccountDeletions] = useState<AccountDeletionRecord[]>([]);
+  const [decisions, setDecisions] = useState<AiDecision[]>([]);
+  const [decisionStatusFilter, setDecisionStatusFilter] = useState<string>('all');
+  const [isLoadingDecisions, setIsLoadingDecisions] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [deletionSearch, setDeletionSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -412,6 +415,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   useEffect(() => {
     loadAdminData();
   }, []);
+
+  // Load AI decision provenance ledger whenever the Decision Ledger tab is active
+  useEffect(() => {
+    if (activeSubTab !== 'decisions') return;
+    let cancelled = false;
+    setIsLoadingDecisions(true);
+    StorageService.getAiDecisions(decisionStatusFilter)
+      .then((rows) => {
+        if (!cancelled) setDecisions(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setDecisions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingDecisions(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSubTab, decisionStatusFilter]);
 
   // Auto sync tags list with newsTags state when newsTags is updated externally
   useEffect(() => {
@@ -3437,6 +3460,174 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
             </motion.div>
           )}
         </AnimatePresence>
+      )}
+
+      {/* DECISION LEDGER SUBTAB */}
+      {activeSubTab === 'decisions' && (
+        <motion.div
+          key="decisions"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="space-y-8 text-left"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-xl font-black text-ug-navy flex items-center gap-2">
+                <Fingerprint className="text-ug-teal" size={22} />
+                AI Decision Provenance Ledger
+              </h3>
+              <p className="text-[10px] font-black text-ug-teal uppercase tracking-widest mt-1">
+                Append-only Audit Trail of Platform AI Decisions & Integrity Digests
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 self-start sm:self-center">
+              <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200/60">
+                <ShieldCheck size={12} className="text-emerald-600" />
+                <span className="text-[9px] font-black uppercase tracking-wider">Service-Role Verified Writes</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Total Decisions</p>
+              <p className="text-2xl font-black text-ug-navy">{decisions.length}</p>
+              <p className="text-[9px] text-gray-400 font-medium">Recorded ledger entries</p>
+            </div>
+            <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Pending Review</p>
+              <p className="text-2xl font-black text-amber-600">
+                {decisions.filter(d => d.review_status === 'pending').length}
+              </p>
+              <p className="text-[9px] text-gray-400 font-medium">Awaiting human audit</p>
+            </div>
+            <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Profile Extraction</p>
+              <p className="text-2xl font-black text-ug-teal">
+                {decisions.filter(d => d.decision_type === 'profile_extraction').length}
+              </p>
+              <p className="text-[9px] text-gray-400 font-medium">AI profile generation calls</p>
+            </div>
+            <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Match Rankings</p>
+              <p className="text-2xl font-black text-indigo-600">
+                {decisions.filter(d => d.decision_type === 'match_ranking').length}
+              </p>
+              <p className="text-[9px] text-gray-400 font-medium">Semantic match scoring runs</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm space-y-4 p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2 border-b border-gray-100">
+              <div>
+                <h4 className="text-sm font-black text-ug-navy uppercase tracking-wider">Decision History</h4>
+                <p className="text-[10px] text-gray-400 font-mono">Immutable provenance records with SHA-256 integrity digests</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <select
+                  value={decisionStatusFilter}
+                  onChange={(e) => setDecisionStatusFilter(e.target.value)}
+                  className="text-[10px] font-black uppercase tracking-wider bg-white border border-gray-200 rounded-xl px-3 py-2 text-ug-navy outline-none focus:border-ug-teal cursor-pointer"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+                <button
+                  onClick={() => StorageService.getAiDecisions(decisionStatusFilter).then(setDecisions)}
+                  className="px-4 py-2 bg-ug-navy hover:bg-slate-800 text-white font-black text-[10px] uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center gap-2"
+                  title="Refresh ledger"
+                >
+                  <Loader2 size={14} className={isLoadingDecisions ? 'animate-spin' : ''} />
+                  Refresh
+                </button>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50/80 border-b border-gray-100 text-[9px] font-black tracking-widest text-gray-400 uppercase">
+                    <th className="p-4 pl-6">Decision Type</th>
+                    <th className="p-4">Provider / Model</th>
+                    <th className="p-4">Subject</th>
+                    <th className="p-4">Integrity Digests</th>
+                    <th className="p-4">Result Summary</th>
+                    <th className="p-4">Review Status</th>
+                    <th className="p-4 pr-6 text-right">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {isLoadingDecisions && decisions.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="p-12 text-center text-xs font-black uppercase text-gray-400 tracking-widest flex items-center justify-center gap-2">
+                        <Loader2 size={16} className="animate-spin" />
+                        Loading provenance ledger...
+                      </td>
+                    </tr>
+                  ) : decisions.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="p-12 text-center text-xs font-black uppercase text-gray-400 tracking-widest">
+                        No AI decisions recorded yet. Run an AI workflow to populate the ledger.
+                      </td>
+                    </tr>
+                  ) : (
+                    decisions.map((d) => (
+                      <tr key={d.id} className="hover:bg-gray-50/50 transition duration-150">
+                        <td className="p-4 pl-6">
+                          <span className="font-extrabold text-xs text-ug-navy block">{d.decision_type}</span>
+                          <span className="text-[9px] font-mono text-gray-400 block mt-0.5">v{d.prompt_version || 'n/a'}</span>
+                        </td>
+                        <td className="p-4">
+                          <span className="font-bold text-xs text-ug-navy block">{d.model || 'n/a'}</span>
+                          <span className="text-[9px] font-mono text-gray-400 block mt-0.5">{d.provider || 'unknown'}</span>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-[10px] font-mono text-gray-500">
+                            {d.subject_id ? `${d.subject_id.substring(0, 12)}...` : 'system'}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <div className="space-y-0.5">
+                            <span className="text-[9px] font-mono text-ug-teal block truncate max-w-[160px]" title={d.input_hash || undefined}>
+                              IN  {d.input_hash ? d.input_hash.substring(0, 20) + '...' : '—'}
+                            </span>
+                            <span className="text-[9px] font-mono text-ug-teal/70 block truncate max-w-[160px]" title={d.output_hash || undefined}>
+                              OUT {d.output_hash ? d.output_hash.substring(0, 20) + '...' : '—'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <span className="text-[10px] font-mono text-gray-500 block truncate max-w-[200px]" title={JSON.stringify(d.result)}>
+                            {d.result ? JSON.stringify(d.result).substring(0, 60) : '—'}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${
+                            d.review_status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' :
+                            d.review_status === 'rejected' ? 'bg-red-50 text-red-700 border border-red-200/60' :
+                            'bg-amber-50 text-amber-700 border border-amber-200/60'
+                          }`}>
+                            {d.review_status}
+                          </span>
+                        </td>
+                        <td className="p-4 pr-6 text-right">
+                          <div className="flex items-center justify-end gap-1.5 text-gray-400 font-mono text-[9px]">
+                            <Clock size={11} />
+                            {new Date(d.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </motion.div>
       )}
 
       {/* REPORT CENTER MODAL FROM OVERVIEW PAGE */}

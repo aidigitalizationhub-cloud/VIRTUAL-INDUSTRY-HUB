@@ -1,8 +1,9 @@
 
-import { Project, NewsItem, User, UserRole, SavedSearch, AlertNotification, AccountDeletionRecord } from '../types';
+import { Project, NewsItem, User, UserRole, SavedSearch, AlertNotification, AccountDeletionRecord, AiDecision } from '../types';
 import { supabase } from '../lib/supabase';
 import { EmbeddingService } from './embeddingService';
 import { decryptMessage } from '../lib/cryptoService';
+import { getJson, postJson } from '../lib/api';
 
 const getStorageFilePath = (urlOrPath: string, bucket = 'projects'): string => {
   if (!urlOrPath) return '';
@@ -1953,6 +1954,27 @@ export const StorageService = {
     }
 
     return newRecord;
+  },
+
+  // --- AI Decision Provenance Ledger ---
+  recordAiDecision: async (entry: Partial<AiDecision>): Promise<boolean> => {
+    try {
+      await postJson('/api/ai-decisions', entry);
+      return true;
+    } catch (e) {
+      console.error("Failed to record AI decision to ledger:", e);
+      return false;
+    }
+  },
+
+  getAiDecisions: async (status?: string): Promise<AiDecision[]> => {
+    try {
+      const data = await getJson<{ decisions?: AiDecision[] }>(`/api/ai-decisions?status=${encodeURIComponent(status || 'all')}`);
+      return data?.decisions || [];
+    } catch (e) {
+      console.error("Failed to load AI decision ledger:", e);
+      return [];
+    }
   },
 
   deleteAccount: async (userId: string): Promise<void> => {

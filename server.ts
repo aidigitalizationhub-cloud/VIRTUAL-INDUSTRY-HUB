@@ -242,6 +242,28 @@ const getServiceClient = () => {
   });
 };
 
+// Append-only AI decision provenance ledger write.
+// Uses the service-role client (bypasses RLS) so platform-generated AI decisions
+// can be recorded regardless of the caller's row-level permissions.
+const recordAiDecision = async (entry: {
+  decision_type: string;
+  subject_id?: string | null;
+  provider?: string | null;
+  model?: string | null;
+  prompt_version?: string | null;
+  input_hash?: string | null;
+  output_hash?: string | null;
+  result?: unknown;
+}) => {
+  try {
+    const service = getServiceClient();
+    if (!service) return;
+    await service.from('ai_decisions').insert([{ ...entry, review_status: 'pending' }]);
+  } catch (err) {
+    console.warn('Failed to record AI decision to ledger:', (err as any)?.message || err);
+  }
+};
+
 const UG_SOURCES = [
   "https://rid.ug.edu.gh/news",
   "https://orid1.ug.edu.gh/news/",
@@ -443,6 +465,7 @@ Be professional, academic yet accessible, and helpful. Keep answers concise (und
 
     let result;
     let chatError;
+    let usedChatModel: string | undefined;
     for (const chatModel of GEMINI_FALLBACK_MODELS) {
       try {
         const chat = ai.chats.create({
@@ -451,6 +474,7 @@ Be professional, academic yet accessible, and helpful. Keep answers concise (und
           history
         });
         result = await chat.sendMessage({ message });
+        usedChatModel = chatModel;
         break;
       } catch (err: any) {
         chatError = err;
@@ -461,6 +485,15 @@ Be professional, academic yet accessible, and helpful. Keep answers concise (und
     if (!result) {
       throw chatError || new Error("All chat models failed.");
     }
+
+    recordAiDecision({
+      decision_type: 'assistant_chat',
+      subject_id: (req as any).user?.id || null,
+      provider: 'google',
+      model: usedChatModel,
+      prompt_version: 'ugjh-gemini-v1',
+      result: { message_length: (result.text || '').length, history_entries: (history || []).length }
+    });
 
     res.json({ text: result.text || '' });
   } catch (error: any) {
@@ -734,7 +767,16 @@ Provide semantic_summary (2-3 sentences) summarizing the profile, and embedding_
       });
       const content = completion.choices[0]?.message?.content;
       if (content) {
-        return res.json({ profile: parseAIJson(profileSchema, content.trim()) });
+        const profile = parseAIJson(profileSchema, content.trim());
+        recordAiDecision({
+          decision_type: 'profile_extraction',
+          subject_id: (req as any).user?.id || null,
+          provider: 'groq',
+          model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+          prompt_version: 'ugjh-profile-extraction-v1',
+          result: { profile_keys: Object.keys(profile || {}) }
+        });
+        return res.json({ profile });
       }
     }
 
@@ -742,7 +784,16 @@ Provide semantic_summary (2-3 sentences) summarizing the profile, and embedding_
       const response = await generateWithFallback(ai, GEMINI_FALLBACK_MODELS, `${systemPrompt}\n\n${userPrompt}`, { responseMimeType: 'application/json' });
       const text = response?.text;
       if (text) {
-        return res.json({ profile: parseAIJson(profileSchema, text.trim()) });
+        const profile = parseAIJson(profileSchema, text.trim());
+        recordAiDecision({
+          decision_type: 'profile_extraction',
+          subject_id: (req as any).user?.id || null,
+          provider: 'google',
+          model: 'gemini-2.5-flash',
+          prompt_version: 'ugjh-profile-extraction-v1',
+          result: { profile_keys: Object.keys(profile || {}) }
+        });
+        return res.json({ profile });
       }
     }
 
@@ -1218,6 +1269,15 @@ app.post('/api/ai-match', validateBody(aiMatchRequestSchema), authenticateUser, 
         reasoning: llm?.reasoning || lr.reasoning,
         alignment_label: llm?.alignment_label || lr.alignment_label,
       };
+    });
+
+    recordAiDecision({
+      decision_type: 'match_ranking',
+      subject_id: (req as any).user?.id || null,
+      provider: 'hybrid',
+      model: 'scoring-engine',
+      prompt_version: 'ugjh-match-rankings-v1',
+      result: { rankings_count: finalRankings.length }
     });
 
     return res.json({ rankings: finalRankings });
@@ -1746,6 +1806,59 @@ app.put('/api/challenge-matches/:id', validateBody(updateMatchStatusRequestSchem
   } catch (error: any) {
     console.error('Failed to update match status:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+
+// --- AI Decision Provenance Ledger (Admin) ---
+app.get('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : undefined;
+    const supabaseClient = getSupabaseClient(token)!;
+    if (!supabaseClient) {
+      return res.json({ decisions: [] });
+    }
+    const { status } = req.query;
+    let query = supabaseClient
+      .from('ai_decisions')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (status && status !== 'all') {
+      query = query.eq('review_status', status as string);
+    }
+    const { data, error } = await query;
+    if (error) {
+      return res.json({ decisions: [] });
+    }
+    res.json({ decisions: data || [] });
+  } catch (error: any) {
+    console.error('Failed to load AI decision ledger:', error);
+    res.json({ decisions: [] });
+  }
+});
+
+app.post('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), async (req, res) => {
+  try {
+    const { decision_type, subject_id, provider, model, prompt_version, input_hash, output_hash, result } = req.body;
+    if (!decision_type) {
+      return res.status(400).json({ error: 'decision_type is required.' });
+    }
+    await recordAiDecision({
+      decision_type,
+      subject_id: subject_id || (req as any).user?.id || null,
+      provider,
+      model,
+      prompt_version,
+      input_hash,
+      output_hash,
+      result
+    });
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('Failed to record AI decision:', error);
+    res.status(500).json({ error: error.message || 'Failed to record AI decision.' });
   }
 });
 
