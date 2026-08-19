@@ -316,7 +316,7 @@ flowchart LR
 | **Frontend Framework** | React 18 + TypeScript + Vite | Rapid Hot Module Replacement, strict type safety, modular architecture. |
 | **Styling & Icons** | Tailwind CSS + Lucide React | High-contrast utility-first design, fluid responsive layouts. |
 | **Backend Runtime** | Node.js + Express + `tsx` / `esbuild` | Scalable REST API, native TypeScript execution, fast build times. |
-| **AI Engine** | Google Gemini 3.6 Flash (`@google/genai`) | State-of-the-art multimodal reasoning, high speed, large context window. |
+| **AI Engine** | Primary: Groq (`groq-sdk`, `openai/gpt-oss-120b`); Fallback: Google Gemini 3.6 Flash (`@google/genai`) | High-speed LLM inference with automatic provider failover; embeddings via Gemini. |
 | **Database** | PostgreSQL / Supabase | Relational integrity, ACID compliance, native JSONB support. |
 | **Cryptography** | Web Crypto API (AES-256-GCM / SHA-256) + TLS | Client-side crypto is defense-in-depth; authorization is enforced server-side via RBAC, request validation, and AES-256 at-rest encryption. |
 
@@ -541,7 +541,7 @@ Manually appends a ledger entry. The server inserts the record through the servi
 { "success": true }
 ```
 
-Instrumented call-sites: `POST /api/gemini/chat`, `POST /api/ai-profile`, and `POST /api/ai-match`. The administrative **Decision Ledger** tab under the Admin Dashboard renders pending/approved/rejected statuses, provider/model information, digest previews, and result summaries.
+All generative AI calls are **Groq-primary** (`GROQ_MODEL`) with automatic `GEMINI_FALLBACK_MODELS` fallback; vector embeddings remain Gemini-only (Groq exposes no embeddings endpoint). Instrumented call-sites: `POST /api/gemini/chat`, `POST /api/ai-profile`, `POST /api/ai-match`, and `POST /api/ai-scout/sync`. The administrative **Decision Ledger** tab under the Admin Dashboard renders pending/approved/rejected statuses, provider/model information, digest previews, and result summaries.
 
 ---
 
@@ -736,7 +736,7 @@ Platform AI activity is additionally captured in the append-only **AI Decision P
 | Risk Description | Probability | Impact | Mitigation Strategy |
 | :--- | :--- | :--- | :--- |
 | **Unauthorized Disclosure Exposure** | Low | High | Strict server-side RBAC middleware, request-body validation, upload quarantine, and AES-256 at-rest encryption. |
-| **AI Model Rate Limit Exceeded** | Medium | Medium | Model fallback cascade (`gemini-3.6-flash` $\rightarrow$ `gemini-3.5-flash` $\rightarrow$ `gemini-flash-latest`). |
+| **AI Model Rate Limit Exceeded** | Medium | Medium | Groq-primary provider with automatic Gemini model fallback cascade (`gemini-3.6-flash` $\rightarrow$ `gemini-3.5-flash` $\rightarrow$ `gemini-flash-latest`). |
 | **Database Network Disruption** | Low | High | Client-side `StorageService` cache fallback ensuring uninterrupted browsing. |
 | **Unverified External News Feed Scraping** | Medium | Low | Administrative approval queue required before publishing AI Scout findings. |
 

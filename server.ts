@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
-import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 import Groq from 'groq-sdk';
 import { createClient } from '@supabase/supabase-js';
 import mammoth from 'mammoth';
@@ -99,6 +99,59 @@ const generateWithFallback = async (
     }
   }
   throw lastError || new Error('All models failed.');
+};
+
+// Try Groq first, then fall back through the Gemini model list. Returns which
+// provider/model actually produced the response so callers can record accurate
+// provenance metadata in the AI decision ledger.
+const generateWithProviders = async (
+  prompt: string,
+  opts?: { json?: boolean; system?: string }
+): Promise<{ provider: string; model: string; text: string } | null> => {
+  const groq = getGroqClient();
+  if (groq) {
+    try {
+      const completion = await groq.chat.completions.create({
+        model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+        messages: [
+          { role: 'system', content: opts?.system || 'You are a helpful assistant for the University of Ghana Virtual Industry Hub.' },
+          { role: 'user', content: prompt }
+        ],
+        ...(opts?.json ? { response_format: { type: 'json_object' } } : {})
+      });
+      const content = completion.choices[0]?.message?.content;
+      if (content) {
+        return { provider: 'groq', model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b', text: content };
+      }
+    } catch (err: any) {
+      console.warn("Groq primary call failed:", err?.message || err);
+    }
+  }
+
+  const ai = getGeminiClient();
+  if (ai) {
+    let lastError: any;
+    for (const modelName of GEMINI_FALLBACK_MODELS) {
+      try {
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: prompt,
+          config: opts?.json ? { responseMimeType: 'application/json' } : undefined
+        });
+        if (response && response.text) {
+          return { provider: 'google', model: modelName, text: response.text };
+        }
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`Model ${modelName} failed:`, err?.message || err);
+      }
+    }
+    if (lastError) {
+      console.warn("All Gemini fallback models failed:", lastError?.message || lastError);
+    }
+  }
+
+  return null;
 };
 
 // Validate req.body against a Zod schema; strips unknown fields and returns 400 on failure.
@@ -448,7 +501,7 @@ app.post('/api/gemini/chat', validateBody(chatRequestSchema), authenticateUser, 
   const ai = getGeminiClient();
   if (!ai) {
     return res.json({ 
-      text: "Hello! I am the University of Ghana (UG) Virtual Industry Hub Assistant.\n\nTo unlock my full cognitive capabilities powered by Gemini, please configure a valid `GEMINI_API_KEY` in the **Settings > Secrets** panel of your AI Studio workspace.\n\nIn the meantime, I can tell you that this hub is designed to connect University of Ghana's brilliant researchers, students, global investors, and industry leaders to foster collaborative innovation in Diagnostics, Pharmaceuticals, and Vaccines!" 
+      text: "Hello! I am the University of Ghana (UG) Virtual Industry Hub Assistant.\n\nTo unlock my full cognitive capabilities powered by our AI gateway, please configure a valid `GROQ_API_KEY` (primary) or `GEMINI_API_KEY` (fallback) in the **Settings > Secrets** panel of your AI Studio workspace.\n\nIn the meantime, I can tell you that this hub is designed to connect University of Ghana's brilliant researchers, students, global investors, and industry leaders to foster collaborative innovation in Diagnostics, Pharmaceuticals, and Vaccines!" 
     });
   }
 
@@ -463,39 +516,70 @@ You know about:
 
 Be professional, academic yet accessible, and helpful. Keep answers concise (under 150 words) unless asked for detail.`;
 
-    let result;
-    let chatError;
-    let usedChatModel: string | undefined;
-    for (const chatModel of GEMINI_FALLBACK_MODELS) {
+    let resultText: string | undefined;
+    let usedProvider = 'google';
+    let usedModel: string | undefined;
+
+    const groq = getGroqClient();
+    const chatMessages = [
+      { role: 'system' as const, content: systemInstruction },
+      ...(history || []).map((m: any) => ({
+        role: m.role === 'model' ? 'assistant' as const : 'user' as const,
+        content: m.parts?.[0]?.text || ''
+      })),
+      { role: 'user' as const, content: message }
+    ];
+
+    if (groq) {
       try {
-        const chat = ai.chats.create({
-          model: chatModel,
-          config: { systemInstruction },
-          history
+        const completion = await groq.chat.completions.create({
+          model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+          messages: chatMessages
         });
-        result = await chat.sendMessage({ message });
-        usedChatModel = chatModel;
-        break;
+        const content = completion.choices[0]?.message?.content;
+        if (content) {
+          resultText = content;
+          usedProvider = 'groq';
+          usedModel = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+        }
       } catch (err: any) {
-        chatError = err;
-        console.warn(`Chat model ${chatModel} failed:`, err?.message || err);
+        console.warn("Groq chat failed:", err?.message || err);
       }
     }
 
-    if (!result) {
-      throw chatError || new Error("All chat models failed.");
+    if (!resultText) {
+      let chatError: any;
+      for (const chatModel of GEMINI_FALLBACK_MODELS) {
+        try {
+          const chat = ai.chats.create({
+            model: chatModel,
+            config: { systemInstruction },
+            history
+          });
+          const result = await chat.sendMessage({ message });
+          resultText = result.text || '';
+          usedModel = chatModel;
+          break;
+        } catch (err: any) {
+          chatError = err;
+          console.warn(`Chat model ${chatModel} failed:`, err?.message || err);
+        }
+      }
+      if (!resultText) {
+        throw chatError || new Error("All chat models failed.");
+      }
     }
 
     recordAiDecision({
       decision_type: 'assistant_chat',
       subject_id: (req as any).user?.id || null,
-      provider: 'google',
-      model: usedChatModel,
-      prompt_version: 'ugjh-gemini-v1',
-      result: { message_length: (result.text || '').length, history_entries: (history || []).length }
+      provider: usedProvider,
+      model: usedModel,
+      prompt_version: 'ugjh-chat-v1',
+      result: { message_length: (resultText || '').length, history_entries: (history || []).length }
     });
 
-    res.json({ text: result.text || '' });
+    res.json({ text: resultText || '' });
   } catch (error: any) {
     console.error('Server Gemini error:', error);
     res.status(500).json({ error: error.message || 'Gemini processing failed.' });
@@ -503,6 +587,7 @@ Be professional, academic yet accessible, and helpful. Keep answers concise (und
 });
 
 // 3. secure Gemini embedding proxy
+// NOTE: Vector embeddings intentionally stay on Gemini — Groq does not expose an embeddings endpoint.
 app.post('/api/gemini/embed', validateBody(embedRequestSchema), authenticateUser, throttleLimit(100, 60 * 1000), async (req, res) => {
   const { text } = req.body;
 
@@ -681,8 +766,6 @@ ${text.slice(0, 12000)}
 // 4. secure Profile mapping using Groq or fallback to Gemini
 app.post('/api/ai-profile', validateBody(aiProfileRequestSchema), authenticateUser, throttleLimit(10, 60 * 1000), async (req, res) => {
   const { cvText, questionnaire, userType } = req.body;
-  const groq = getGroqClient();
-  const ai = getGeminiClient();
 
   const systemPrompt = `You are a High-Precision Profile Extraction Agent for the University of Ghana Virtual Industry Hub.
 Your objective is to transform unstructured text (CVs/Resumes) and role-specific questionnaire responses into a high-fidelity, machine-readable JSON profile.
@@ -756,45 +839,21 @@ ${JSON.stringify(questionnaire)}
 Provide semantic_summary (2-3 sentences) summarizing the profile, and embedding_text (concise keyword dump for semantic vector analysis).`;
 
   try {
-    if (groq) {
-      const completion = await groq.chat.completions.create({
-        model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        response_format: { type: 'json_object' }
+    const providerOutput = await generateWithProviders(`${systemPrompt}\n\n${userPrompt}`, {
+      json: true,
+      system: systemPrompt
+    });
+    if (providerOutput) {
+      const profile = parseAIJson(profileSchema, providerOutput.text.trim());
+      recordAiDecision({
+        decision_type: 'profile_extraction',
+        subject_id: (req as any).user?.id || null,
+        provider: providerOutput.provider,
+        model: providerOutput.model,
+        prompt_version: 'ugjh-profile-extraction-v1',
+        result: { profile_keys: Object.keys(profile || {}) }
       });
-      const content = completion.choices[0]?.message?.content;
-      if (content) {
-        const profile = parseAIJson(profileSchema, content.trim());
-        recordAiDecision({
-          decision_type: 'profile_extraction',
-          subject_id: (req as any).user?.id || null,
-          provider: 'groq',
-          model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
-          prompt_version: 'ugjh-profile-extraction-v1',
-          result: { profile_keys: Object.keys(profile || {}) }
-        });
-        return res.json({ profile });
-      }
-    }
-
-    if (ai) {
-      const response = await generateWithFallback(ai, GEMINI_FALLBACK_MODELS, `${systemPrompt}\n\n${userPrompt}`, { responseMimeType: 'application/json' });
-      const text = response?.text;
-      if (text) {
-        const profile = parseAIJson(profileSchema, text.trim());
-        recordAiDecision({
-          decision_type: 'profile_extraction',
-          subject_id: (req as any).user?.id || null,
-          provider: 'google',
-          model: 'gemini-2.5-flash',
-          prompt_version: 'ugjh-profile-extraction-v1',
-          result: { profile_keys: Object.keys(profile || {}) }
-        });
-        return res.json({ profile });
-      }
+      return res.json({ profile });
     }
 
     // High quality offline fallback match if keys are missing or invalid
@@ -968,24 +1027,19 @@ app.post('/api/ai-scout/sync', validateBody(aiScoutSyncRequestSchema), throttleL
     });
   }
 
-  const ai = getGeminiClient();
   const today = new Date().toISOString().split('T')[0];
 
   try {
     const supabaseServer = getSupabaseClient()!;
     const finalizedItems: any[] = [];
 
-    if (ai) {
-      try {
-        console.log("Server AI Scout: scouting global trend news using live Gemini...");
+    try {
+      console.log("Server AI Scout: scouting global trend news using live AI (Groq-first)...");
 
-        const sitesPrompt = UG_SOURCES.join(", ");
-        const globalPrompt = GLOBAL_ACCREDITED.join(", ");
+      const sitesPrompt = UG_SOURCES.join(", ");
+      const globalPrompt = GLOBAL_ACCREDITED.join(", ");
 
-        let researchResponse;
-        let scoutError;
-        try {
-          researchResponse = await generateWithFallback(ai, GEMINI_FALLBACK_MODELS, `Act as a Lead Intelligence Scout for the University of Ghana.
+      const scoutingPrompt = `Act as a Lead Intelligence Scout for the University of Ghana.
 Find 4 RECENT breakthroughs in Medicines, Vaccines, or Diagnostics.
 
 For each news item, you MUST analyze and extract:
@@ -1001,62 +1055,46 @@ For each news item, you MUST analyze and extract:
 Sources: ${sitesPrompt}
 Global context: ${globalPrompt}
 
-Output: JSON array of objects with the precise structure outlined.`, {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  title: { type: Type.STRING },
-                  category: { type: Type.STRING },
-                  summary: { type: Type.STRING },
-                  tags: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  relevance_score: { type: Type.INTEGER },
-                  source_verification_notes: { type: Type.STRING },
-                  source_name: { type: Type.STRING },
-                  external_url: { type: Type.STRING }
-                },
-                required: ["title", "category", "summary", "tags", "relevance_score", "source_verification_notes", "source_name", "external_url"]
-              }
-            }
-          });
-        } catch (err: any) {
-          scoutError = err;
-          console.log("[Scout] Live Gemini news scouting unavailable. Trying alternative...");
-        }
+Output: JSON array of objects with the precise structure outlined.`;
 
-        if (!researchResponse || !researchResponse.text) {
-          throw new Error("Ecosystem services currently busy. Bypassing live sync to fallback.");
-        }
-
-        if (researchResponse.text) {
-          const rawScoutedData = parseAIJson(newsItemsSchema, researchResponse.text.trim());
-          
-          for (let i = 0; i < Math.min(rawScoutedData.length, 4); i++) {
-            const item = rawScoutedData[i];
-            finalizedItems.push({
-              title: item.title,
-              category: item.category,
-              published_at: today,
-              image_url: '', // Empty initially for manual review and image upload!
-              summary: item.summary,
-              tags: item.tags || [],
-              relevance_score: item.relevance_score || 0,
-              source_verification_notes: item.source_verification_notes || '',
-              external_url: item.external_url || '',
-              is_ai_generated: true,
-              source_name: item.source_name || 'Global News Feed',
-              status: 'Draft' // Saved as Draft so admin must upload image and review before publishing
-            });
-          }
-        }
-      } catch (gemError: any) {
-        console.log(`Live Gemini News Sync temporarily unavailable (${gemError?.message || gemError}), using polished local fallback.`);
+      const providerOutput = await generateWithProviders(scoutingPrompt, { json: true });
+      if (!providerOutput?.text) {
+        throw new Error("Ecosystem services currently busy. Bypassing live sync to fallback.");
       }
+
+      const rawScoutedData = parseAIJson(newsItemsSchema, providerOutput.text.trim());
+
+      for (let i = 0; i < Math.min(rawScoutedData.length, 4); i++) {
+        const item = rawScoutedData[i];
+        finalizedItems.push({
+          title: item.title,
+          category: item.category,
+          published_at: today,
+          image_url: '', // Empty initially for manual review and image upload!
+          summary: item.summary,
+          tags: item.tags || [],
+          relevance_score: item.relevance_score || 0,
+          source_verification_notes: item.source_verification_notes || '',
+          external_url: item.external_url || '',
+          is_ai_generated: true,
+          source_name: item.source_name || 'Global News Feed',
+          status: 'Draft' // Saved as Draft so admin must upload image and review before publishing
+        });
+      }
+
+      recordAiDecision({
+        decision_type: 'news_scouting',
+        subject_id: null,
+        provider: providerOutput.provider,
+        model: providerOutput.model,
+        prompt_version: 'ugjh-news-scout-v1',
+        result: { scouted_items: finalizedItems.length }
+      });
+    } catch (scoutError: any) {
+      console.log(`Live AI News Sync temporarily unavailable (${scoutError?.message || scoutError}), using polished local fallback.`);
     }
 
-    // If Gemini key is invalid/missing OR if live call failed, populate using high quality fallbacks
+    // If no provider key is configured OR if the live call failed, populate using high quality fallbacks
     if (finalizedItems.length === 0) {
       console.log("Using pre-designed, premium fallback breakthroughs dataset.");
       FALLBACK_NEWS.forEach((item, idx) => {
@@ -1161,8 +1199,6 @@ app.post('/api/ai-match', validateBody(aiMatchRequestSchema), authenticateUser, 
   const { userProfile, candidateMatches } = req.body || {};
   const up = userProfile || {};
   const candidates = candidateMatches || [];
-  const groq = getGroqClient();
-  const ai = getGeminiClient();
 
   if (!candidates || !candidates.length) {
     return res.json({ rankings: [] });
@@ -1225,35 +1261,17 @@ app.post('/api/ai-match', validateBody(aiMatchRequestSchema), authenticateUser, 
     const localRankings = computeLocalRankings();
 
     let llmRankings: any[] | null = null;
+    let provider: string | null = null;
+    let model: string | null = null;
 
-    if (groq) {
-      try {
-        const completion = await groq.chat.completions.create({
-          model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
-          messages: [
-            { role: 'system', content: 'You are a professional research matching AI. Respond strictly in JSON format matching the specified schema.' },
-            { role: 'user', content: prompt }
-          ],
-          response_format: { type: 'json_object' }
-        });
-        const content = completion.choices[0]?.message?.content;
-        if (content) {
-          llmRankings = parseAIJson(matchRankingsSchema, content.trim()).rankings;
-        }
-      } catch (err: any) {
-        console.warn("Groq match explanation failed:", err?.message || err);
-      }
-    }
-
-    if (!llmRankings && ai) {
-      try {
-        const response = await generateWithFallback(ai, GEMINI_FALLBACK_MODELS, prompt, { responseMimeType: 'application/json' });
-        if (response?.text) {
-          llmRankings = parseAIJson(matchRankingsSchema, response.text).rankings;
-        }
-      } catch (err: any) {
-        console.warn("Gemini match explanation failed:", err?.message || err);
-      }
+    const providerOutput = await generateWithProviders(prompt, {
+      json: true,
+      system: 'You are a professional research matching AI. Respond strictly in JSON format matching the specified schema.'
+    });
+    if (providerOutput) {
+      llmRankings = parseAIJson(matchRankingsSchema, providerOutput.text.trim()).rankings;
+      provider = providerOutput.provider;
+      model = providerOutput.model;
     }
 
     // Merge: keep the deterministic score, use LLM reasoning/label only when present.
@@ -1274,10 +1292,10 @@ app.post('/api/ai-match', validateBody(aiMatchRequestSchema), authenticateUser, 
     recordAiDecision({
       decision_type: 'match_ranking',
       subject_id: (req as any).user?.id || null,
-      provider: 'hybrid',
-      model: 'scoring-engine',
+      provider: provider || 'hybrid',
+      model: model || 'scoring-engine',
       prompt_version: 'ugjh-match-rankings-v1',
-      result: { rankings_count: finalRankings.length }
+      result: { rankings_count: finalRankings.length, llm_enriched: llmRankings ? true : false }
     });
 
     return res.json({ rankings: finalRankings });
