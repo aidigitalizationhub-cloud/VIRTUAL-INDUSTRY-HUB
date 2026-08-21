@@ -239,7 +239,7 @@ ${proposalText}`;
 
       // Update local state
       setChallengeMatches(prev => prev.map(m => m.id === selectedMatch.id ? { ...m, status: 'interested' } : m));
-      showToast('Proposal & Solution Outline transmitted directly to Partner!', 'success');
+      showToast('Proposal sent to the partner!', 'success');
       setIsProposalModalOpen(false);
     } catch (err: any) {
       showToast(err.message || 'Failed to submit proposal.', 'error');
@@ -428,7 +428,7 @@ ${proposalText}`;
                               </>
                             ) : (
                               <div className="flex items-center gap-1.5 px-4 py-2.5 bg-green-50 text-green-700 rounded-xl border border-green-100 text-[11px] font-semibold tracking-wide">
-                                <Check size={12} className="stroke-[3]" /> Proposal Transmitted
+                                <Check size={12} className="stroke-[3]" /> Proposal Sent
                               </div>
                             )}
                           </div>

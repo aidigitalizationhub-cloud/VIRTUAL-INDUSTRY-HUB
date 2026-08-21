@@ -44,7 +44,7 @@ const ContactPIModal: React.FC<{
       showToast("Message routed to PI dashboard", "success");
       setTimeout(() => { setSent(false); setMessage(''); onClose(); }, 2000);
     } catch (err) {
-      showToast("Failed to transmit. Sign in required.", "error");
+      showToast("Failed to send. Sign-in required.", "error");
     } finally {
       setSending(false);
     }
@@ -65,7 +65,7 @@ const ContactPIModal: React.FC<{
             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100"><p className="text-[11px] font-semibold text-gray-400 tracking-wide">Recipient PI</p><p className="font-bold text-ug-navy">{recipientName}</p></div>
             <textarea required rows={5} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Enter message..." className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-ug-teal/20 font-medium text-gray-700"></textarea>
             <button type="submit" disabled={sending} className="w-full bg-[#0092B0] text-white py-4 rounded-2xl font-bold uppercase tracking-wide shadow-xl flex items-center justify-center gap-2">
-              {sending ? <Loader2 className="animate-spin" size={20} /> : <><Send size={18} /> Transmit to Lab</>}
+              {sending ? <Loader2 className="animate-spin" size={20} /> : <><Send size={18} /> Send to Lab</>}
             </button>
           </form>
         )}

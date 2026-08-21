@@ -45,7 +45,7 @@ const ContactPIModal: React.FC<{
 
       await StorageService.submitEOI(projectId, senderName, `[DIRECT MESSAGE] ${message}`);
       setSent(true);
-      showToast("Message Transmitted to PI", "success");
+      showToast("Message Sent to PI", "success");
       setTimeout(() => { setSent(false); setMessage(''); onClose(); }, 2000);
     } catch (err: any) {
       showToast(err.message || "Transmission failed. Check your login status.", "error");
@@ -350,7 +350,7 @@ const ProjectDetail: React.FC = () => {
         messageText = `[LAB_WORKSPACE_ACCESS] Student "${senderName}" is requesting secure authorization to access the workspace relative to this project. Justification: Innovation analysis.`;
       } else if (type === 'Secure Project Reveal') {
         const finalReason = customReason || revealReason;
-        messageText = `🔐 Technical Disclosure Request\n\n[${senderName}] has requested access to the technical brief for:\n\nProject: ${project?.title || 'AI-Driven Crop Disease Detection System'}\n\n\nreason \n${finalReason}`;
+        messageText = `[REVEAL_REQUEST] Technical Disclosure Request\n\n[${senderName}] has requested access to the technical brief for:\n\nProject: ${project?.title || 'AI-Driven Crop Disease Detection System'}\n\n\nreason \n${finalReason}`;
       }
 
       // Determine correct metric category based on the interaction type
@@ -684,7 +684,7 @@ const ProjectDetail: React.FC = () => {
                 <Briefcase className="text-ug-teal" size={16} /> 
                 {currentUserProfile?.role === 'Student' ? 'Student Application' : 'Submission of Interest'}
               </h2>
-              <p className="text-gray-400 text-[7.5px] md:text-[11px] mb-4 md:mb-5 font-bold tracking-wide">
+              <p className="text-gray-400 text-[10px] md:text-[11px] mb-4 md:mb-5 font-bold tracking-wide">
                 {currentUserProfile?.role === 'Student' ? 'Academic Opportunities Track' : 'Formal partnership track'}
               </p>
               
@@ -754,7 +754,7 @@ const ProjectDetail: React.FC = () => {
                       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#0092B0_1px,transparent_1px)] [background-size:16px_16px]"></div>
                       <div className="relative z-10 flex flex-col items-start">
                         <span className="text-[11px] md:text-[11px] font-bold text-ug-teal tracking-wider block mb-0.5">Ecosystem Impact Index</span>
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-[7.5px] md:text-[11px] font-bold tracking-wider border ${rankColor}`}>
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] md:text-[11px] font-bold tracking-wider border ${rankColor}`}>
                           {tractionRank}
                         </span>
                       </div>
@@ -783,24 +783,24 @@ const ProjectDetail: React.FC = () => {
                          <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-[56px] hover:bg-gray-100/30 transition-colors">
                            <span className="text-[11px] md:text-[11px] font-bold text-gray-400 tracking-wider truncate">Views</span>
                            <span className="text-xs md:text-sm font-bold text-ug-navy my-0.5">{viewsCount}</span>
-                           <span className="text-[7px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+1 Pt</span>
+                           <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+1 Pt</span>
                          </div>
                          <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-[56px] hover:bg-gray-100/30 transition-colors">
                            <span className="text-[11px] md:text-[11px] font-bold text-gray-400 tracking-wider truncate">EOIs</span>
                            <span className="text-xs md:text-sm font-bold text-ug-navy my-0.5">{eoiCount}</span>
-                           <span className="text-[7px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+8 Pts</span>
+                           <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+8 Pts</span>
                          </div>
                          <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-[56px] hover:bg-gray-100/30 transition-colors">
                            <span className="text-[11px] md:text-[11px] font-bold text-gray-400 tracking-wider truncate">Requests</span>
                            <span className="text-xs md:text-sm font-bold text-ug-navy my-0.5">{requestsCount}</span>
-                           <span className="text-[7px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+15 Pts</span>
+                           <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+15 Pts</span>
                          </div>
                        </div>
 
                        {!project.technical_details_url && (
                          <div className="p-2 bg-red-50/50 rounded-xl flex items-center gap-2 border border-red-100/30">
                            <AlertCircle size={12} className="text-red-400 shrink-0" />
-                           <span className="text-[7.5px] md:text-[11px] font-bold text-red-700 tracking-wider leading-relaxed">
+                           <span className="text-[10px] md:text-[11px] font-bold text-red-700 tracking-wider leading-relaxed">
                              Technical Brief is restricted for non-owners
                            </span>
                          </div>

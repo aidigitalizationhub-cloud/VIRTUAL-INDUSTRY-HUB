@@ -918,12 +918,12 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                                 {new Date(item.published_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                               </span>
                               {item.status === 'Draft' ? (
-                                <span className="bg-amber-100 text-amber-700 font-extrabold text-[7px] uppercase px-1 rounded">DRAFT</span>
+                                <span className="bg-amber-100 text-amber-700 font-extrabold text-[10px] uppercase px-1 rounded">DRAFT</span>
                               ) : (
-                                <span className="bg-emerald-100 text-emerald-700 font-extrabold text-[7px] uppercase px-1 rounded">PUBLISHED</span>
+                                <span className="bg-emerald-100 text-emerald-700 font-extrabold text-[10px] uppercase px-1 rounded">PUBLISHED</span>
                               )}
                               {(item.is_ai_generated || (item.relevance_score && item.relevance_score > 80)) && (
-                                <span className="bg-purple-100 text-purple-700 font-extrabold text-[7px] uppercase px-1 rounded flex items-center gap-0.5">
+                                <span className="bg-purple-100 text-purple-700 font-extrabold text-[10px] uppercase px-1 rounded flex items-center gap-0.5">
                                   <Sparkles size={6} /> AI Scout
                                 </span>
                               )}

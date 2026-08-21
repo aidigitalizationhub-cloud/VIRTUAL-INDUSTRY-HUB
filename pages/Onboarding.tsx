@@ -250,7 +250,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         embedding = (await EmbeddingService.getEmbedding(profile.embedding_text)) ?? undefined;
       } catch (err: any) {
         console.error("Embedding generation failed:", err);
-        showToast(err?.message || "AI Vector Matching setup failed due to missing credentials. Using local fallbacks.", "warning");
+        showToast(err?.message || "AI profile setup failed due to missing credentials. Using local fallbacks.", "warning");
       }
 
       // Save to Supabase
@@ -1019,9 +1019,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
       </button>
 
       <div className="mb-10">
-        <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 5 of 5: AI Core Matching</span>
-        <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Smart Match Synthesis</h2>
-        <p className="text-gray-400 text-sm font-medium mt-2">Fill out these open-ended statements to power high-fidelity semantic re-ranking. Mandatory fields marked with (<span className="text-red-500 font-bold">*</span>).</p>
+        <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 5 of 5: Matching Preferences</span>
+        <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Tell Us Your Focus</h2>
+        <p className="text-gray-400 text-sm font-medium mt-2">Fill out these open-ended statements to improve your match accuracy. Mandatory fields marked with (<span className="text-red-500 font-bold">*</span>).</p>
       </div>
 
       <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth pb-6">
@@ -1497,7 +1497,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               </div>
             </div>
             <div>
-              <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide mb-4">Strategic Intent</h4>
+              <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide mb-4">Your Goals</h4>
               <div className="flex flex-wrap gap-2">
                 {(extractedProfile?.collaboration_profile?.looking_for || []).map(l => (
                   <span key={l} className="px-3 py-1.5 bg-ug-teal/10 rounded-lg text-[11px] font-bold text-ug-teal border border-ug-teal/20">{l}</span>
@@ -1538,11 +1538,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             </div>
           )}
 
-          <button 
+          <button
             onClick={onComplete}
-            className="w-full md:w-auto bg-ug-navy text-white px-12 py-6 rounded-[2rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/40 hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 group"
+            className="w-full md:w-auto bg-ug-navy text-white px-8 py-3.5 rounded-2xl font-bold text-xs shadow-md hover:bg-ug-teal active:scale-95 transition-all flex items-center justify-center gap-2 group"
           >
-            Enter Dashboard <Rocket size={20} className="group-hover:translate-x-2 transition-transform" />
+            Enter Dashboard <Rocket size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
@@ -1572,7 +1572,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
   if (isEmbedded) {
     return (
-      <div className="w-full bg-white p-6 md:p-10 rounded-[2.5rem] border border-gray-150 shadow-sm font-sans text-ug-navy relative overflow-hidden selection:bg-ug-teal/20">
+      <div className="w-full bg-white p-6 md:p-10 rounded-2xl border border-gray-100 shadow-sm font-sans text-ug-navy relative overflow-hidden selection:bg-ug-teal/20">
         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[400px] h-[400px] bg-ug-teal/5 rounded-full blur-[80px] pointer-events-none" />
         
         {/* Simplified Header for Embedded status monitoring */}

@@ -32,6 +32,14 @@ interface DashboardProps {
   user: User | null;
 }
 
+// Reveal-request detection: matches the current bracket tag and the legacy
+// emoji-prefixed format so older messages keep rendering correctly.
+const isRevealRequestMessage = (text?: string | null): boolean =>
+  !!text && (
+    text.includes('[REVEAL_REQUEST]') ||
+    text.includes('\uD83D\uDD10 Technical Disclosure Request')
+  );
+
 // --- MOBILE BOTTOM NAV ---
 const MobileNav: React.FC<{ activeTab: string; setActiveTab: (t: any) => void; role: UserRole; unreadCount: number }> = ({ activeTab, setActiveTab, role, unreadCount }) => {
   const tabs = [
@@ -105,7 +113,7 @@ const Sidebar: React.FC<{
     { id: 'projects', icon: ShieldCheck, label: 'Project Screener' },
     { id: 'news', icon: Globe, label: 'News Curator' },
     { id: 'logs', icon: Activity, label: 'Governance Audit' },
-    { id: 'decisions', icon: Fingerprint, label: 'Decision Ledger' },
+    { id: 'decisions', icon: Fingerprint, label: 'Decision Log' },
   ] as const;
 
   const getPortalTitle = () => {
@@ -839,7 +847,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
       await StorageService.submitEOI(
         msg.project_id,
         user.name,
-        `🟢 Access Granted. You have been granted secure, 1-hour decrypted access to download the Technical Disclosure PDF.`,
+        `Access Granted. You have been granted secure, 1-hour decrypted access to download the Technical Disclosure PDF.`,
         msg.sender_id
       );
       
@@ -869,7 +877,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
       await StorageService.submitEOI(
         msg.project_id,
         user.name,
-        `🔴 Access Declined. Your request for technical brief access has been declined.`,
+        `Access Declined. Your request for technical brief access has been declined.`,
         msg.sender_id
       );
       
@@ -957,7 +965,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
       const updated = await StorageService.getConversations(user.id);
       setThreads(updated);
     } catch (e) {
-      showToast("Failed to transmit message", "error");
+      showToast("Failed to send message", "error");
     } finally {
       setSending(false);
     }
@@ -1105,7 +1113,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                             return (
                               <div key={attIdx} className="flex flex-col gap-1.5 max-w-[200px]">
                                 {isImg ? (
-                                  <div className="relative group border border-gray-150 rounded-xl overflow-hidden bg-gray-50/50 shadow-sm max-w-[150px]">
+                                  <div className="relative group border border-gray-100 rounded-xl overflow-hidden bg-gray-50/50 shadow-sm max-w-[150px]">
                                     <img 
                                       src={att.url} 
                                       alt={att.name} 
@@ -1152,7 +1160,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                         </div>
                       )}
 
-                    {msg.message.includes('🔐 Technical Disclosure Request') && (
+                    {isRevealRequestMessage(msg.message) && (
                       <div className="mt-4 pt-3 border-t border-gray-100 space-y-3">
                         {(!msg.status || msg.status === 'pending') ? (
                           msg.sender_id !== user?.id ? (
@@ -1172,7 +1180,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                             </div>
                           ) : (
                             <div className="flex items-center gap-1.5 justify-center py-1.5 bg-pink-50 text-pink-700 rounded-xl border border-pink-100 text-[11px] font-semibold tracking-wider">
-                              🔒 Clearance Pending
+                              Clearance Pending
                             </div>
                           )
                         ) : msg.status.startsWith('released') ? (
@@ -1181,7 +1189,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                           </div>
                         ) : (
                           <div className="flex items-center gap-1.5 justify-center py-1.5 bg-red-50 text-red-700 rounded-xl border border-red-100 text-[11px] font-semibold tracking-wider">
-                            Access Declined 🔴
+                            Access Declined
                           </div>
                         )}
                       </div>
@@ -1231,7 +1239,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between border-t border-gray-150/10 pt-1.5 px-1 bg-transparent shrink-0">
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-1.5 px-1 bg-transparent shrink-0">
                     <div className="flex items-center gap-1">
                       <input 
                         type="file" 
@@ -1437,7 +1445,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                             </div>
                           )}
 
-                        {msg.message.includes('🔐 Technical Disclosure Request') && (
+                        {isRevealRequestMessage(msg.message) && (
                           <div className="mt-4 pt-3 border-t border-gray-100 space-y-3 max-w-md">
                             {(!msg.status || msg.status === 'pending') ? (
                               msg.sender_id !== user?.id ? (
@@ -1457,7 +1465,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                                 </div>
                               ) : (
                                 <div className="flex items-center gap-1.5 justify-center py-1.5 bg-pink-50 text-pink-700 rounded-xl border border-pink-100 text-[11px] font-semibold tracking-wider">
-                                  🔒 Clearance Pending
+                                  Clearance Pending
                                 </div>
                               )
                             ) : msg.status.startsWith('released') ? (
@@ -1466,7 +1474,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                               </div>
                             ) : (
                               <div className="flex items-center gap-1.5 justify-center py-1.5 bg-red-50 text-red-700 rounded-xl border border-red-100 text-[11px] font-semibold tracking-wider">
-                                Access Declined 🔴
+                                Access Declined
                               </div>
                             )}
                           </div>
@@ -1719,7 +1727,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
               disabled={sending || uploadingCompose || !selectedRecipient || (!composeMessage.trim() && composeAttachments.length === 0)}
               className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-xl font-bold text-[12px]  tracking-[0.2em] transition-all shadow-[0_10px_30px_-10px_rgba(37,99,235,0.4)] disabled:opacity-50 active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
             >
-              {sending ? <Loader2 size={18} className="animate-spin" /> : <><SendIcon size={18} /> Transmit Message</>}
+              {sending ? <Loader2 size={18} className="animate-spin" /> : <><SendIcon size={18} /> Send Message</>}
             </button>
             <div className="flex items-center gap-6 text-gray-300">
               <input 
@@ -1851,7 +1859,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
     if (!userId) return;
     const interval = setInterval(() => {
        StorageService.getUnreadCount(userId).then(setInternalUnread);
-    }, 12000);
+    }, 30000);
     return () => clearInterval(interval);
   }, [localUser?.id, user?.id]);
 
@@ -2107,7 +2115,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                         <div className="space-y-1 text-center md:text-left">
                           <h4 className="text-sm font-bold text-ug-navy  ">Complete Your AI Match Profile</h4>
                           <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                            You currently do not have an active AI Match Profile. Industry delegates, researchers, and students rely on high-fidelity AI recommendations to discover you. Complete the interactive setup to get matched!
+                            You currently do not have an active AI Match Profile. Industry delegates, researchers, and students rely on accurate AI recommendations to discover you. Complete the interactive setup to get matched!
                           </p>
                         </div>
                       </div>
@@ -2134,7 +2142,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                         <ProfileInsight profile={localUser?.ai_profile} />
                       </div>
                       <div className="lg:col-span-4 shrink-0 space-y-6">
-                        <div className="bg-gradient-to-br from-[#12073d] to-[#1a0b59] text-white p-4 xs:p-5 rounded-2xl shadow-xl relative overflow-hidden group border border-white/5">
+                        <div className="bg-gradient-to-br from-[#12073d] to-[#1a0b59] text-white p-4 rounded-2xl shadow-xl relative overflow-hidden group border border-white/5">
                           <div className="absolute -top-2 -right-2 p-6 opacity-5 group-hover:opacity-10 transition duration-500">
                             <Target size={80} />
                           </div>
@@ -2143,7 +2151,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                               <h4 className="text-[11px] font-semibold text-ug-teal/80 tracking-wide mb-0.5">Ecosystem Compliance</h4>
                               <h3 className="text-sm font-bold tracking-wide  leading-tight text-white">AI Profile Sync</h3>
                             </div>
-                            <p className="text-[9.5px] font-medium leading-relaxed text-white/70 italic font-sans">
+                            <p className="text-[11px] font-medium leading-relaxed text-white/70 italic font-sans">
                               "Insights are compiled from your verified academic records. Re-indexing occurs automatically within 24 hours of profile edits."
                             </p>
                             <div className="flex items-center gap-2 p-2.5 bg-white/5 rounded-xl border border-white/5">
@@ -2176,7 +2184,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                                  <div className={`w-3.5 h-3.5 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${localUser?.ai_profile?.portfolio_visible !== false ? 'translate-x-3.5' : 'translate-x-0'}`} />
                               </button>
                            </div>
-                           <p className="text-[8.5px] text-gray-400 font-medium leading-normal italic">
+                           <p className="text-[10px] text-gray-400 font-medium leading-normal italic">
                               {localUser?.ai_profile?.portfolio_visible !== false 
                                  ? "Your profile is discoverable to verified technical partners and industry delegates."
                                  : "Your profile is hidden from the public directories and matching engine."}
@@ -2394,7 +2402,7 @@ const ResearcherDashboard = ({
       await StorageService.submitEOI(
         msg.project_id,
         user.name,
-        `🟢 Access Granted. You have been granted secure, 1-hour decrypted access to download the Technical Disclosure PDF.`,
+        `Access Granted. You have been granted secure, 1-hour decrypted access to download the Technical Disclosure PDF.`,
         msg.sender_id
       );
       
@@ -2415,7 +2423,7 @@ const ResearcherDashboard = ({
       await StorageService.submitEOI(
         msg.project_id,
         user.name,
-        `🔴 Access Declined. Your request for technical brief access has been declined.`,
+        `Access Declined. Your request for technical brief access has been declined.`,
         msg.sender_id
       );
       
@@ -2750,7 +2758,7 @@ const ResearcherDashboard = ({
                                           <span className="text-[11px] font-bold text-green-600">✓</span>
                                         </div>
                                         <span className="truncate font-bold">{doc.name}</span>
-                                        <span className="text-[7px] text-gray-400 font-medium">Uploaded by {doc.by || 'PI'}</span>
+                                        <span className="text-[10px] text-gray-400 font-medium">Uploaded by {doc.by || 'PI'}</span>
                                       </div>
                                       <a href={doc.url} target="_blank" rel="noreferrer" className="text-ug-teal hover:underline flex items-center gap-1 shrink-0 ml-1">
                                         <Download size={10} />
@@ -2844,7 +2852,7 @@ const ResearcherDashboard = ({
                 >
                   <span>Disclosures</span>
                   <span className={`px-1.5 py-0.5 text-[11px] rounded-md font-semibold ${eoiFilter === 'disclosures' ? 'bg-white/20 text-white' : 'bg-pink-100 text-pink-800'}`}>
-                    {eois.filter(e => e.message?.includes('[REVEAL_REQUEST]') || e.message?.includes('🔐 Technical Disclosure Request')).length}
+                    {eois.filter(e => isRevealRequestMessage(e.message)).length}
                   </span>
                 </button>
                 <button
@@ -2878,7 +2886,7 @@ const ResearcherDashboard = ({
                   return !eoi.status || eoi.status === 'pending';
                 }
                 if (eoiFilter === 'disclosures') {
-                  return eoi.message?.includes('[REVEAL_REQUEST]') || eoi.message?.includes('🔐 Technical Disclosure Request');
+                  return isRevealRequestMessage(eoi.message);
                 }
                 if (eoiFilter === 'applications') {
                   return eoi.message?.includes('[ASSISTANTSHIP_APPLICATION]') || eoi.message?.includes('[SCHOLARSHIP_APPLICATION]') || eoi.message?.includes('[LAB_WORKSPACE_ACCESS]');
@@ -2903,7 +2911,7 @@ const ResearcherDashboard = ({
                 <>
                   <div className="space-y-3">
                     {displayedEois.map(eoi => {
-                      const isReveal = eoi.message?.includes('[REVEAL_REQUEST]') || eoi.message?.includes('🔐 Technical Disclosure Request');
+                      const isReveal = isRevealRequestMessage(eoi.message);
                       const isAssistantship = eoi.message?.includes('[ASSISTANTSHIP_APPLICATION]');
                       const isScholarship = eoi.message?.includes('[SCHOLARSHIP_APPLICATION]');
                       const isLabAccess = eoi.message?.includes('[LAB_WORKSPACE_ACCESS]');
@@ -2935,7 +2943,7 @@ const ResearcherDashboard = ({
                         typeLabel = "Disclosure Request";
                         badgeColor = "bg-pink-50 text-pink-700 border-pink-200/80";
                         IconComponent = Lock;
-                        if (!eoi.message?.includes('🔐 Technical Disclosure Request') && eoi.message?.includes(']')) {
+                        if (isRevealRequestMessage(eoi.message) && eoi.message?.includes(']')) {
                           cleanMessage = eoi.message.substring(eoi.message.indexOf(']') + 1).trim();
                         }
                       } else if (isAssistantship) {
@@ -3272,7 +3280,7 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
       <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100">
         <Sparkles size={32} className="text-ug-teal/50" />
       </div>
-      <h3 className="text-sm font-bold text-ug-navy  tracking-wide mb-2">Neural Profile Pending</h3>
+      <h3 className="text-sm font-bold text-ug-navy  tracking-wide mb-2">Profile Insights Pending</h3>
       <p className="text-[11px] text-gray-500 font-medium italic max-w-xs mx-auto">Upload your academic documents or resume in the overview to unlock AI-powered semantic matching and profile insights.</p>
     </div>
   );
@@ -3479,7 +3487,7 @@ const MatchesView = ({
         subject: `Academic Collaboration Proposal: "${projTitle}"`,
         body: `Dear ${recipientName},
 
-My name is ${senderName} from the ${senderDept} at the University of Ghana. I am reaching out to explore potential research synergy on your active project, "${projTitle}".
+My name is ${senderName} from the ${senderDept} at the University of Ghana. I am reaching out to explore a potential collaboration on your active project, "${projTitle}".
 
 Based on our AI Profile recommendations, our technical competencies in ${researchArea} strongly align with your project's roadmap.
 
@@ -3553,7 +3561,7 @@ ${senderName}`
 
   const handleSendProposal = async () => {
     if (!user) {
-      showToast("Authentication Required: Please sign in to transmit messages.", "error");
+      showToast("Authentication Required: Please sign in to send messages.", "error");
       return;
     }
     setIsSending(true);
@@ -3596,7 +3604,7 @@ ${senderName}`
       showToast("Proposal sent successfully!", "success");
       setIsProposalModalOpen(false);
     } catch (err: any) {
-      showToast(err.message || "Failed to transmit proposal.", "error");
+      showToast(err.message || "Failed to send proposal.", "error");
     } finally {
       setIsSending(false);
     }
@@ -4292,7 +4300,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
        const metric = appType === 'Lab Workspace Access' ? 'requests' : 'expressions_of_interest';
        await StorageService.submitEOI(selectedProjectForApp.id, user.name, messageText, undefined, metric);
 
-       showToast(`Your ${appType} request was successfully transmitted!`, "success");
+       showToast(`Your ${appType} request was submitted!`, "success");
        setDrawerOpen(false);
        
        // Reload dashboard data to update stats and application history
@@ -4310,7 +4318,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
      if (msg.startsWith('[ASSISTANTSHIP_APPLICATION]')) return 'Research Assistantship';
      if (msg.startsWith('[SCHOLARSHIP_APPLICATION]')) return 'Scholarship Inquiry';
      if (msg.startsWith('[LAB_WORKSPACE_ACCESS]')) return 'Lab Workspace Access';
-     if (msg.includes('Technical Disclosure') || msg.includes('🔐')) return 'Technical Disclosure';
+     if (msg.includes('Technical Disclosure')) return 'Technical Disclosure';
      return 'Inquiry';
    };
 
@@ -4320,7 +4328,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
        .replace(/^\[ASSISTANTSHIP_APPLICATION\].*?\n\n(Personal Statement:\n)?/s, '')
        .replace(/^\[SCHOLARSHIP_APPLICATION\].*?\n\n(Statement of Intent:\n)?/s, '')
        .replace(/^\[LAB_WORKSPACE_ACCESS\].*?\n\n(Justification:\n)?/s, '')
-       .replace(/^🔐.*?\n\n/s, '');
+       .replace(/^(?:[REVEAL_REQUEST]|🔐).*?\n\n/s, '');
    };
 
    const getStatusBadgeColor = (status: string) => {
@@ -4666,10 +4674,10 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                               {submitting ? (
                                 <>
                                    <Loader2 className="animate-spin" size={16} />
-                                   <span>Transmitting...</span>
+                                   <span>Submitting...</span>
                                 </>
                               ) : (
-                                <span>Transmit Secure Application</span>
+                                <span>Submit Application</span>
                               )}
                            </button>
                         </div>

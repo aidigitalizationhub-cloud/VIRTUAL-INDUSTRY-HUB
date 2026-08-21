@@ -1785,7 +1785,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <>
                         <div className="flex items-center justify-between mb-4 px-2">
                           <h4 className="text-[11px] font-bold tracking-wider text-gray-400">Pending Disclosures</h4>
-                          <span className="text-[10.5px] font-bold px-2 py-0.5 bg-[#1a1a4b] text-[#5eead4] rounded-full">
+                          <span className="text-[11px] font-bold px-2 py-0.5 bg-[#1a1a4b] text-[#5eead4] rounded-full">
                             {activePendingCount}
                           </span>
                         </div>
@@ -1827,7 +1827,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                       <span className="font-extrabold text-[12.5px] text-[#1a1a4b]/90 truncate">
                                         {ownerProfile?.name || 'Academic Faculty'}
                                       </span>
-                                      <span className={`text-[8.5px] font-bold flex items-center gap-1 shrink-0 ${
+                                      <span className={`text-[10px] font-bold flex items-center gap-1 shrink-0 ${
                                         p.disclosure_status === 'Published' ? 'text-green-500' :
                                         isWaiting ? 'text-amber-500' : 'text-ug-teal'
                                       }`}>
@@ -1843,7 +1843,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   </div>
                                   
                                   <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-100/40">
-                                    <span className="text-[9.5px] text-gray-400 font-medium">
+                                    <span className="text-[11px] text-gray-400 font-medium">
                                       Submitted: {new Date(p.created_at || '').toLocaleDateString()}
                                     </span>
                                     <span className={`text-xs ${isChosen ? 'text-[#5eead4]' : 'text-gray-300'}`}>
@@ -1868,7 +1868,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       return (
                         <div className="h-[600px] flex flex-col items-center justify-center text-center text-gray-400 space-y-3 py-20 bg-white rounded-xl border border-dashed border-gray-200 w-full">
                           <ShieldCheck size={40} className="text-gray-300 stroke-[1.5]" />
-                          <p className="text-[10.5px] font-bold   max-w-sm">
+                          <p className="text-[11px] font-bold   max-w-sm">
                             Select a disclosure from the pending ledger list to begin administrative review
                           </p>
                         </div>
@@ -2040,7 +2040,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     </div>
                                     <p className="text-xs text-[#1a1a4b] font-bold">Dynamic Revision Feed</p>
                                     <p className="text-[11px] md:text-xs text-gray-400 font-medium px-4 leading-normal">
-                                      No message history or requested document slots yet. Use the feedback panel to transmit directions.
+                                      No message history or requested document slots yet. Use the feedback panel to send directions.
                                     </p>
                                   </div>
                                 ) : (
@@ -2112,7 +2112,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           {timeline.length > 0 && (
                             <div className="bg-white p-5 rounded-xl border border-gray-100 space-y-2 font-serif">
                               <p className="text-[11px] md:text-xs font-bold text-[#1a1a4b] tracking-wide">Permanent Audit Trail</p>
-                              <div className="space-y-2 max-h-28 overflow-y-auto pl-1 pr-1 border-l border-gray-150 ml-1">
+                              <div className="space-y-2 max-h-28 overflow-y-auto pl-1 pr-1 border-l border-gray-100 ml-1">
                                 {timeline.map((item: any, idx: number) => (
                                   <div key={idx} className="text-xs font-semibold text-gray-500 leading-relaxed pl-3 text-left relative">
                                     <span className="absolute left-0 top-1.5 h-1.5 w-1.5 rounded-full bg-ug-teal"></span>
@@ -2127,7 +2127,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                         {/* Quiet caution footer details of regulatory framework logs */}
                         <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-4 font-sans">
-                          <p className="text-[9.5px] text-gray-400 font-medium">
+                          <p className="text-[11px] text-gray-400 font-medium">
                             * All administrative determinations are logged in the secure academic innovation ledger for historical audits.
                           </p>
                           <button

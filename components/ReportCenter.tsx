@@ -842,7 +842,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 { key: 'aiScout', label: 'AI Scout Intelligence', desc: 'Trending keywords & sector sentiment' },
                 { key: 'projects', label: 'Research & Projects Activity', desc: 'Disclosures, TRL & funding needs' },
                 { key: 'translation', label: 'Translation & Accessibility', desc: 'Languages used & sessions' },
-                { key: 'systemMetrics', label: 'System Performance', desc: 'API uptime & vector embeddings' },
+                { key: 'systemMetrics', label: 'System Performance', desc: 'API uptime & matching engine' },
                 { key: 'auditLogs', label: 'Governance Audit Logs', desc: 'Chronological admin ledger' },
                 { key: 'recommendations', label: 'AI Strategic Recommendations', desc: 'Actionable university insights' }
               ].map(({ key, label, desc }) => {
