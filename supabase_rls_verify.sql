@@ -11,7 +11,7 @@ DECLARE
 BEGIN
   -- 1. RLS must be ENABLED on every core table.
   FOREACH rel IN ARRAY ARRAY[
-    'profiles', 'projects', 'student_profiles', 'researcher_profiles',
+    'profiles', 'projects', 'eois', 'student_profiles', 'researcher_profiles',
     'investor_profiles', 'industry_profiles', 'bookmarks', 'news',
     'industry_challenges', 'challenge_matches', 'interaction_logs',
     'ai_decisions'
@@ -51,12 +51,36 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='news' AND policyname='Anyone can view published news') THEN
     missing := array_append(missing, 'news:Anyone can view published news');
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='eois' AND policyname='Participants can view eois') THEN
+    missing := array_append(missing, 'eois:Participants can view eois');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='eois' AND policyname='Users can send eois') THEN
+    missing := array_append(missing, 'eois:Users can send eois');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='eois' AND policyname='Recipients can manage received eois') THEN
+    missing := array_append(missing, 'eois:Recipients can manage received eois');
+  END IF;
 
   IF array_length(missing, 1) > 0 THEN
     RAISE EXCEPTION 'Missing required policies: %', array_to_string(missing, ', ');
   END IF;
 
   RAISE NOTICE 'RLS verification passed: RLS enabled and required policies present on all core tables.';
+END $$;
+
+-- 3. Privilege-escalation guard: the role-protection trigger must exist on profiles.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger t
+    JOIN pg_class c ON c.oid = t.tgrelid
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relname = 'profiles'
+      AND t.tgname = 'protect_profile_role' AND NOT t.tgisinternal
+  ) THEN
+    RAISE EXCEPTION 'profiles.protect_profile_role trigger is missing - privilege escalation guard not active.';
+  END IF;
+  RAISE NOTICE 'profiles role-escalation guard verified.';
 END $$;
 
 -- 3. Security-adjacent invariant: ai_decisions must have NO INSERT/UPDATE policy,

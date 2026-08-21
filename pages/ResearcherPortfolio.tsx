@@ -11,6 +11,7 @@ import { StorageService } from '../services/storageService';
 import { User, Project } from '../types';
 import { useToast } from '../App';
 import { supabase } from '../lib/supabase';
+import { safeExternalUrl } from '../lib/urlSafety';
 
 // --- CONTACT PI MODAL ---
 const ContactPIModal: React.FC<{ 
@@ -139,40 +140,30 @@ const ResearcherPortfolio: React.FC = () => {
              <p className="prose prose-2xl text-gray-600 font-normal leading-relaxed" style={{ fontFamily: "'Times New Roman', Times, serif" }}>"{profile.bio || "Academic identity verified."}"</p>
           </section>
 
-          {(profile.website_url || profile.website_url_2 || profile.website_url_3) && (
-            <section className="bg-white p-12 rounded-[4rem] border border-gray-100 shadow-sm relative overflow-hidden">
-              <h2 className="text-2xl font-bold text-ug-navy mb-8 flex items-center gap-4 uppercase tracking-[0.2em]"><Globe className="text-ug-teal" size={28} /> Digital Footprint</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {profile.website_url && (
-                  <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl hover:bg-ug-teal/5 transition-colors group">
-                    <Globe size={20} className="text-ug-teal" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-semibold text-gray-400 tracking-wide">Primary Link</p>
-                      <p className="font-bold text-ug-navy truncate group-hover:text-ug-teal transition-colors">{profile.website_url.replace(/^https?:\/\/(www\.)?/, '')}</p>
-                    </div>
-                  </a>
-                )}
-                {profile.website_url_2 && (
-                  <a href={profile.website_url_2} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl hover:bg-ug-teal/5 transition-colors group">
-                    <Globe size={20} className="text-ug-teal" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-semibold text-gray-400 tracking-wide">Portfolio Link 2</p>
-                      <p className="font-bold text-ug-navy truncate group-hover:text-ug-teal transition-colors">{profile.website_url_2.replace(/^https?:\/\/(www\.)?/, '')}</p>
-                    </div>
-                  </a>
-                )}
-                {profile.website_url_3 && (
-                  <a href={profile.website_url_3} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl hover:bg-ug-teal/5 transition-colors group">
-                    <Globe size={20} className="text-ug-teal" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-semibold text-gray-400 tracking-wide">Portfolio Link 3</p>
-                      <p className="font-bold text-ug-navy truncate group-hover:text-ug-teal transition-colors">{profile.website_url_3.replace(/^https?:\/\/(www\.)?/, '')}</p>
-                    </div>
-                  </a>
-                )}
-              </div>
-            </section>
-          )}
+          {(() => {
+            const links = [
+              { label: 'Primary Link', url: safeExternalUrl(profile.website_url) },
+              { label: 'Portfolio Link 2', url: safeExternalUrl(profile.website_url_2) },
+              { label: 'Portfolio Link 3', url: safeExternalUrl(profile.website_url_3) },
+            ].filter(l => l.url !== '');
+            if (links.length === 0) return null;
+            return (
+              <section className="bg-white p-12 rounded-[4rem] border border-gray-100 shadow-sm relative overflow-hidden">
+                <h2 className="text-2xl font-bold text-ug-navy mb-8 flex items-center gap-4 uppercase tracking-[0.2em]"><Globe className="text-ug-teal" size={28} /> Digital Footprint</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {links.map((link, idx) => (
+                    <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl hover:bg-ug-teal/5 transition-colors group">
+                      <Globe size={20} className="text-ug-teal" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-semibold text-gray-400 tracking-wide">{link.label}</p>
+                        <p className="font-bold text-ug-navy truncate group-hover:text-ug-teal transition-colors">{link.url.replace(/^https?:\/\/(www\.)?/, '')}</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
 
           {/* Open Student Opportunities Card */}
           {(() => {

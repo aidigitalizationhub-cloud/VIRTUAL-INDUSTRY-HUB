@@ -62,9 +62,11 @@ const isValidKey = (key: any): boolean => {
 // --- AI Gateway: centralized provider clients + model fallback ---
 const GEMINI_FALLBACK_MODELS = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-3.1-flash-lite'];
 
-const getGeminiKey = (): string => process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+// Server-only provider keys. Never read VITE_* variables here: anything prefixed
+// VITE_ is bundled into client JS and would leak the key to every visitor.
+const getGeminiKey = (): string => process.env.GEMINI_API_KEY || '';
 
-const getGroqKey = (): string => process.env.VITE_GROQ_API_KEY || process.env.GROQ_API_KEY || '';
+const getGroqKey = (): string => process.env.GROQ_API_KEY || '';
 
 const getGeminiClient = (): GoogleGenAI | null => {
   const apiKey = getGeminiKey();
@@ -233,7 +235,9 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (origin) {
-    const isAllowed = ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes(origin);
+    // Default-deny: when CORS_ORIGINS is not configured, no cross-origin
+    // requests receive CORS headers (same-origin clients are unaffected).
+    const isAllowed = ALLOWED_ORIGINS.includes(origin);
     if (isAllowed) {
       res.header('Access-Control-Allow-Origin', origin);
       res.header('Vary', 'Origin');

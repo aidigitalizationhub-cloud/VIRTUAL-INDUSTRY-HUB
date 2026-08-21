@@ -23,6 +23,7 @@ import { EmbeddingService } from '../services/embeddingService';
 import { IndustryChallengesMatcher } from '../components/IndustryChallengesMatcher';
 import { CreateChallengeModal } from '../components/CreateChallengeModal';
 import { PartnerChallengesTracker } from '../components/PartnerChallengesTracker';
+import { safeExternalUrl } from '../lib/urlSafety';
 import ThemeSwitcher from '../components/ThemeSwitcher';
 
 
@@ -5062,16 +5063,16 @@ const ProfileSettings: React.FC<{
         sectorVector
       };
 
-      await StorageService.updateProfile({ 
-        id: user.id, 
-        name, 
-        bio, 
+      await StorageService.updateProfile({
+        id: user.id,
+        name,
+        bio,
         role: user.role,
         email: user.email,
-        website_url: website,
-        website_url_2: website2,
-        website_url_3: website3,
-        website_url_4: website4,
+        website_url: safeExternalUrl(website),
+        website_url_2: safeExternalUrl(website2),
+        website_url_3: safeExternalUrl(website3),
+        website_url_4: safeExternalUrl(website4),
         avatar_url: avatarUrl,
         answers: updatedAnswers,
         ai_profile: updatedAIProfile

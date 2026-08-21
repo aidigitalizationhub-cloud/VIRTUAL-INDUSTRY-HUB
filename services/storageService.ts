@@ -880,6 +880,7 @@ export const StorageService = {
         const { data: basicData } = await supabase
           .from('news')
           .select('id, title, category, published_at, image_url, summary')
+          .eq('status', 'Published')
           .order('published_at', { ascending: false })
           .range(0, 19);
         return await StorageService.signNewsUrls((basicData || []) as NewsItem[]);
@@ -892,6 +893,7 @@ export const StorageService = {
         const { data } = await supabase
           .from('news')
           .select('id, title, category, published_at, image_url, summary')
+          .eq('status', 'Published')
           .limit(20);
         return await StorageService.signNewsUrls((data || []) as NewsItem[]);
       } catch (innerErr) {

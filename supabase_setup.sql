@@ -4,6 +4,24 @@
 -- Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
 
+-- Fresh-deploy safety nets: base core tables (skipped if they already exist)
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT,
+  email TEXT,
+  role TEXT DEFAULT 'Student',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.projects (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT,
+  owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  visibility TEXT DEFAULT 'Public',
+  disclosure_status TEXT DEFAULT 'Submitted',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Profiles table schema enhancements
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS title TEXT;
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS ai_profile JSONB;
@@ -506,6 +524,86 @@ FOR UPDATE TO authenticated USING (
   auth.uid() = id
 ) WITH CHECK (
   auth.uid() = id
+);
+
+-- Privilege-escalation guard: only administrators may create Admin profiles or
+-- change a profile's role. Contexts without a user JWT (SQL editor, service role)
+-- are exempt so platform administration and migrations keep working.
+CREATE OR REPLACE FUNCTION public.guard_profile_role()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF auth.uid() IS NULL THEN
+    RETURN NEW; -- non-JWT context (service role / SQL editor)
+  END IF;
+
+  IF TG_OP = 'INSERT' AND NEW.role = 'Admin' THEN
+    IF NOT public.is_admin() THEN
+      RAISE EXCEPTION 'Permission denied: the Admin role cannot be self-assigned';
+    END IF;
+  END IF;
+
+  IF TG_OP = 'UPDATE' AND NEW.role IS DISTINCT FROM OLD.role THEN
+    IF NOT public.is_admin() THEN
+      RAISE EXCEPTION 'Permission denied: role changes require an administrator';
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS protect_profile_role ON public.profiles;
+CREATE TRIGGER protect_profile_role
+BEFORE INSERT OR UPDATE ON public.profiles
+FOR EACH ROW EXECUTE FUNCTION public.guard_profile_role();
+
+-- EOI / direct message table: every private proposal, request, and chat message.
+CREATE TABLE IF NOT EXISTS public.eois (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  project_id UUID REFERENCES public.projects(id) ON DELETE SET NULL,
+  user_name TEXT,
+  message TEXT,
+  read BOOLEAN DEFAULT FALSE,
+  sender_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  recipient_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+  status TEXT DEFAULT 'pending',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.eois ENABLE ROW LEVEL SECURITY;
+
+-- Participants (and admins) can read a message thread
+DROP POLICY IF EXISTS "Participants can view eois" ON public.eois;
+CREATE POLICY "Participants can view eois" ON public.eois
+FOR SELECT TO authenticated USING (
+  auth.uid() = sender_id OR auth.uid() = recipient_id OR public.is_admin()
+);
+
+-- Senders may create messages under their own identity
+DROP POLICY IF EXISTS "Users can send eois" ON public.eois;
+CREATE POLICY "Users can send eois" ON public.eois
+FOR INSERT TO authenticated WITH CHECK (
+  auth.uid() = sender_id
+);
+
+-- Recipients act on messages (mark read, accept/decline); admins moderate
+DROP POLICY IF EXISTS "Recipients can manage received eois" ON public.eois;
+CREATE POLICY "Recipients can manage received eois" ON public.eois
+FOR UPDATE TO authenticated USING (
+  auth.uid() = recipient_id OR public.is_admin()
+) WITH CHECK (
+  auth.uid() = recipient_id OR public.is_admin()
+);
+
+-- Only admins may hard-delete messages
+DROP POLICY IF EXISTS "Admins can delete eois" ON public.eois;
+CREATE POLICY "Admins can delete eois" ON public.eois
+FOR DELETE TO authenticated USING (
+  public.is_admin()
 );
 
 -- Bookmarks table to support saving research projects
