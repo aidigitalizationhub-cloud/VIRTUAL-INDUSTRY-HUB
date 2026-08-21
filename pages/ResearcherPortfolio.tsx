@@ -86,11 +86,16 @@ const ResearcherPortfolio: React.FC = () => {
   useEffect(() => {
     if (id) {
       setLoading(true);
-      Promise.all([StorageService.getProfile(id), StorageService.getPublicResearcherProjects(id)]).then(([p, projects]) => {
-        setProfile(p);
-        setProjects(projects);
-        setLoading(false);
-      });
+      Promise.all([StorageService.getProfile(id), StorageService.getPublicResearcherProjects(id)])
+        .then(([p, projects]) => {
+          setProfile(p);
+          setProjects(projects);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to load portfolio:", err);
+          setLoading(false);
+        });
     }
   }, [id]);
 
@@ -167,29 +172,21 @@ const ResearcherPortfolio: React.FC = () => {
 
           {/* Open Student Opportunities Card */}
           {(() => {
-            const openGrants = profile.ai_profile?.open_grants || profile.answers?.open_grants;
-            const grantDetails = profile.ai_profile?.grant_details || profile.answers?.grant_details;
-            const openFellowships = profile.ai_profile?.open_fellowships || profile.answers?.open_fellowships;
-            const fellowshipDetails = profile.ai_profile?.fellowship_details || profile.answers?.fellowship_details;
-            const openScholarships = profile.ai_profile?.open_scholarships || profile.answers?.open_scholarships;
-            const scholarshipDetails = profile.ai_profile?.scholarship_details || profile.answers?.scholarship_details;
             const needsStudents = profile.needs_students || profile.ai_profile?.needs_students || profile.answers?.needs_students;
-
-            const hasAnyOpportunity = openGrants || openFellowships || openScholarships || needsStudents;
 
             return (
               <section className="bg-gradient-to-br from-ug-navy via-slate-900 to-ug-navy text-white p-8 md:p-12 rounded-[3.5rem] shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-ug-teal/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-white/10 pb-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-6">
                   <div>
                     <div className="flex items-center gap-2 text-xs font-bold text-ug-teal uppercase tracking-wide mb-1">
-                      <GraduationCap size={18} /> Student Funding & Research Collaborations
+                      <GraduationCap size={18} /> Student Research Collaborations
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-white">Student Opportunities Hub</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white">Opportunities Hub</h2>
                     <p className="text-xs text-gray-300 font-medium mt-1">
-                      {hasAnyOpportunity 
-                        ? 'This laboratory is actively welcoming student research assistants, fellows, and scholars.'
-                        : 'Contact PI directly regarding upcoming grant, scholarship, or lab assistant openings.'}
+                      {needsStudents
+                        ? 'This laboratory is actively welcoming student research assistants.'
+                        : 'Contact the PI directly regarding upcoming assistantship openings.'}
                     </p>
                   </div>
 
@@ -201,67 +198,7 @@ const ResearcherPortfolio: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Grants */}
-                  <div className={`p-5 rounded-2xl border transition ${openGrants ? 'bg-blue-500/10 border-blue-400/40' : 'bg-white/5 border-white/10 opacity-60'}`}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`p-2 rounded-xl ${openGrants ? 'bg-blue-500 text-white' : 'bg-white/10 text-gray-400'}`}>
-                        <Award size={18} />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-white">Research Grants & Stipends</h4>
-                        <span className={`text-[11px] font-semibold tracking-wide px-2 py-0.5 rounded-full ${openGrants ? 'bg-blue-500/20 text-blue-300' : 'bg-white/10 text-gray-400'}`}>
-                          {openGrants ? 'OPEN FOR STUDENTS' : 'Currently Unavailable'}
-                        </span>
-                      </div>
-                    </div>
-                    {openGrants && grantDetails && (
-                      <p className="text-xs text-gray-200 mt-2 font-medium bg-black/20 p-3 rounded-xl border border-white/5">
-                        "{grantDetails}"
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Fellowships */}
-                  <div className={`p-5 rounded-2xl border transition ${openFellowships ? 'bg-purple-500/10 border-purple-400/40' : 'bg-white/5 border-white/10 opacity-60'}`}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`p-2 rounded-xl ${openFellowships ? 'bg-purple-500 text-white' : 'bg-white/10 text-gray-400'}`}>
-                        <Briefcase size={18} />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-white">Graduate Fellowships</h4>
-                        <span className={`text-[11px] font-semibold tracking-wide px-2 py-0.5 rounded-full ${openFellowships ? 'bg-purple-500/20 text-purple-300' : 'bg-white/10 text-gray-400'}`}>
-                          {openFellowships ? 'OPEN FELLOWSHIPS' : 'Currently Unavailable'}
-                        </span>
-                      </div>
-                    </div>
-                    {openFellowships && fellowshipDetails && (
-                      <p className="text-xs text-gray-200 mt-2 font-medium bg-black/20 p-3 rounded-xl border border-white/5">
-                        "{fellowshipDetails}"
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Scholarships */}
-                  <div className={`p-5 rounded-2xl border transition ${openScholarships ? 'bg-amber-500/10 border-amber-400/40' : 'bg-white/5 border-white/10 opacity-60'}`}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`p-2 rounded-xl ${openScholarships ? 'bg-amber-500 text-white' : 'bg-white/10 text-gray-400'}`}>
-                        <GraduationCap size={18} />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-white">Student Scholarships</h4>
-                        <span className={`text-[11px] font-semibold tracking-wide px-2 py-0.5 rounded-full ${openScholarships ? 'bg-amber-500/20 text-amber-300' : 'bg-white/10 text-gray-400'}`}>
-                          {openScholarships ? 'SCHOLARSHIPS OPEN' : 'Currently Unavailable'}
-                        </span>
-                      </div>
-                    </div>
-                    {openScholarships && scholarshipDetails && (
-                      <p className="text-xs text-gray-200 mt-2 font-medium bg-black/20 p-3 rounded-xl border border-white/5">
-                        "{scholarshipDetails}"
-                      </p>
-                    )}
-                  </div>
-
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
                   {/* Recruiting Students */}
                   <div className={`p-5 rounded-2xl border transition ${needsStudents ? 'bg-emerald-500/10 border-emerald-400/40' : 'bg-white/5 border-white/10 opacity-60'}`}>
                     <div className="flex items-center gap-3 mb-2">

@@ -44,11 +44,13 @@ import { DocumentExtractionService } from '../services/documentExtractionService
 import { NewsItem } from '../types';
 import { supabase } from '../lib/supabase';
 import { useToast } from '../App';
+import { useNavigate } from 'react-router-dom';
 import { getGeminiResponse } from '../services/geminiService';
 import { Tr } from '../components/Tr';
 import { useTranslatedText } from '../services/translationService';
 
 const News: React.FC = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { showToast } = useToast();
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -101,10 +103,13 @@ const News: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lastSync, setLastSync] = useState<Date | null>(null);
 
-  // Administrative / Curation states
-  const isAdmin = false;
-  const curatorMode = false;
-  const setCuratorMode = (val: boolean) => {};
+  // Administrative / Curation states (verified against the user's profile)
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [curatorMode, setCuratorMode] = useState(false);
+
+  useEffect(() => {
+    StorageService.verifyAdmin().then(setIsAdmin).catch(() => setIsAdmin(false));
+  }, []);
 
   // News editing / creation form states
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
@@ -199,6 +204,19 @@ const News: React.FC = () => {
         });
       } else {
         setNews(data);
+      }
+
+      // Notify saved-search owners about newly listed matches (deduped internally)
+      if (!append) {
+        data.forEach(n => {
+          StorageService.triggerSavedSearchMatchAlerts({
+            id: n.id,
+            title: n.title || 'Untitled',
+            summary: n.summary,
+            category: n.category,
+            type: 'news'
+          });
+        });
       }
 
       setHasMore(data.length === limit);
@@ -660,43 +678,25 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
           <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
             <div className="text-[11px] font-semibold tracking-wide text-[#4e5072] px-3 mb-3">SYSTEM MODULES</div>
             
-            <button 
+            <button
               type="button"
-              onClick={() => showToast("Navigating to System Dashboard...", "info")} 
+              onClick={() => navigate('/dashboard')}
               className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-[#151735] hover:text-white transition duration-150 text-left"
             >
               <LayoutDashboard size={16} />
               <span>Dashboard</span>
             </button>
 
-            <button 
-              type="button"
-              onClick={() => showToast("Loading User Directory...", "info")} 
-              className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-[#151735] hover:text-white transition duration-150 text-left"
-            >
-              <Users size={16} />
-              <span>Users</span>
-            </button>
-
-            <button 
+            <button
               type="button"
               onClick={() => {
                 handleClearWorkspace();
                 showToast("Now viewing announcements feed", "success");
-              }} 
+              }}
               className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-[#151735] hover:text-white transition duration-150 text-left"
             >
               <Newspaper size={16} />
               <span>Announcements</span>
-            </button>
-
-            <button 
-              type="button"
-              onClick={() => showToast("Opening Regulatory Disclosures...", "info")} 
-              className="w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-[#151735] hover:text-white transition duration-150 text-left"
-            >
-              <ShieldCheck size={16} />
-              <span>Disclosures</span>
             </button>
 
             {/* ACTIVE ITEM */}
@@ -1618,6 +1618,15 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
               <Tr text="Monitoring research outputs, commercial spin-offs, partnerships, and global innovation trends." />
             </p>
           </div>
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => setCuratorMode(true)}
+              className="inline-flex items-center gap-1.5 text-[11px] font-bold text-white bg-ug-navy hover:bg-ug-teal px-3 py-2 rounded-lg border border-gray-100 transition self-start md:self-auto shrink-0 cursor-pointer"
+            >
+              Curator Workspace
+            </button>
+          )}
           {lastSync && (
             <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100 self-start md:self-auto shrink-0">
               <Clock size={11} className="text-ug-teal" />

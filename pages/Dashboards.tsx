@@ -701,7 +701,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
   const [selectedThread, setSelectedThread] = useState<any[] | null>(null);
   const [reply, setReply] = useState('');
   const [sending, setSending] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<'inbox' | 'sent' | 'starred' | 'trash'>('inbox');
+  const [activeCategory, setActiveCategory] = useState<'inbox' | 'sent'>('inbox');
   const [searchQuery, setSearchQuery] = useState('');
   const [isComposing, setIsComposing] = useState(false);
   const [composeRecipient, setComposeRecipient] = useState('');
@@ -907,9 +907,6 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
     // Category filtering
     if (activeCategory === 'inbox' && isSent) return false;
     if (activeCategory === 'sent' && !isSent) return false;
-    // (Starred and Trash would need DB support, for now we just show empty or filtered)
-    if (activeCategory === 'starred') return false; 
-    if (activeCategory === 'trash') return false;
 
     // Search filtering
     if (searchQuery) {
@@ -985,9 +982,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
             <div className="flex-1">
               {[
                 { id: 'inbox', icon: Inbox, label: 'Inbox', count: unreadCount },
-                { id: 'starred', icon: Star, label: 'Starred' },
                 { id: 'sent', icon: SendIcon, label: 'Sent' },
-                { id: 'trash', icon: Trash, label: 'Trash' },
               ].map((cat) => (
                 <div key={cat.id} className="border-b border-gray-50 last:border-none">
                   <button
@@ -1298,9 +1293,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
         <nav className="flex-1 overflow-y-auto px-2 md:px-0">
           {[
             { id: 'inbox', icon: Inbox, label: 'Inbox', count: unreadCount },
-            { id: 'starred', icon: Star, label: 'Starred' },
             { id: 'sent', icon: SendIcon, label: 'Sent' },
-            { id: 'trash', icon: Trash, label: 'Trash' },
           ].map((cat) => (
             <button
               key={cat.id}
@@ -1344,9 +1337,6 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
               />
             </div>
             <div className="hidden sm:flex items-center gap-2">
-              <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition"><Archive size={18} /></button>
-              <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition"><Trash size={18} /></button>
-              <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition"><MoreVertical size={18} /></button>
             </div>
           </div>
         ) : null}
@@ -1367,7 +1357,6 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                 </h4>
                 <p className="text-[11px] text-gray-400 font-bold tracking-wide truncate">{selectedThread[0].user_name}</p>
               </div>
-              <button className="md:hidden p-2 text-gray-400"><Trash size={18} /></button>
             </div>
             
             <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 md:space-y-8 custom-scrollbar bg-gray-50/20">
@@ -1592,10 +1581,6 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                       }`}
                     >
                       {isUnread && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-blue-600 rounded-full ml-1 animate-pulse"></div>}
-                      <div className="hidden sm:flex items-center gap-3 shrink-0">
-                        <div className="w-4 h-4 border border-gray-300 rounded sm group-hover:border-gray-400 transition-colors"></div>
-                        <button className="text-gray-300 hover:text-yellow-400 transition"><Star size={18} /></button>
-                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
                           <span className={`text-sm truncate w-32 md:w-48 ${isUnread ? 'font-bold text-gray-900' : 'font-bold text-gray-700'}`}>
@@ -2391,7 +2376,9 @@ const ResearcherDashboard = ({
       setProjects(pList);
       const eoiList = await StorageService.getEOIsForPI(user.id);
       setEois(eoiList);
-    } catch (err) {} finally { setLoading(false); }
+    } catch (err: any) {
+      showToast(err.message || "Could not load your dashboard data. Please refresh.", "error");
+    } finally { setLoading(false); }
   };
 
   useEffect(() => { loadData(); }, [user?.id, refreshTrigger]);
@@ -3221,9 +3208,6 @@ const UnifiedDashboardProfile = ({ user, onAction, actionLabel }: { user: User |
     </button>
   </div>
 );
-
-const StatCardV2 = ({ label, value, trend, icon: Icon }: any) => null;
-const RedesignedResearcherProfile = ({ user, onDisclosure }: { user: User | null, onDisclosure: () => void }) => null;
 
 const ActiveProjectHero = ({ project }: { project: Project }) => (
   <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden animate-fade-in group">

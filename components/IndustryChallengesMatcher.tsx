@@ -74,19 +74,6 @@ const ScoreBreakdown = ({ match }: { match: ChallengeMatch }) => {
   );
 };
 
-const getHeaders = async (includeJson = false) => {
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-  const headers: Record<string, string> = {};
-  if (includeJson) {
-    headers['Content-Type'] = 'application/json';
-  }
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  return headers;
-};
-
 interface MatcherProps {
   user: User | null;
   setActiveTab?: (tab: 'overview' | 'matches' | 'messages' | 'profile') => void;

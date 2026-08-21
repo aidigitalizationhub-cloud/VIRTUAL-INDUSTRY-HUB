@@ -67,6 +67,17 @@ const Projects: React.FC = () => {
         const data = await StorageService.getProjects();
         setProjects(data);
 
+        // Notify saved-search owners about newly listed matches (deduped internally)
+        (data || []).forEach(p => {
+          StorageService.triggerSavedSearchMatchAlerts({
+            id: p.id,
+            title: p.title || 'Untitled Project',
+            description: p.description,
+            category: p.research_area,
+            type: 'project'
+          });
+        });
+
         // Check for track or researcher parameter in URL
         const trackParam = searchParams.get('track');
         if (trackParam && Object.values(ResearchArea).includes(trackParam as ResearchArea)) {

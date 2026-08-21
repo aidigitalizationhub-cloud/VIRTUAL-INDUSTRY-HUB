@@ -335,6 +335,66 @@ export const StorageService = {
     }
   },
 
+  // Fetch a single project by id (RLS enforces visibility server-side).
+  // Sensitive fields are stripped for non-owners/non-admins, mirroring getProjects.
+  getProjectById: async (projectId: string): Promise<Project | null> => {
+    if (!projectId) return null;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id || null;
+      let isAdmin = false;
+      if (userId) {
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle();
+        isAdmin = profile?.role === 'Admin';
+      }
+
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectId)
+        .maybeSingle();
+
+      if (error || !data) return null;
+
+      const p: Project = data as Project;
+      const isOwnerOrAdmin = isAdmin || (userId && p.owner_id === userId);
+      const sanitized: Project = isOwnerOrAdmin ? p : {
+        ...p,
+        internal_notes: undefined,
+        requested_documents: undefined,
+        disclosure_timeline: undefined,
+        ai_verification: undefined
+      };
+
+      let ownerMeta: any = null;
+      if (p.owner_id) {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('id, name, email, avatar_url, department, company')
+          .eq('id', p.owner_id)
+          .maybeSingle();
+        ownerMeta = prof;
+      }
+
+      const withOwner: Project = ownerMeta ? {
+        ...sanitized,
+        owner_name: ownerMeta.name || 'University Researcher',
+        owner_email: ownerMeta.email || '',
+        owner_avatar: ownerMeta.avatar_url || '',
+        owner_department: ownerMeta.department || sanitized.department || '',
+        owner_company: ownerMeta.company || ''
+      } : {
+        ...sanitized,
+        owner_name: (sanitized as any).owner_name || 'University Researcher'
+      };
+
+      const [signed] = await StorageService.signProjectUrls([withOwner]);
+      return signed || withOwner;
+    } catch (e) {
+      return null;
+    }
+  },
+
   getMyProjects: async (userId: string): Promise<Project[]> => {
     if (!userId) return [];
     try {

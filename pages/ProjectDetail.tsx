@@ -256,15 +256,11 @@ const ProjectDetail: React.FC = () => {
   useEffect(() => {
     if (id) {
       setPageLoading(true);
-      StorageService.getProjects().then(data => {
-        const found = data.find(p => p.id === id);
+      StorageService.getProjectById(id).then(found => {
         if (found) {
-          setProject({
-            ...found,
-            views: (found.views || 0) + 1
-          });
+          setProject(found);
           if (found.owner_id) StorageService.getProfile(found.owner_id).then(setOwnerProfile);
-          // Increment views
+          // Count this visit server-side (single authoritative increment)
           StorageService.incrementProjectMetric(id, 'views');
         }
       }).catch(err => {
