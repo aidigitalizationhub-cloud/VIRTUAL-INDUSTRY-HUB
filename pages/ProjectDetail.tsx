@@ -397,9 +397,8 @@ const ProjectDetail: React.FC = () => {
     try {
       // Dynamically fetch the short-lived signed URL from backend to guarantee 1-hour access is strictly enforced
       const signedUrl = await StorageService.getSignedTechnicalBrief(project.id);
-      
-      const watermarkText = `Shared with ${currentUserProfile?.name || currentUserProfile?.email || 'Authorized Partner'} via Virtual Hub`;
-      showToast(`Watermark Applied: "${watermarkText}"`, "success");
+
+      showToast("Secure link opened - valid for one hour.", "success");
       
       setTimeout(() => {
         window.open(signedUrl, '_blank', 'noopener,noreferrer');

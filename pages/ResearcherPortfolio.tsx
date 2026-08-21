@@ -305,14 +305,14 @@ const ResearcherPortfolio: React.FC = () => {
           </section>
         </div>
 
-        <div className="lg:col-span-4 space-y-10">
-          <section className="bg-ug-navy text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
-             <h3 className="text-xl font-bold mb-10 flex items-center gap-4 uppercase tracking-[0.2em]"><TrendingUp className="text-ug-teal" /> Verified Impact</h3>
-             <div className="space-y-6">
-               <div className="flex justify-between items-center p-5 bg-white/5 rounded-[2rem] border border-white/10"><span className="text-[11px] font-semibold text-gray-400 tracking-wide">Active Leads</span><span className="text-2xl font-semibold text-ug-teal">--</span></div>
-               <div className="flex justify-between items-center p-5 bg-white/5 rounded-[2rem] border border-white/10"><span className="text-[11px] font-semibold text-gray-400 tracking-wide">Patent Filings</span><span className="text-2xl font-semibold text-ug-teal">--</span></div>
-             </div>
-          </section>
+         <div className="lg:col-span-4 space-y-10">
+           <section className="bg-ug-navy text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
+              <h3 className="text-xl font-bold mb-10 flex items-center gap-4 uppercase tracking-[0.2em]"><TrendingUp className="text-ug-teal" /> Verified Impact</h3>
+              <div className="space-y-6">
+                <div className="flex justify-between items-center p-5 bg-white/5 rounded-[2rem] border border-white/10"><span className="text-[11px] font-semibold text-gray-400 tracking-wide">Published Projects</span><span className="text-2xl font-semibold text-ug-teal">{projects.length}</span></div>
+                <div className="flex justify-between items-center p-5 bg-white/5 rounded-[2rem] border border-white/10"><span className="text-[11px] font-semibold text-gray-400 tracking-wide">Open to Collaboration</span><span className="text-2xl font-semibold text-ug-teal">{projects.filter(p => p.open_to_collaboration).length}</span></div>
+              </div>
+           </section>
 
           <div className="flex items-center gap-5">
             <button onClick={handleShare} className="h-[76px] w-[76px] rounded-[28px] bg-white border border-gray-100 shadow-xl hover:bg-gray-50 transition-all flex items-center justify-center text-ug-navy group active:scale-95">

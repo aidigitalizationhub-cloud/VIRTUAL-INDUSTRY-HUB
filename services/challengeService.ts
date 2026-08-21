@@ -2,6 +2,59 @@ import { supabase } from '../lib/supabase';
 import { postJson } from '../lib/api';
 import { IndustryChallenge, ChallengeMatch } from '../types';
 
+const mapMatchRow = (m: any): ChallengeMatch => ({
+  id: m.id,
+  challengeId: m.challenge_id,
+  candidateUserId: m.candidate_user_id,
+  partnerUserId: m.partner_user_id,
+  candidateRole: m.candidate_role,
+  totalScore: m.total_score,
+  domainScore: m.domain_score,
+  skillScore: m.skill_score,
+  experienceScore: m.experience_score,
+  interestScore: m.interest_score,
+  roleSuitabilityScore: m.role_suitability_score,
+  locationScore: m.location_score,
+  availabilityScore: m.availability_score,
+  verificationScore: m.verification_score,
+  matchedSkills: m.matched_skills || [],
+  missingSkills: m.missing_skills || [],
+  matchReasons: m.match_reasons || [],
+  recommendedRole: m.recommended_role,
+  status: m.status,
+  createdAt: m.created_at,
+  updatedAt: m.updated_at,
+  challenge: m.industry_challenges ? {
+    id: m.industry_challenges.id,
+    title: m.industry_challenges.title,
+    summary: m.industry_challenges.summary,
+    description: m.industry_challenges.description,
+    category: m.industry_challenges.category,
+    required_skills: m.industry_challenges.required_skills || [],
+    collaboration_type: m.industry_challenges.collaboration_type,
+    budget_range: m.industry_challenges.budget_range,
+    deadline: m.industry_challenges.deadline,
+    location: m.industry_challenges.location,
+    status: m.industry_challenges.status,
+    partner_id: m.industry_challenges.partner_id
+  } : undefined,
+  candidate: m.profiles ? {
+    id: m.profiles.id,
+    name: m.profiles.name || 'University Researcher',
+    email: m.profiles.email || '',
+    role: m.profiles.role || 'Researcher',
+    avatar_url: m.profiles.avatar_url,
+    bio: m.profiles.bio,
+    company: m.profiles.company,
+    department: m.profiles.department,
+    education_level: m.profiles.education_level,
+    availability: m.profiles.availability,
+    skills: m.profiles.ai_profile?.skills?.technical_skills || [],
+    research_interests: m.profiles.ai_profile?.research_information?.research_interests || [],
+    ai_profile: m.profiles.ai_profile
+  } : undefined
+});
+
 export const ChallengeService = {
   getIndustryChallenges: async (): Promise<IndustryChallenge[]> => {
     try {
@@ -94,60 +147,29 @@ export const ChallengeService = {
         return [];
       }
 
-      return (data || []).map((m: any) => ({
-        id: m.id,
-        challengeId: m.challenge_id,
-        candidateUserId: m.candidate_user_id,
-        partnerUserId: m.partner_user_id,
-        candidateRole: m.candidate_role,
-        totalScore: m.total_score,
-        domainScore: m.domain_score,
-        skillScore: m.skill_score,
-        experienceScore: m.experience_score,
-        interestScore: m.interest_score,
-        roleSuitabilityScore: m.role_suitability_score,
-        locationScore: m.location_score,
-        availabilityScore: m.availability_score,
-        verificationScore: m.verification_score,
-        matchedSkills: m.matched_skills || [],
-        missingSkills: m.missing_skills || [],
-        matchReasons: m.match_reasons || [],
-        recommendedRole: m.recommended_role,
-        status: m.status,
-        createdAt: m.created_at,
-        updatedAt: m.updated_at,
-        challenge: m.industry_challenges ? {
-          id: m.industry_challenges.id,
-          title: m.industry_challenges.title,
-          summary: m.industry_challenges.summary,
-          description: m.industry_challenges.description,
-          category: m.industry_challenges.category,
-          required_skills: m.industry_challenges.required_skills || [],
-          collaboration_type: m.industry_challenges.collaboration_type,
-          budget_range: m.industry_challenges.budget_range,
-          deadline: m.industry_challenges.deadline,
-          location: m.industry_challenges.location,
-          status: m.industry_challenges.status,
-          partner_id: m.industry_challenges.partner_id
-        } : undefined,
-        candidate: m.profiles ? {
-          id: m.profiles.id,
-          name: m.profiles.name || 'University Researcher',
-          email: m.profiles.email || '',
-          role: m.profiles.role || 'Researcher',
-          avatar_url: m.profiles.avatar_url,
-          bio: m.profiles.bio,
-          company: m.profiles.company,
-          department: m.profiles.department,
-          education_level: m.profiles.education_level,
-          availability: m.profiles.availability,
-          skills: m.profiles.ai_profile?.skills?.technical_skills || [],
-          research_interests: m.profiles.ai_profile?.research_information?.research_interests || [],
-          ai_profile: m.profiles.ai_profile
-        } : undefined
-      }));
+      return (data || []).map(mapMatchRow);
     } catch (e) {
       console.error("Error in getChallengeMatches:", e);
+      return [];
+    }
+  },
+
+  // Admin-wide fetch for reporting. RLS restricts results to admins automatically.
+  getAllMatches: async (): Promise<ChallengeMatch[]> => {
+    try {
+      const { data, error } = await supabase
+        .from('challenge_matches')
+        .select('*, industry_challenges(*), profiles!candidate_user_id(*)')
+        .order('total_score', { ascending: false });
+
+      if (error) {
+        console.warn("Could not fetch all challenge matches:", error.message);
+        return [];
+      }
+
+      return (data || []).map(mapMatchRow);
+    } catch (e) {
+      console.error("Error in getAllMatches:", e);
       return [];
     }
   },

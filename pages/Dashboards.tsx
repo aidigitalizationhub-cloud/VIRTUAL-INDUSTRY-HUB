@@ -2161,12 +2161,9 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                             <p className="text-[9.5px] font-medium leading-relaxed text-white/70 italic font-sans">
                               "Insights are compiled from your verified academic records. Re-indexing occurs automatically within 24 hours of profile edits."
                             </p>
-                            <div className="flex items-center justify-between p-2.5 bg-white/5 rounded-xl border border-white/5">
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 bg-ug-teal/20 text-ug-teal rounded-lg flex items-center justify-center"><Zap size={12} className="animate-pulse" /></div>
-                                <span className="text-[11px] font-bold text-white/90 tracking-wider">Matching Fidelity</span>
-                              </div>
-                              <span className="text-[11px] font-semibold text-ug-teal">98.4% Accuracy</span>
+                            <div className="flex items-center gap-2 p-2.5 bg-white/5 rounded-xl border border-white/5">
+                              <div className="w-6 h-6 bg-ug-teal/20 text-ug-teal rounded-lg flex items-center justify-center"><Zap size={12} className="animate-pulse" /></div>
+                              <span className="text-[11px] font-bold text-white/90 tracking-wider">Matching Active</span>
                             </div>
                             {localUser?.ai_profile && (
                               <button
@@ -2454,9 +2451,9 @@ const ResearcherDashboard = ({
         }} actionLabel="New Project Disclosure" />
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <StatCard label="Live Disclosures" value={projects.length} trend="+2" icon={FileText} />
-          <StatCard label="Total Hub Views" value={totalViews >= 1000 ? `${(totalViews/1000).toFixed(1)}k` : totalViews} trend="+8%" icon={Eye} />
-          <StatCard label="Interactions" value={totalInteractions} trend="+12%" icon={Handshake} />
+          <StatCard label="Live Disclosures" value={projects.length} icon={FileText} />
+          <StatCard label="Total Hub Views" value={totalViews >= 1000 ? `${(totalViews/1000).toFixed(1)}k` : totalViews} icon={Eye} />
+          <StatCard label="Interactions" value={totalInteractions} icon={Handshake} />
         </div>
 
         {activeProject && (
@@ -3271,22 +3268,14 @@ const ActiveProjectHero = ({ project }: { project: Project }) => (
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-100 font-sans">
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 font-sans">
         <div>
-          <span className="text-[11px] font-bold text-gray-400 tracking-wider mb-2 block">Collaborators</span>
-          <div className="flex items-center -space-x-2">
-             {['AS', 'JM', 'EV'].map((initials, i) => (
-               <div key={i} className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-[11px] font-bold text-ug-navy shadow-sm ring-2 ring-white">
-                 {initials}
-               </div>
-             ))}
-             <div className="w-8 h-8 rounded-full bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center text-[11px] font-bold text-gray-400 shadow-sm">+3</div>
-          </div>
+          <span className="text-[11px] font-bold text-gray-400 tracking-wider mb-2 block">Hub Views</span>
+          <p className="text-lg font-bold text-ug-navy leading-none">{project.views ?? 0}</p>
         </div>
         <div>
-           <span className="text-[11px] font-bold text-gray-400 tracking-wider mb-2 block">Next Milestone</span>
-           <p className="text-xs font-bold text-ug-navy leading-none">Clinical Pilot (Sept 24)</p>
-           <p className="text-[11px] font-medium text-gray-400 mt-1 tracking-wider">Awaiting Ethics Approval</p>
+           <span className="text-[11px] font-bold text-gray-400 tracking-wider mb-2 block">Interests Received</span>
+           <p className="text-lg font-bold text-ug-navy leading-none">{project.expressions_of_interest ?? 0}</p>
         </div>
       </div>
     </div>
@@ -3655,19 +3644,24 @@ ${senderName}`
         return;
       }
 
-      // 1. INSTANT INITIAL DISPLAY (<50ms): Map vector similarity scores directly
+      // 1. INSTANT INITIAL DISPLAY (<50ms): Map vector similarity scores directly.
+      // Real scores only - never fabricate a score or rationale when data is missing.
       const initialProfiles = profiles.map((p: any) => ({
         ...p,
-        ai_score: Math.round((p.similarity || 0.75) * 100),
-        ai_reasoning: p.ai_reasoning || "Direct research synergy based on ecosystem profile & vector distance.",
-        ai_label: (p.similarity || 0) >= 0.85 ? "Highly Compatible" : "Strategic Match"
+        ai_score: (typeof p.similarity === 'number' && p.similarity > 0)
+          ? Math.round(p.similarity * 100)
+          : undefined,
+        ai_reasoning: p.ai_reasoning || '',
+        ai_label: p.ai_label || ''
       }));
 
       const initialProjects = projects.map((p: any) => ({
         ...p,
-        ai_score: Math.round((p.similarity || 0.75) * 100),
-        ai_reasoning: p.ai_reasoning || "Strong research alignment with active project roadmap.",
-        ai_label: (p.similarity || 0) >= 0.85 ? "Highly Compatible" : "Strategic Match"
+        ai_score: (typeof p.similarity === 'number' && p.similarity > 0)
+          ? Math.round(p.similarity * 100)
+          : undefined,
+        ai_reasoning: p.ai_reasoning || '',
+        ai_label: p.ai_label || ''
       }));
 
       setProfileMatches(initialProfiles);
@@ -3971,9 +3965,11 @@ ${senderName}`
                        </span>
                      )}
                    </div>
-                   <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mt-1.5">
-                     "{collab.ai_reasoning || collab.semantic_summary || 'Profile matches your research interests.'}"
-                   </p>
+                   {(collab.ai_reasoning || collab.semantic_summary) && (
+                     <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mt-1.5">
+                       "{collab.ai_reasoning || collab.semantic_summary}"
+                     </p>
+                   )}
                  </div>
                </div>
                <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end gap-2">
@@ -4281,22 +4277,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
        template = `Dear Lab Coordinator,\n\nI am requesting authorized workspace or laboratory access in connection with "${proj.title}". I require access to conduct research, run analysis, or collaborate with team members.`;
      }
      setMessage(template);
-     setDrawerOpen(true);
-   };
-
-   const handleInquireScholarship = (schName: string, provider: string) => {
-     // Search for an active project matching provider department or biochemistry/health keywords
-     const matchedProj = projects.find(p => 
-       p.department?.toLowerCase().includes(provider.toLowerCase()) ||
-       p.title?.toLowerCase().includes(provider.toLowerCase()) ||
-       p.description?.toLowerCase().includes(provider.toLowerCase())
-     ) || projects.find(p => p.open_to_collaboration) || projects[0];
-
-     if (matchedProj) {
-       openApplicationDrawer(matchedProj, 'Scholarship Application');
-     } else {
-       showToast("No active research project found to link this scholarship inquiry.", "error");
-     }
+      setDrawerOpen(true);
    };
 
    const handleSubmitApplication = async (e: React.FormEvent) => {
@@ -4376,11 +4357,11 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
       <div className="space-y-8 animate-fade-in">
          <UnifiedDashboardProfile user={user} onAction={() => navigate('/projects')} actionLabel="Explore Research" />
          
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatCard label="Active Opportunities" value={openOpportunities.length.toString()} trend="Seeking Talent" icon={BookOpen} />
-            <StatCard label="My Applications" value={applications.length.toString()} trend="Real-Time Tracking" icon={Clock} />
-            <StatCard label="Saved Bookmarks" value={bookmarks.length.toString()} trend="Watchlist" icon={Bookmark} />
-         </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             <StatCard label="Active Opportunities" value={openOpportunities.length.toString()} icon={BookOpen} />
+             <StatCard label="My Applications" value={applications.length.toString()} icon={Clock} />
+             <StatCard label="Saved Bookmarks" value={bookmarks.length.toString()} icon={Bookmark} />
+          </div>
 
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 items-start">
             <div className="md:col-span-2 lg:col-span-8 space-y-8">
@@ -4429,30 +4410,9 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                {/* SCHOLARSHIPS */}
                <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm mt-6 sm:mt-8">
                   <SectionTitle title="Scholarships & Research Fellowships" subtitle="Academically Funded Pathways to Support Innovation" />
-                  <div className="space-y-4 mt-6">
-                     {[
-                        { title: "University of Ghana Research Excellence Grant", provider: "Department of Biochemistry", amount: "GH₵ 25,000 / sem", openTo: "MPhil / MSc", icon: Award },
-                        { title: "West African Vaccines Research Fellowship", provider: "Noguchi Medical Research Institute", amount: "GH₵ 40,000 / yr", openTo: "PhD Candidates", icon: Zap },
-                        { title: "UG Innovate Technical Mentee Grant", provider: "Institute of Applied Science & Technology", amount: "GH₵ 12,000 / sem", openTo: "BSc Senior Students", icon: BookOpen }
-                     ].map((sch, index) => (
-                        <div key={index} className="flex flex-col md:flex-row md:items-center justify-between p-6 border border-gray-50 rounded-2xl bg-gray-50/10 hover:bg-white hover:shadow-lg transition gap-4 animate-fade-in-up">
-                           <div className="flex gap-4">
-                              <div className="w-12 h-12 bg-ug-teal/5 rounded-2xl flex items-center justify-center text-ug-teal shrink-0"><sch.icon size={20} /></div>
-                              <div>
-                                 <span className="text-[11px] font-semibold text-ug-teal tracking-wide mb-1 block">{sch.openTo}</span>
-                                 <h4 className="font-bold text-ug-navy text-xs leading-snug">{sch.title}</h4>
-                                 <p className="text-[11px] font-semibold text-gray-400 mt-1 tracking-wide">{sch.provider}</p>
-                              </div>
-                           </div>
-                           <div className="flex items-center gap-4 justify-between md:justify-end">
-                              <div className="text-left md:text-right shrink-0">
-                                 <span className="text-[11px] font-bold text-gray-400 tracking-wide block">Stipend Amount</span>
-                                 <span className="text-xs font-bold text-ug-navy">{sch.amount}</span>
-                              </div>
-                              <button onClick={() => handleInquireScholarship(sch.title, sch.provider)} className="bg-ug-navy text-white px-4 py-2 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition cursor-pointer">Inquire</button>
-                           </div>
-                        </div>
-                     ))}
+                  <div className="mt-6 text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                     <p className="text-gray-400 text-xs font-bold">No funded opportunities listed right now.</p>
+                     <p className="text-gray-400 text-[11px] font-medium mt-1">Check back soon or ask your department about open calls.</p>
                   </div>
                </section>
 
@@ -4760,10 +4720,9 @@ const InvestorDashboard = ({
             actionLabel="Post New Challenge" 
          />
          
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatCard label="Market Ready Assets" value={projects.filter(p => p.status === ProjectStatus.MarketReady).length} trend="High ROI" icon={ShoppingBag} />
-            <StatCard label="Active Inquiries" value="5" trend="+1 Today" icon={Bookmark} />
-            <StatCard label="Digital NDA" value="Verified" trend="Secure" icon={Lock} />
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <StatCard label="Market Ready Assets" value={projects.filter(p => p.status === ProjectStatus.MarketReady).length} icon={ShoppingBag} />
+            <StatCard label="Total Inquiries" value={projects.reduce((sum, p) => sum + (p.expressions_of_interest || 0), 0)} icon={Bookmark} />
          </div>
 
          {/* Commercial Challenges Tracker & Management Ledger */}

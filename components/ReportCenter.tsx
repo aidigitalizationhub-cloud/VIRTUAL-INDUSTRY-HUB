@@ -61,16 +61,9 @@ export const ReportCenter: React.FC<ReportCenterProps> = ({
     recommendations: true,
   });
 
-  // State for AI-generated insight & recommendations
-  const [aiSummaryText, setAiSummaryText] = useState<string>(
-    "Platform activity increased by 18.4% compared to the previous reporting period. The strongest growth occurred in Health Sciences and Agritech challenge submissions, while match acceptance rates improved from 54% to 62.2%."
-  );
-  const [aiRecommendations, setAiRecommendations] = useState<string[]>([
-    "Increase engagement campaigns for Engineering students, whose participation is 23% below the platform average.",
-    "Prioritize Agritech and HealthTech sectors, which together account for 54% of successful collaborations.",
-    "Review industry challenges with match scores below 70% to refine required skill tag accuracy.",
-    "Encourage industry partners with high challenge posting but low response rates to provide clearer problem statements."
-  ]);
+  // State for AI-generated insight & recommendations (populated only by real generation)
+  const [aiSummaryText, setAiSummaryText] = useState<string>('');
+  const [aiRecommendations, setAiRecommendations] = useState<string[]>([]);
   const [isGeneratingAi, setIsGeneratingAi] = useState<boolean>(false);
 
   // Challenges and matches loaded from services
@@ -89,7 +82,7 @@ export const ReportCenter: React.FC<ReportCenterProps> = ({
         setLoadingData(true);
         const [chList, mList] = await Promise.all([
           ChallengeService.getIndustryChallenges(),
-          ChallengeService.getChallengeMatches ? ChallengeService.getChallengeMatches('all', 'Admin') : Promise.resolve([])
+          ChallengeService.getAllMatches ? ChallengeService.getAllMatches() : Promise.resolve([])
         ]);
         setChallenges(chList || []);
         setMatches(mList || []);
@@ -135,9 +128,8 @@ export const ReportCenter: React.FC<ReportCenterProps> = ({
   const filteredEOIs = eois.filter(e => filterByDate(e.created_at));
   const filteredNews = news.filter(n => filterByDate(n.published_at));
 
-  // Compute Metrics
+  // Compute Metrics (real data only; no fabricated fallbacks)
   const totalUsers = profiles.length;
-  const activeUsers = Math.round(totalUsers * 0.81);
   const studentsCount = profiles.filter(p => p.role === UserRole.Student).length;
   const researchersCount = profiles.filter(p => p.role === UserRole.Researcher).length;
   const industryCount = profiles.filter(p => p.role === UserRole.IndustryPartner).length;
@@ -145,11 +137,11 @@ export const ReportCenter: React.FC<ReportCenterProps> = ({
 
   const openChallengesCount = challenges.filter(c => c.status === 'Open' || !c.status).length;
   const inProgressChallengesCount = challenges.filter(c => c.status === 'Closed' || c.status === 'Draft').length;
-  const solvedChallengesCount = Math.round(challenges.length * 0.3) || 12;
+  const solvedChallengesCount = matches.filter(m => m.status === 'interested').length;
 
-  const totalMatchesCount = matches.length || (eois.length + 42);
-  const acceptedMatchesCount = matches.filter(m => m.status === 'accepted').length || Math.round(totalMatchesCount * 0.62);
-  const acceptanceRate = totalMatchesCount > 0 ? ((acceptedMatchesCount / totalMatchesCount) * 100).toFixed(1) : '62.2';
+  const totalMatchesCount = matches.length;
+  const acceptedMatchesCount = matches.filter(m => m.status === 'accepted').length || matches.filter(m => m.status === 'interested').length;
+  const acceptanceRate = totalMatchesCount > 0 ? ((acceptedMatchesCount / totalMatchesCount) * 100).toFixed(1) : '0.0';
 
   // Department Distribution
   const departmentCounts: Record<string, number> = {};
@@ -161,12 +153,12 @@ export const ReportCenter: React.FC<ReportCenterProps> = ({
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
 
-  // Match Quality Breakdown
+  // Match Quality Breakdown (real counts; zero when no data)
   const scoreRanges = {
-    excellent: matches.filter(m => m.totalScore >= 90).length || 24,
-    strong: matches.filter(m => m.totalScore >= 80 && m.totalScore < 90).length || 41,
-    moderate: matches.filter(m => m.totalScore >= 70 && m.totalScore < 80).length || 19,
-    weak: matches.filter(m => m.totalScore < 70).length || 5,
+    excellent: matches.filter(m => m.totalScore >= 90).length,
+    strong: matches.filter(m => m.totalScore >= 80 && m.totalScore < 90).length,
+    moderate: matches.filter(m => m.totalScore >= 70 && m.totalScore < 80).length,
+    weak: matches.filter(m => m.totalScore > 0 && m.totalScore < 70).length,
   };
 
   // Generate AI Executive Analysis
@@ -224,10 +216,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
     if (datasetType === 'challenges' || datasetType === 'all') {
       const challengeHeaders = ["Challenge ID", "Title", "Category", "Industry Partner", "Status", "Budget Range", "Created At"];
-      const challengeRows = (filteredChallenges.length > 0 ? filteredChallenges : [
-        { id: 'CH-101', title: 'Smart Irrigation for Small Farms', category: 'Agritech', partner_name: 'Agritech Ghana Ltd', status: 'In Progress', budget_range: '$10k - $25k', created_at: new Date().toISOString() },
-        { id: 'CH-102', title: 'Malaria Data Prediction Dashboard', category: 'HealthTech', partner_name: 'HealthTech Africa', status: 'Open', budget_range: '$5k - $15k', created_at: new Date().toISOString() }
-      ]).map(c => [
+      const challengeRows = filteredChallenges.map(c => [
         `"${c.id}"`,
         `"${(c.title || '').replace(/"/g, '""')}"`,
         `"${(c.category || '').replace(/"/g, '""')}"`,
@@ -241,15 +230,12 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
     if (datasetType === 'matches' || datasetType === 'all') {
       const matchHeaders = ["Match ID", "Challenge ID", "Candidate Name", "Candidate Role", "Match Score (%)", "Status", "Created At"];
-      const matchRows = (filteredMatches.length > 0 ? filteredMatches : [
-        { id: 'M-1', challengeId: 'CH-101', candidate: { name: 'Dr. A. Mensah', role: 'Researcher' }, totalScore: 92, status: 'accepted', createdAt: timeStamp },
-        { id: 'M-2', challengeId: 'CH-102', candidate: { name: 'Kofi Owusu', role: 'Student' }, totalScore: 87, status: 'invited', createdAt: timeStamp }
-      ]).map(m => [
+      const matchRows = filteredMatches.map(m => [
         `"${m.id}"`,
         `"${m.challengeId || 'N/A'}"`,
         `"${(m.candidate?.name || 'Candidate').replace(/"/g, '""')}"`,
         `"${m.candidate?.role || (m as { candidateRole?: string }).candidateRole || 'N/A'}"`,
-        `"${m.totalScore || 85}"`,
+        `"${m.totalScore ?? 0}"`,
         `"${m.status || 'recommended'}"`,
         `"${m.createdAt || timeStamp}"`
       ]);
@@ -364,7 +350,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
       doc.text(`Generated By: ${user?.name || 'Administrative Officer'} (${user?.email || 'admin@ug.edu.gh'})`, 40, 175);
       doc.text(`Reporting Period: ${getDateRangeLabel(dateRange)}`, 40, 185);
       doc.text(`Generated Date & Time: ${timeStampStr}`, 40, 195);
-      doc.text(`System Status: Active Core Ledger (Uptime 99.92%)`, 40, 205);
+      doc.text(`System Status: Active`, 40, 205);
       doc.text(`Confidentiality Level: RESTRICTED - INTERNAL GOVERNANCE ONLY`, 40, 215);
 
       // Footer
@@ -390,16 +376,17 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
         autoTable(doc, {
           startY: currentY,
-          head: [['Metric', 'Value', 'Category Trend']],
+          head: [['Metric', 'Value']],
           body: [
-            ['Total Registered Users', totalUsers.toLocaleString(), '↑ +18.4% YoY'],
-            ['Active Platform Users', activeUsers.toLocaleString(), '81.2% Retention'],
-            ['Industry Partners Enrolled', industryCount.toString(), '57 Corporate Entities'],
-            ['Researchers & Faculty', researchersCount.toString(), '612 Verified Leads'],
-            ['Student Innovators', studentsCount.toString(), '1,762 Active Profiles'],
-            ['Industry Challenges Posted', challenges.length.toString(), '38 Open, 61 In-Progress'],
-            ['Total Match Connections', totalMatchesCount.toString(), '89 High-Yield Matches'],
-            ['Collaboration Acceptance Rate', `${acceptanceRate}%`, '↑ Improved from 54.0%']
+            ['Total Registered Users', totalUsers.toLocaleString()],
+            ['Industry Partners Enrolled', industryCount.toString()],
+            ['Researchers & Faculty', researchersCount.toString()],
+            ['Student Innovators', studentsCount.toString()],
+            ['Investor Accounts', investorsCount.toString()],
+            ['Industry Challenges Posted', challenges.length.toString()],
+            ['Open Challenges', openChallengesCount.toString()],
+            ['Total Match Connections', totalMatchesCount.toString()],
+            ['Collaboration Acceptance Rate', `${acceptanceRate}%`]
           ],
           theme: 'striped',
           headStyles: { fillColor: [10, 11, 44], textColor: [255, 255, 255], fontStyle: 'bold' },
@@ -408,24 +395,26 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
         currentY = (doc as any).lastAutoTable.finalY + 8;
 
-        // AI Summary Callout
-        doc.setFillColor(240, 253, 250);
-        doc.setDrawColor(0, 168, 150);
-        doc.roundedRect(14, currentY, 182, 24, 3, 3, 'FD');
+        // AI Summary Callout (only when a real insight has been generated)
+        if (aiSummaryText) {
+          doc.setFillColor(240, 253, 250);
+          doc.setDrawColor(0, 168, 150);
+          doc.roundedRect(14, currentY, 182, 24, 3, 3, 'FD');
 
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9);
-        doc.setTextColor(0, 120, 110);
-        doc.text("AI SCOUT & GEMINI EXECUTIVE SUMMARY", 18, currentY + 6);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(0, 120, 110);
+          doc.text("AI EXECUTIVE SUMMARY", 18, currentY + 6);
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8.5);
-        doc.setTextColor(51, 65, 85);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8.5);
+          doc.setTextColor(51, 65, 85);
 
-        const splitAiText = doc.splitTextToSize(aiSummaryText, 174);
-        doc.text(splitAiText, 18, currentY + 12);
+          const splitAiText = doc.splitTextToSize(aiSummaryText, 174);
+          doc.text(splitAiText, 18, currentY + 12);
 
-        currentY += 32;
+          currentY += 32;
+        }
       }
 
       if (includeSections.userAnalytics) {
@@ -444,13 +433,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
         autoTable(doc, {
           startY: currentY,
           head: [['Department / Faculty', 'Registered Users', 'Share of Total']],
-          body: deptBody.length > 0 ? deptBody : [
-            ['Computer Science / FinTech', '542', '22.3%'],
-            ['Biochemistry & Molecular Biology', '412', '16.9%'],
-            ['Agritech & Soil Science', '389', '16.0%'],
-            ['School of Engineering', '310', '12.8%'],
-            ['Health Sciences & Public Health', '290', '11.9%']
-          ],
+          body: deptBody.length > 0 ? deptBody : [['No registered users in this period', '0', '0%']],
           theme: 'grid',
           headStyles: { fillColor: [0, 168, 150], textColor: [255, 255, 255] },
           styles: { fontSize: 8.5, cellPadding: 2 }
@@ -471,15 +454,23 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
         doc.text("Active Industry Challenges & Status", 14, currentY);
         currentY += 4;
 
+        const challengeBody = filteredChallenges.slice(0, 10).map(c => {
+          const best = matches
+            .filter(m => m.challengeId === c.id && m.candidate)
+            .sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0))[0];
+          return [
+            c.title || 'Untitled Challenge',
+            c.partner_company || c.partner_name || 'Industry Partner',
+            c.status || 'Open',
+            best?.candidate?.name || 'No match yet',
+            best ? `${best.totalScore}%` : '-'
+          ];
+        });
+
         autoTable(doc, {
           startY: currentY,
           head: [['Challenge Title', 'Industry Sector', 'Status', 'Best Match Lead', 'Score']],
-          body: [
-            ['Smart Irrigation for Small Farms', 'Agritech Ghana Ltd', 'In Progress', 'Researcher R-104 (Biochem)', '92%'],
-            ['Malaria Data Prediction Dashboard', 'HealthTech Africa', 'Open', 'Student S-221 (CompSci)', '87%'],
-            ['Solar Cold Storage Logistics', 'Logistics West Africa', 'In Progress', 'Researcher R-209 (Engineering)', '94%'],
-            ['AI Disease Detection in Cassava', 'AgriCorp Global', 'Open', 'Student S-109 (Data Sci)', '89%']
-          ],
+          body: challengeBody.length > 0 ? challengeBody : [['No challenges posted in this period', '-', '-', '-', '-']],
           theme: 'striped',
           headStyles: { fillColor: [10, 11, 44], textColor: [255, 255, 255] },
           styles: { fontSize: 8.5, cellPadding: 2.5 }
@@ -497,12 +488,12 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
         autoTable(doc, {
           startY: currentY,
-          head: [['Score Range', 'Match Count', 'Interpretation', 'Strategic Action']],
+          head: [['Score Range', 'Match Count', 'Interpretation', 'Recommended Action']],
           body: [
-            ['90 - 100%', scoreRanges.excellent.toString(), 'Excellent Fit', 'Direct Fast-Track Contract'],
-            ['80 - 89%', scoreRanges.strong.toString(), 'Strong Alignment', 'Recommend Introduction'],
-            ['70 - 79%', scoreRanges.moderate.toString(), 'Moderate Fit', 'Requires Metadata Tag Review'],
-            ['Below 70%', scoreRanges.weak.toString(), 'Weak Match', 'Flagged for Refinement']
+            ['90 - 100%', scoreRanges.excellent.toString(), 'Excellent Fit', 'Prioritize for introduction'],
+            ['80 - 89%', scoreRanges.strong.toString(), 'Strong Alignment', 'Recommend introduction'],
+            ['70 - 79%', scoreRanges.moderate.toString(), 'Moderate Fit', 'Review skill metadata'],
+            ['Below 70%', scoreRanges.weak.toString(), 'Weak Match', 'Flagged for review']
           ],
           theme: 'grid',
           headStyles: { fillColor: [0, 168, 150], textColor: [255, 255, 255] },
@@ -526,12 +517,9 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
         autoTable(doc, {
           startY: currentY,
-          head: [['Research Topic', 'Mentions', 'Trend Status', 'Key Vector Focus']],
+          head: [['Research Topic', 'Mentions', 'Trend Status', 'Key Topics']],
           body: [
-            ['AI in Agriculture & Crop Yield', '48', '↑ Rising', 'Machine Vision, Soil Sensors'],
-            ['Renewable Energy Storage', '31', '↑ Rising', 'Lithium Alternative Membranes'],
-            ['Drug Discovery & Indigenous Herbs', '27', '→ Stable', 'Phyto-chemical Analysis'],
-            ['Climate-Smart Farming Technologies', '22', '↑ Rising', 'Carbon Credit Calculators']
+            ['No AI Scout data available for this period', '-', '-', '-']
           ],
           theme: 'striped',
           headStyles: { fillColor: [10, 11, 44], textColor: [255, 255, 255] },
@@ -558,11 +546,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
         autoTable(doc, {
           startY: currentY,
           head: [['Timestamp', 'Actor', 'Action Detail', 'Verification Status']],
-          body: auditRows.length > 0 ? auditRows : [
-            [timeStampStr, 'admin@ug.edu.gh', 'Approved Industry Challenge #CH-101', 'SHA-256 Signed'],
-            [timeStampStr, 'admin@ug.edu.gh', 'Generated AI Scout Sync Sweep', 'Verified'],
-            [timeStampStr, 'admin@ug.edu.gh', 'Exported Collaboration Governance Report', 'Completed']
-          ],
+          body: auditRows.length > 0 ? auditRows : [[timeStampStr, user?.name || 'System', 'No audit activity in this period', '-']],
           theme: 'grid',
           headStyles: { fillColor: [71, 85, 105], textColor: [255, 255, 255] },
           styles: { fontSize: 8, cellPadding: 2 }
@@ -575,8 +559,16 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
         doc.setTextColor(textDark[0], textDark[1], textDark[2]);
-        doc.text("AI & Administrative Strategic Recommendations", 14, currentY);
+        doc.text("AI & Administrative Recommendations", 14, currentY);
         currentY += 6;
+
+        if (aiRecommendations.length === 0 && !aiSummaryText) {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8.5);
+          doc.setTextColor(51, 65, 85);
+          doc.text('No AI recommendations generated for this period.', 14, currentY + 2);
+          currentY += 8;
+        }
 
         aiRecommendations.forEach((rec, idx) => {
           doc.setFillColor(224, 169, 109);
@@ -1082,7 +1074,9 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
                     <div className="p-4 bg-ug-teal/10 border border-ug-teal/30 rounded-2xl text-xs space-y-1">
                       <span className="font-bold text-ug-teal  tracking-wide block">AI Executive Summary</span>
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed font-medium">{aiSummaryText}</p>
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+                        {aiSummaryText || 'No AI summary generated yet. Use "Generate AI Insight" to create one from live platform data.'}
+                      </p>
                     </div>
                   </div>
                 )}
@@ -1147,17 +1141,21 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 {includeSections.recommendations && (
                   <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 space-y-4">
                     <h3 className="text-base font-bold text-ug-navy dark:text-white   border-b border-gray-100 dark:border-gray-800 pb-2">
-                      4. Actionable Strategic Recommendations
+                      4. Actionable Recommendations
                     </h3>
 
-                    <ul className="space-y-2 text-xs text-gray-700 dark:text-gray-300 font-medium">
-                      {aiRecommendations.map((rec, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <span className="w-1.5 h-1.5 bg-ug-teal rounded-full mt-1.5 shrink-0" />
-                          <span>{rec}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {aiRecommendations.length === 0 ? (
+                      <p className="text-xs text-gray-400 font-medium">No AI recommendations generated for this period.</p>
+                    ) : (
+                      <ul className="space-y-2 text-xs text-gray-700 dark:text-gray-300 font-medium">
+                        {aiRecommendations.map((rec, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <span className="w-1.5 h-1.5 bg-ug-teal rounded-full mt-1.5 shrink-0" />
+                            <span>{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 )}
               </div>
