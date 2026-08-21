@@ -95,20 +95,20 @@ const VerifyOTP: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
         <div className="bg-ug-navy p-8 text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1579684385180-1ea55f9f8c60?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
           <div className="relative z-10">
              <div className="w-12 h-12 bg-ug-teal rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
                 <ShieldCheck size={28} />
              </div>
-             <h1 className="text-white font-black text-2xl tracking-tight">Verify Identity</h1>
-             <p className="text-gray-300 text-[10px] font-black uppercase tracking-[0.3em] mt-2">Security Checkpoint</p>
+             <h1 className="text-white font-bold text-2xl tracking-tight">Verify Identity</h1>
+             <p className="text-gray-300 text-[11px] font-semibold tracking-[0.3em] mt-2">Security Checkpoint</p>
           </div>
         </div>
 
         <div className="p-8">
-          <Link to="/forgot-password" title="Back to Email Entry" className="inline-flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-ug-teal transition mb-6">
+          <Link to="/forgot-password" title="Back to Email Entry" className="inline-flex items-center gap-2 text-[11px] font-semibold text-gray-400 tracking-wide hover:text-ug-teal transition mb-6">
             <ArrowLeft size={14} /> Edit Email
           </Link>
 
@@ -134,7 +134,7 @@ const VerifyOTP: React.FC = () => {
                   value={digit}
                   onChange={(e) => handleChange(idx, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(idx, e)}
-                  className="w-12 h-16 text-center text-2xl font-black bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-ug-teal/10 focus:border-ug-teal transition-all text-ug-navy"
+                  className="w-12 h-16 text-center text-2xl font-bold bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-ug-teal/10 focus:border-ug-teal transition-all text-ug-navy"
                   autoFocus={idx === 0}
                 />
               ))}
@@ -145,7 +145,7 @@ const VerifyOTP: React.FC = () => {
                 type="button"
                 onClick={handleResend}
                 disabled={countdown > 0 || resending}
-                className={`text-xs font-black uppercase tracking-widest flex items-center gap-2 mx-auto transition-colors ${
+                className={`text-xs font-bold uppercase tracking-wide flex items-center gap-2 mx-auto transition-colors ${
                   countdown > 0 ? 'text-gray-300 cursor-not-allowed' : 'text-ug-teal hover:text-ug-navy'
                 }`}
               >
@@ -157,7 +157,7 @@ const VerifyOTP: React.FC = () => {
             <button
               type="submit"
               disabled={loading || otp.some(d => !d)}
-              className="w-full bg-ug-navy text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-ug-navy/10 flex items-center justify-center gap-2 hover:bg-ug-teal transition-all disabled:opacity-50"
+              className="w-full bg-ug-navy text-white py-4 rounded-2xl font-bold uppercase tracking-wide shadow-xl shadow-ug-navy/10 flex items-center justify-center gap-2 hover:bg-ug-teal transition-all disabled:opacity-50"
             >
               {loading ? <Loader2 className="animate-spin" /> : (
                 <>Verify & Continue <ArrowRight size={18} /></>

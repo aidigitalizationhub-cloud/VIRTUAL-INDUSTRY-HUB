@@ -36,20 +36,20 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
         <div className="bg-ug-navy p-8 text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
           <div className="relative z-10">
             <div className="h-12 px-2 py-1 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border-2 border-white object-contain w-fit">
               <img src="/logo.svg" alt="University of Ghana Logo" className="h-full w-auto max-w-[120px] object-contain" />
             </div>
-            <h1 className="text-white font-black text-2xl tracking-tight">Recover Access</h1>
-            <p className="text-gray-300 text-xs font-bold uppercase tracking-widest mt-2">Identity Verification</p>
+            <h1 className="text-white font-bold text-2xl tracking-tight">Recover Access</h1>
+            <p className="text-gray-300 text-xs font-bold uppercase tracking-wide mt-2">Identity Verification</p>
           </div>
         </div>
 
         <div className="p-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-ug-teal transition mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 text-[11px] font-semibold text-gray-400 tracking-wide hover:text-ug-teal transition mb-8">
             <ArrowLeft size={14} /> Back to Home
           </Link>
 
@@ -80,7 +80,7 @@ const ForgotPassword: React.FC = () => {
             <button
               type="submit"
               disabled={loading || !email.trim()}
-              className="w-full bg-ug-navy text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-ug-navy/10 flex items-center justify-center gap-2 hover:bg-ug-teal transition-all disabled:opacity-50"
+              className="w-full bg-ug-navy text-white py-4 rounded-2xl font-bold uppercase tracking-wide shadow-xl shadow-ug-navy/10 flex items-center justify-center gap-2 hover:bg-ug-teal transition-all disabled:opacity-50"
             >
               {loading ? <Loader2 className="animate-spin" /> : (
                 <>Send Security Code <ArrowRight size={18} /></>
@@ -88,7 +88,7 @@ const ForgotPassword: React.FC = () => {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] leading-relaxed">
+          <p className="mt-8 text-center text-[11px] text-gray-400 font-bold tracking-[0.2em] leading-relaxed">
             University of Ghana Innovation Hub <br /> Security & Governance Portal
           </p>
         </div>

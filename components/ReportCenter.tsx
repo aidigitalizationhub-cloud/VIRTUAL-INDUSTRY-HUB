@@ -307,9 +307,9 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
         format: 'a4'
       });
 
-      const primaryNavy = [10, 11, 44]; // #0a0b2c
-      const secondaryTeal = [0, 168, 150]; // #00a896
-      const goldAccent = [224, 169, 109]; // #e0a96d
+      const primaryNavy = [26, 26, 75]; // #1a1a4b
+      const secondaryTeal = [8, 145, 178]; // ug-teal
+      const goldAccent = [245, 158, 11]; // ug-warning
       const textDark = [30, 41, 59];
       const timeStampStr = new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) + ' GMT';
 
@@ -657,15 +657,15 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
   return (
     <div className="space-y-8 animate-fade-in text-gray-900 dark:text-gray-100">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-ug-navy via-slate-900 to-ug-navy text-white p-8 rounded-3xl shadow-xl border border-ug-navy/50 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-ug-navy via-slate-900 to-ug-navy text-white p-8 rounded-2xl shadow-xl border border-ug-navy/50 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-ug-teal/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-ug-teal/20 text-ug-teal rounded-full text-[10px] font-black uppercase tracking-widest border border-ug-teal/30">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-ug-teal/20 text-ug-teal rounded-full text-[11px] font-semibold tracking-wide border border-ug-teal/30">
               <FileSpreadsheet size={12} />
               <span>Administrative Analytics & Reporting Center</span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-white">
+            <h1 className="text-3xl font-bold tracking-tight text-white">
               REPORT CENTER & EXPORT GATEWAY
             </h1>
             <p className="text-xs text-gray-300 max-w-2xl leading-relaxed font-medium">
@@ -677,7 +677,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
             <button
               onClick={handleGenerateAIReportInsights}
               disabled={isGeneratingAi}
-              className="px-5 py-3.5 bg-ug-teal hover:bg-ug-teal/90 text-white text-xs font-black uppercase tracking-wider rounded-2xl shadow-lg transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="px-5 py-3.5 bg-ug-teal hover:bg-ug-teal/90 text-white text-xs font-bold   rounded-2xl shadow-lg transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {isGeneratingAi ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
               <span>{isGeneratingAi ? 'Synthesizing...' : 'Re-Generate AI Insights'}</span>
@@ -700,13 +700,13 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
         {/* Left Column: Form Parameters */}
         <div className="lg:col-span-2 space-y-6">
           {/* Card 1: Parameters & Formats */}
-          <div className="bg-white dark:bg-gray-800/80 p-8 rounded-3xl border border-gray-100 dark:border-gray-700/80 shadow-xs space-y-6">
+          <div className="bg-white dark:bg-gray-800/80 p-8 rounded-2xl border border-gray-100 dark:border-gray-700/80 shadow-xs space-y-6">
             <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
               <div className="p-2.5 bg-ug-teal/10 text-ug-teal rounded-2xl">
                 <Filter size={20} />
               </div>
               <div>
-                <h3 className="text-lg font-black text-ug-navy dark:text-white">Report Configuration</h3>
+                <h3 className="text-lg font-bold text-ug-navy dark:text-white">Report Configuration</h3>
                 <p className="text-xs text-gray-400 font-medium">Select report type, time frame, and output format</p>
               </div>
             </div>
@@ -714,7 +714,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* Report Type */}
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-gray-400 block">
                   Report Type
                 </label>
                 <select
@@ -735,7 +735,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
               {/* Date Range */}
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-gray-400 block">
                   Date Range
                 </label>
                 <select
@@ -760,7 +760,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 bg-gray-50 dark:bg-gray-900/40 rounded-2xl border border-gray-100 dark:border-gray-700"
               >
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Start Date</label>
+                  <label className="text-[11px] font-bold text-gray-400 tracking-wide block mb-1">Start Date</label>
                   <input
                     type="date"
                     value={customStartDate}
@@ -769,7 +769,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">End Date</label>
+                  <label className="text-[11px] font-bold text-gray-400 tracking-wide block mb-1">End Date</label>
                   <input
                     type="date"
                     value={customEndDate}
@@ -782,7 +782,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
             {/* Export Format Selection */}
             <div className="space-y-3 pt-2">
-              <label className="text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 block">
+              <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-gray-400 block">
                 Export Format
               </label>
               <div className="grid grid-cols-2 gap-4">
@@ -799,8 +799,8 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                     <FileText size={20} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-black uppercase tracking-wider mb-1">PDF Executive Report</h4>
-                    <p className={`text-[10px] leading-relaxed font-medium ${exportFormat === 'pdf' ? 'text-gray-300' : 'text-gray-400'}`}>
+                    <h4 className="text-xs font-bold   mb-1">PDF Executive Report</h4>
+                    <p className={`text-[11px] leading-relaxed font-medium ${exportFormat === 'pdf' ? 'text-gray-300' : 'text-gray-400'}`}>
                       Branded, multi-page PDF with charts, AI summaries & recommendations.
                     </p>
                   </div>
@@ -819,8 +819,8 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                     <FileSpreadsheet size={20} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-black uppercase tracking-wider mb-1">CSV Raw Data Export</h4>
-                    <p className={`text-[10px] leading-relaxed font-medium ${exportFormat === 'csv' ? 'text-gray-300' : 'text-gray-400'}`}>
+                    <h4 className="text-xs font-bold   mb-1">CSV Raw Data Export</h4>
+                    <p className={`text-[11px] leading-relaxed font-medium ${exportFormat === 'csv' ? 'text-gray-300' : 'text-gray-400'}`}>
                       Clean UTF-8 structured data files for Excel, R, PowerBI, or Python.
                     </p>
                   </div>
@@ -830,13 +830,13 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
           </div>
 
           {/* Card 2: Include Sections Checkboxes */}
-          <div className="bg-white dark:bg-gray-800/80 p-8 rounded-3xl border border-gray-100 dark:border-gray-700/80 shadow-xs space-y-6">
+          <div className="bg-white dark:bg-gray-800/80 p-8 rounded-2xl border border-gray-100 dark:border-gray-700/80 shadow-xs space-y-6">
             <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
               <div className="p-2.5 bg-ug-teal/10 text-ug-teal rounded-2xl">
                 <Layers size={20} />
               </div>
               <div>
-                <h3 className="text-lg font-black text-ug-navy dark:text-white">Included Report Sections</h3>
+                <h3 className="text-lg font-bold text-ug-navy dark:text-white">Included Report Sections</h3>
                 <p className="text-xs text-gray-400 font-medium">Toggle sections to customize report payload</p>
               </div>
             </div>
@@ -873,8 +873,8 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                       className="mt-0.5 w-4 h-4 rounded text-ug-teal focus:ring-ug-teal cursor-pointer"
                     />
                     <div>
-                      <span className="text-xs font-black text-ug-navy dark:text-white block">{label}</span>
-                      <span className="text-[10px] text-gray-400 font-medium block mt-0.5">{desc}</span>
+                      <span className="text-xs font-bold text-ug-navy dark:text-white block">{label}</span>
+                      <span className="text-[11px] text-gray-400 font-medium block mt-0.5">{desc}</span>
                     </div>
                   </label>
                 );
@@ -886,16 +886,16 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
         {/* Right Column: Actions & Quick Summary */}
         <div className="space-y-6">
           {/* Action Card */}
-          <div className="bg-white dark:bg-gray-800/80 p-8 rounded-3xl border border-gray-100 dark:border-gray-700/80 shadow-xs space-y-6 sticky top-6">
+          <div className="bg-white dark:bg-gray-800/80 p-8 rounded-2xl border border-gray-100 dark:border-gray-700/80 shadow-xs space-y-6 sticky top-6">
             <div className="space-y-2">
-              <h3 className="text-xl font-black text-ug-navy dark:text-white">Report Actions</h3>
+              <h3 className="text-xl font-bold text-ug-navy dark:text-white">Report Actions</h3>
               <p className="text-xs text-gray-400 font-medium">Preview before downloading or export dataset directly</p>
             </div>
 
             <div className="space-y-3">
               <button
                 onClick={() => setShowPreviewModal(true)}
-                className="w-full py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-ug-navy dark:text-white font-black text-xs uppercase tracking-widest rounded-2xl transition flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-ug-navy dark:text-white font-bold text-xs  tracking-wide rounded-2xl transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Eye size={16} />
                 <span>Preview Report</span>
@@ -905,7 +905,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 <button
                   onClick={handleGeneratePDF}
                   disabled={isExporting}
-                  className="w-full py-4 bg-ug-navy hover:bg-ug-navy/90 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-ug-navy/20 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full py-3.5 bg-ug-navy hover:bg-ug-navy/90 text-white font-bold text-xs  tracking-wide rounded-2xl shadow-xl shadow-ug-navy/20 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
                   <span>{isExporting ? 'Compiling PDF...' : 'Download Executive PDF'}</span>
@@ -913,7 +913,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
               ) : (
                 <button
                   onClick={() => handleExportCSV('all')}
-                  className="w-full py-4 bg-ug-teal hover:bg-ug-teal/90 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-ug-teal/20 transition flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 bg-ug-teal hover:bg-ug-teal/90 text-white font-bold text-xs  tracking-wide rounded-2xl shadow-xl shadow-ug-teal/20 transition flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Download size={16} />
                   <span>Download CSV Datasets</span>
@@ -925,40 +925,40 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
 
             {/* Quick Metrics Summary */}
             <div className="space-y-3">
-              <span className="text-[10px] font-black uppercase tracking-widest text-ug-teal block">
+              <span className="text-[11px] font-semibold tracking-wide text-ug-teal block">
                 Current Scope Metrics
               </span>
 
               <div className="space-y-2 text-xs font-bold text-gray-600 dark:text-gray-300">
                 <div className="flex justify-between py-1 border-b border-gray-50 dark:border-gray-700/50">
                   <span className="text-gray-400 font-medium">Total Registered Users:</span>
-                  <span className="text-ug-navy dark:text-white font-black">{totalUsers}</span>
+                  <span className="text-ug-navy dark:text-white font-bold">{totalUsers}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-gray-50 dark:border-gray-700/50">
                   <span className="text-gray-400 font-medium">Industry Partners:</span>
-                  <span className="text-ug-navy dark:text-white font-black">{industryCount}</span>
+                  <span className="text-ug-navy dark:text-white font-bold">{industryCount}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-gray-50 dark:border-gray-700/50">
                   <span className="text-gray-400 font-medium">Industry Challenges:</span>
-                  <span className="text-ug-navy dark:text-white font-black">{challenges.length}</span>
+                  <span className="text-ug-navy dark:text-white font-bold">{challenges.length}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-gray-50 dark:border-gray-700/50">
                   <span className="text-gray-400 font-medium">Collaborations Generated:</span>
-                  <span className="text-ug-navy dark:text-white font-black">{totalMatchesCount}</span>
+                  <span className="text-ug-navy dark:text-white font-bold">{totalMatchesCount}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-gray-50 dark:border-gray-700/50">
                   <span className="text-gray-400 font-medium">Match Acceptance Rate:</span>
-                  <span className="text-ug-teal font-black">{acceptanceRate}%</span>
+                  <span className="text-ug-teal font-bold">{acceptanceRate}%</span>
                 </div>
               </div>
             </div>
 
             {/* CSV Quick Links */}
             <div className="pt-2 space-y-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 block">
+              <span className="text-[11px] font-semibold tracking-wide text-gray-400 block">
                 Individual Dataset Downloads
               </span>
-              <div className="grid grid-cols-2 gap-2 text-[10px] font-bold">
+              <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
                 <button
                   onClick={() => handleExportCSV('users')}
                   className="p-2.5 bg-gray-50 dark:bg-gray-900/60 rounded-xl hover:bg-ug-teal/10 hover:text-ug-teal transition text-center cursor-pointer border border-gray-100 dark:border-gray-700"
@@ -997,7 +997,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden"
+              className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden"
             >
               {/* Modal Header */}
               <div className="p-6 bg-ug-navy text-white flex items-center justify-between border-b border-ug-navy/50 shrink-0">
@@ -1006,7 +1006,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                     <Eye size={20} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black tracking-tight">Executive Report Live Document Preview</h3>
+                    <h3 className="text-lg font-bold tracking-tight">Executive Report Live Document Preview</h3>
                     <p className="text-xs text-gray-300 font-medium">
                       University of Ghana Virtual Industry Hub • {getReportTypeTitle(reportType)}
                     </p>
@@ -1016,7 +1016,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleGeneratePDF}
-                    className="px-4 py-2 bg-ug-teal hover:bg-ug-teal/90 text-white font-black text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-2 cursor-pointer"
+                    className="px-4 py-2 bg-ug-teal hover:bg-ug-teal/90 text-white font-bold text-xs   rounded-xl transition flex items-center gap-2 cursor-pointer"
                   >
                     <Download size={14} />
                     Export PDF
@@ -1033,12 +1033,12 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
               {/* Printable Body Scroll Area */}
               <div className="p-8 overflow-y-auto space-y-8 text-gray-900 dark:text-gray-100 bg-gray-50/50 dark:bg-slate-950/50">
                 {/* Cover Page Card Preview */}
-                <div className="bg-ug-navy text-white p-10 rounded-3xl space-y-6 shadow-xl relative overflow-hidden text-center">
+                <div className="bg-ug-navy text-white p-8 rounded-2xl space-y-6 shadow-xl relative overflow-hidden text-center">
                   <div className="space-y-2">
-                    <span className="text-xs font-black tracking-[0.3em] text-ug-teal uppercase block">
+                    <span className="text-xs font-bold tracking-[0.3em] text-ug-teal  block">
                       UNIVERSITY OF GHANA
                     </span>
-                    <h1 className="text-3xl font-black tracking-tight text-white">VIRTUAL INDUSTRY HUB</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-white">VIRTUAL INDUSTRY HUB</h1>
                     <div className="w-24 h-1 bg-ug-gold mx-auto my-4 rounded-full" />
                     <h2 className="text-xl font-bold text-gray-200">
                       Administrative Analytics & Governance Report
@@ -1057,31 +1057,31 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 {/* Section 1: Executive Summary */}
                 {includeSections.executiveSummary && (
                   <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 space-y-4">
-                    <h3 className="text-base font-black text-ug-navy dark:text-white uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2">
+                    <h3 className="text-base font-bold text-ug-navy dark:text-white   border-b border-gray-100 dark:border-gray-800 pb-2">
                       1. Executive Summary & KPIs
                     </h3>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                       <div className="p-4 bg-gray-50 dark:bg-slate-800/60 rounded-xl border border-gray-100 dark:border-gray-700 text-center">
-                        <span className="text-2xl font-black text-ug-navy dark:text-white block">{totalUsers}</span>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Users</span>
+                        <span className="text-2xl font-bold text-ug-navy dark:text-white block">{totalUsers}</span>
+                        <span className="text-[11px] font-bold text-gray-400 tracking-wide">Total Users</span>
                       </div>
                       <div className="p-4 bg-gray-50 dark:bg-slate-800/60 rounded-xl border border-gray-100 dark:border-gray-700 text-center">
-                        <span className="text-2xl font-black text-ug-teal block">{challenges.length}</span>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Challenges</span>
+                        <span className="text-2xl font-bold text-ug-teal block">{challenges.length}</span>
+                        <span className="text-[11px] font-bold text-gray-400 tracking-wide">Challenges</span>
                       </div>
                       <div className="p-4 bg-gray-50 dark:bg-slate-800/60 rounded-xl border border-gray-100 dark:border-gray-700 text-center">
-                        <span className="text-2xl font-black text-ug-navy dark:text-white block">{totalMatchesCount}</span>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Matches</span>
+                        <span className="text-2xl font-bold text-ug-navy dark:text-white block">{totalMatchesCount}</span>
+                        <span className="text-[11px] font-bold text-gray-400 tracking-wide">Matches</span>
                       </div>
                       <div className="p-4 bg-gray-50 dark:bg-slate-800/60 rounded-xl border border-gray-100 dark:border-gray-700 text-center">
-                        <span className="text-2xl font-black text-ug-teal block">{acceptanceRate}%</span>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Acceptance</span>
+                        <span className="text-2xl font-bold text-ug-teal block">{acceptanceRate}%</span>
+                        <span className="text-[11px] font-bold text-gray-400 tracking-wide">Acceptance</span>
                       </div>
                     </div>
 
                     <div className="p-4 bg-ug-teal/10 border border-ug-teal/30 rounded-2xl text-xs space-y-1">
-                      <span className="font-black text-ug-teal uppercase tracking-widest block">AI Executive Summary</span>
+                      <span className="font-bold text-ug-teal  tracking-wide block">AI Executive Summary</span>
                       <p className="text-gray-700 dark:text-gray-300 leading-relaxed font-medium">{aiSummaryText}</p>
                     </div>
                   </div>
@@ -1090,13 +1090,13 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 {/* Section 2: User Analytics */}
                 {includeSections.userAnalytics && (
                   <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 space-y-4">
-                    <h3 className="text-base font-black text-ug-navy dark:text-white uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2">
+                    <h3 className="text-base font-bold text-ug-navy dark:text-white   border-b border-gray-100 dark:border-gray-800 pb-2">
                       2. User Role & Department Distribution
                     </h3>
 
                     <table className="w-full text-xs text-left">
                       <thead>
-                        <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-bold uppercase tracking-wider">
+                        <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-400 font-bold  ">
                           <th className="py-2">Department / Faculty</th>
                           <th className="py-2">Count</th>
                           <th className="py-2">% Total</th>
@@ -1118,26 +1118,26 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 {/* Section 3: Industry Challenges & Match Quality */}
                 {includeSections.challenges && (
                   <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 space-y-4">
-                    <h3 className="text-base font-black text-ug-navy dark:text-white uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2">
+                    <h3 className="text-base font-bold text-ug-navy dark:text-white   border-b border-gray-100 dark:border-gray-800 pb-2">
                       3. Match Quality Breakdown
                     </h3>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
                       <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 rounded-xl">
-                        <span className="font-black text-emerald-700 dark:text-emerald-400 text-lg block">{scoreRanges.excellent}</span>
-                        <span className="text-[10px] font-bold text-emerald-600">90-100% (Excellent)</span>
+                        <span className="font-bold text-emerald-700 dark:text-emerald-400 text-lg block">{scoreRanges.excellent}</span>
+                        <span className="text-[11px] font-bold text-emerald-600">90-100% (Excellent)</span>
                       </div>
                       <div className="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 rounded-xl">
-                        <span className="font-black text-blue-700 dark:text-blue-400 text-lg block">{scoreRanges.strong}</span>
-                        <span className="text-[10px] font-bold text-blue-600">80-89% (Strong)</span>
+                        <span className="font-bold text-blue-700 dark:text-blue-400 text-lg block">{scoreRanges.strong}</span>
+                        <span className="text-[11px] font-bold text-blue-600">80-89% (Strong)</span>
                       </div>
                       <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 rounded-xl">
-                        <span className="font-black text-amber-700 dark:text-amber-400 text-lg block">{scoreRanges.moderate}</span>
-                        <span className="text-[10px] font-bold text-amber-600">70-79% (Moderate)</span>
+                        <span className="font-bold text-amber-700 dark:text-amber-400 text-lg block">{scoreRanges.moderate}</span>
+                        <span className="text-[11px] font-bold text-amber-600">70-79% (Moderate)</span>
                       </div>
                       <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 rounded-xl">
-                        <span className="font-black text-rose-700 dark:text-rose-400 text-lg block">{scoreRanges.weak}</span>
-                        <span className="text-[10px] font-bold text-rose-600">&lt; 70% (Weak)</span>
+                        <span className="font-bold text-rose-700 dark:text-rose-400 text-lg block">{scoreRanges.weak}</span>
+                        <span className="text-[11px] font-bold text-rose-600">&lt; 70% (Weak)</span>
                       </div>
                     </div>
                   </div>
@@ -1146,7 +1146,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                 {/* Section 4: AI Recommendations */}
                 {includeSections.recommendations && (
                   <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 space-y-4">
-                    <h3 className="text-base font-black text-ug-navy dark:text-white uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-2">
+                    <h3 className="text-base font-bold text-ug-navy dark:text-white   border-b border-gray-100 dark:border-gray-800 pb-2">
                       4. Actionable Strategic Recommendations
                     </h3>
 
@@ -1174,7 +1174,7 @@ Return ONLY raw JSON without markdown syntax wrappers.`;
                   </button>
                   <button
                     onClick={handleGeneratePDF}
-                    className="px-6 py-2.5 bg-ug-navy hover:bg-ug-navy/90 text-white font-black text-xs uppercase tracking-wider rounded-xl transition flex items-center gap-2 cursor-pointer shadow-lg"
+                    className="px-6 py-2.5 bg-ug-navy hover:bg-ug-navy/90 text-white font-bold text-xs   rounded-xl transition flex items-center gap-2 cursor-pointer shadow-lg"
                   >
                     <Download size={14} />
                     Download PDF Report

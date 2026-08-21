@@ -115,11 +115,11 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-100">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[9px] font-black uppercase bg-ug-teal/10 text-ug-teal px-3 py-1 rounded-full tracking-widest">
+            <span className="text-[11px] font-semibold bg-ug-teal/10 text-ug-teal px-3 py-1 rounded-full tracking-wide">
               Industry Portfolio Ledger
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-ug-navy uppercase tracking-tight leading-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-ug-navy uppercase tracking-tight leading-tight">
             Track Commercial Challenges
           </h2>
           <p className="text-xs text-gray-500 font-medium mt-1">
@@ -129,7 +129,7 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
 
         <button
           onClick={onPostNewChallenge}
-          className="bg-ug-navy hover:bg-ug-teal text-white px-6 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg shrink-0 cursor-pointer"
+          className="bg-ug-navy hover:bg-ug-teal text-white px-6 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-wide transition flex items-center justify-center gap-2 shadow-lg shrink-0 cursor-pointer"
         >
           <Plus size={16} className="stroke-[3]" />
           <span>Post New Challenge</span>
@@ -156,7 +156,7 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
             <button
               key={tab}
               onClick={() => setStatusFilter(tab)}
-              className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition whitespace-nowrap cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-[11px] font-semibold tracking-wider transition whitespace-nowrap cursor-pointer ${
                 statusFilter === tab
                   ? 'bg-white text-ug-navy shadow-sm'
                   : 'text-gray-500 hover:text-ug-navy'
@@ -175,12 +175,12 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Loading commercial challenges...</p>
         </div>
       ) : filteredChallenges.length === 0 ? (
-        <div className="bg-gray-50/70 border border-dashed border-gray-200 rounded-3xl p-8 text-center space-y-4">
+        <div className="bg-gray-50/70 border border-dashed border-gray-200 rounded-2xl p-8 text-center space-y-4">
           <div className="p-4 bg-white rounded-2xl w-14 h-14 mx-auto flex items-center justify-center text-ug-teal shadow-sm border border-gray-100">
             <Briefcase size={24} />
           </div>
           <div>
-            <h3 className="font-black text-ug-navy text-sm uppercase tracking-tight">No Challenges Found</h3>
+            <h3 className="font-bold text-ug-navy text-sm uppercase tracking-tight">No Challenges Found</h3>
             <p className="text-xs text-gray-500 max-w-sm mx-auto mt-1">
               {searchQuery || statusFilter !== 'All' 
                 ? 'No commercial challenges match your current search criteria or filter.' 
@@ -189,7 +189,7 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
           </div>
           <button
             onClick={onPostNewChallenge}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-ug-navy text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-ug-teal transition cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-ug-navy text-white text-[11px] font-semibold tracking-wide rounded-xl hover:bg-ug-teal transition cursor-pointer"
           >
             <Plus size={14} className="stroke-[3]" />
             <span>Post New Challenge</span>
@@ -200,34 +200,34 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
           {filteredChallenges.map((challenge) => (
             <div
               key={challenge.id}
-              className="bg-gray-50/60 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100 rounded-3xl p-5 sm:p-6 space-y-4 group"
+              className="bg-gray-50/60 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100 rounded-2xl p-5 sm:p-6 space-y-4 group"
             >
               {/* Top Row */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="bg-ug-navy text-white text-[9px] font-black uppercase px-2.5 py-0.5 rounded-md tracking-wider">
+                    <span className="bg-ug-navy text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-md tracking-wider">
                       {challenge.category || 'Diagnostics'}
                     </span>
                     {challenge.collaboration_type && (
-                      <span className="bg-gray-200 text-gray-700 text-[9px] font-bold uppercase px-2.5 py-0.5 rounded-md tracking-wider">
+                      <span className="bg-gray-200 text-gray-700 text-[11px] font-bold px-2.5 py-0.5 rounded-md tracking-wider">
                         {challenge.collaboration_type}
                       </span>
                     )}
                   </div>
-                  <h3 className="text-base sm:text-lg font-black text-ug-navy group-hover:text-ug-teal transition">
+                  <h3 className="text-base sm:text-lg font-bold text-ug-navy group-hover:text-ug-teal transition">
                     {challenge.title}
                   </h3>
                 </div>
 
                 {/* Status Dropdown / Badge */}
                 <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest hidden sm:inline">Status:</span>
+                  <span className="text-[11px] font-bold text-gray-400 tracking-wide hidden sm:inline">Status:</span>
                   <select
                     value={challenge.status || 'Open'}
                     disabled={updatingId === challenge.id}
                     onChange={(e) => handleStatusChange(challenge.id, e.target.value as any)}
-                    className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer transition ${getStatusColor(challenge.status || 'Open')}`}
+                    className={`text-[11px] font-semibold px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer transition ${getStatusColor(challenge.status || 'Open')}`}
                   >
                     <option value="Open">Open</option>
                     <option value="In-Review">In-Review</option>
@@ -248,13 +248,13 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
                   {challenge.required_skills.slice(0, 5).map((skill, idx) => (
                     <span
                       key={idx}
-                      className="text-[9px] font-bold text-gray-600 bg-white border border-gray-200 px-2.5 py-1 rounded-lg"
+                      className="text-[11px] font-bold text-gray-600 bg-white border border-gray-200 px-2.5 py-1 rounded-lg"
                     >
                       #{skill}
                     </span>
                   ))}
                   {challenge.required_skills.length > 5 && (
-                    <span className="text-[9px] font-bold text-gray-400 px-1">
+                    <span className="text-[11px] font-bold text-gray-400 px-1">
                       +{challenge.required_skills.length - 5} more
                     </span>
                   )}
@@ -288,7 +288,7 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
                   {setActiveTab && (
                     <button
                       onClick={() => setActiveTab('matches')}
-                      className="px-3.5 py-1.5 bg-ug-teal/10 hover:bg-ug-teal text-ug-teal hover:text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer"
+                      className="px-3.5 py-1.5 bg-ug-teal/10 hover:bg-ug-teal text-ug-teal hover:text-white rounded-xl text-[11px] font-semibold tracking-wider transition flex items-center gap-1.5 cursor-pointer"
                       title="Review AI talent matches for this challenge"
                     >
                       <Users size={13} />

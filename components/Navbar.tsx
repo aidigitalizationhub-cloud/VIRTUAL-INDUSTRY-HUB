@@ -47,14 +47,14 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, user, onUserIconClick,
              </div>
              <div className="flex flex-col">
                <div className="flex items-center gap-1.5">
-                 <span className="font-black text-sm sm:text-base md:text-lg tracking-tight text-white group-hover:text-ug-teal transition-colors">
+                 <span className="font-bold text-sm sm:text-base md:text-lg tracking-tight text-white group-hover:text-ug-teal transition-colors">
                    {t('nav.brand')}
                  </span>
-                 <span className="hidden sm:inline-block text-[9px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded bg-ug-gold/20 text-ug-gold border border-ug-gold/30">
+                 <span className="hidden sm:inline-block text-[11px] font-extrabold tracking-wide px-1.5 py-0.5 rounded bg-ug-gold/20 text-ug-gold border border-ug-gold/30">
                    IAST
                  </span>
                </div>
-               <span className="text-[10px] text-gray-300 font-bold tracking-wider hidden sm:block uppercase -mt-0.5">
+               <span className="text-[11px] text-gray-300 font-bold tracking-wider hidden sm:block -mt-0.5">
                  University of Ghana
                </span>
              </div>
@@ -107,7 +107,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, user, onUserIconClick,
              >
                 {isAuthenticated ? (
                   <>
-                    <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center font-black text-[11px]">
+                    <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center font-bold text-[11px]">
                       {user?.name ? user.name.charAt(0).toUpperCase() : <User size={14} />}
                     </div>
                     <span className="max-w-[120px] truncate">{user?.name || t('nav.myDashboard')}</span>
@@ -154,7 +154,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, user, onUserIconClick,
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="md:hidden border-t border-white/10 bg-ug-navy/98 backdrop-blur-xl animate-fade-in shadow-2xl">
+        <div className="md:hidden border-t border-white/10 bg-ug-navy/98 backdrop-blur-xl animate-fade-in shadow-xl">
           <div className="px-4 pt-3 pb-6 space-y-2">
             {navLinks.map((link) => {
               const active = isActive(link.path);
@@ -190,7 +190,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, user, onUserIconClick,
                     <span>{isAuthenticated ? (user?.name || t('nav.myDashboard')) : t('nav.login')}</span>
                   </div>
                   {isAuthenticated && unreadCount > 0 && (
-                    <span className="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-black">
+                    <span className="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
                       {unreadCount}
                     </span>
                   )}

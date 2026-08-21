@@ -73,12 +73,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
   };
 
   const renderFieldLabel = (text: string, fieldKey: string, isRequired = true) => (
-    <label className="text-[10px] font-black tracking-widest mb-2.5 flex items-center justify-between uppercase block">
-      <span className={fieldErrors[fieldKey] ? "text-red-600 font-black flex items-center gap-1" : "text-gray-400"}>
-        {text} {isRequired && <span className="text-red-500 font-black text-sm ml-0.5">*</span>}
+    <label className="text-[11px] font-semibold tracking-wide mb-2.5 flex items-center justify-between block">
+      <span className={fieldErrors[fieldKey] ? "text-red-600 font-bold flex items-center gap-1" : "text-gray-400"}>
+        {text} {isRequired && <span className="text-red-500 font-bold text-sm ml-0.5">*</span>}
       </span>
       {fieldErrors[fieldKey] && (
-        <span className="text-[10px] text-red-600 font-extrabold uppercase tracking-wider animate-pulse flex items-center gap-1">
+        <span className="text-[11px] text-red-600 font-extrabold tracking-wider animate-pulse flex items-center gap-1">
           Required Field
         </span>
       )}
@@ -282,11 +282,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-20 h-20 bg-ug-teal/10 text-ug-teal rounded-3xl flex items-center justify-center mx-auto mb-6"
+          className="w-20 h-20 bg-ug-teal/10 text-ug-teal rounded-2xl flex items-center justify-center mx-auto mb-6"
         >
           <Zap size={40} className="fill-current" />
         </motion.div>
-        <h1 className="text-4xl font-black text-ug-navy mb-4 tracking-tighter col-span-2">Who are you in this ecosystem?</h1>
+        <h1 className="text-4xl font-bold text-ug-navy mb-4 tracking-tighter col-span-2">Who are you in this ecosystem?</h1>
         <p className="text-gray-500 font-medium col-span-2">Select your identity to personalize your intelligence hub.</p>
       </div>
 
@@ -307,11 +307,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             }`}
           >
             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-colors ${
-              selectedRole === role.id ? 'bg-ug-teal text-white font-black' : 'bg-gray-50 group-hover:bg-ug-teal text-gray-400 group-hover:text-white'
+              selectedRole === role.id ? 'bg-ug-teal text-white font-bold' : 'bg-gray-50 group-hover:bg-ug-teal text-gray-400 group-hover:text-white'
             }`}>
               <role.icon size={28} />
             </div>
-            <h3 className="text-lg font-black text-ug-navy mb-2 uppercase tracking-wide group-hover:text-ug-teal transition-colors">
+            <h3 className="text-lg font-bold text-ug-navy mb-2 uppercase tracking-wide group-hover:text-ug-teal transition-colors">
               {role.label}
             </h3>
             <p className="text-xs text-gray-400 font-bold leading-relaxed">{role.desc}</p>
@@ -325,13 +325,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
           animate={{ opacity: 1, scale: 1 }}
           className="mt-12 max-w-2xl mx-auto bg-gray-50 rounded-[2.5rem] p-8 border-2 border-gray-100 relative text-center"
         >
-          <h3 className="text-lg font-black text-ug-navy uppercase tracking-wider mb-2">Portal Setup Type</h3>
+          <h3 className="text-lg font-bold text-ug-navy uppercase tracking-wider mb-2">Portal Setup Type</h3>
           <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-6">Are you setting up as an individual advisor, or on behalf of an organization?</p>
           
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-8">
             <button
               onClick={() => setUserType('individual')}
-              className={`py-4 px-6 rounded-2xl border-2 text-xs font-black uppercase tracking-wider transition-all ${
+              className={`py-4 px-6 rounded-2xl border-2 text-xs font-bold uppercase tracking-wider transition-all ${
                 userType === 'individual'
                   ? 'bg-ug-navy text-white border-ug-navy shadow-lg'
                   : 'bg-white border-gray-200 text-gray-400 hover:border-ug-teal'
@@ -341,7 +341,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             </button>
             <button
               onClick={() => setUserType('entity')}
-              className={`py-4 px-6 rounded-2xl border-2 text-xs font-black uppercase tracking-wider transition-all ${
+              className={`py-4 px-6 rounded-2xl border-2 text-xs font-bold uppercase tracking-wider transition-all ${
                 userType === 'entity'
                   ? 'bg-ug-navy text-white border-ug-navy shadow-lg'
                   : 'bg-white border-gray-200 text-gray-400 hover:border-ug-teal'
@@ -359,7 +359,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 setStep('questionnaire');
               }
             }}
-            className="bg-ug-teal text-white px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
+            className="bg-ug-teal text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-[0.2em] shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
           >
             Proceed Setup <ChevronRight size={16} />
           </button>
@@ -370,13 +370,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
   const renderEntityIdentity = () => (
     <div className="max-w-2xl mx-auto p-8">
-      <button onClick={() => navigateToStep('role')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-widest transition-colors font-sans focus:outline-none cursor-pointer">
+      <button onClick={() => navigateToStep('role')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
         <ChevronLeft size={16} /> Back
       </button>
 
       <div className="mb-10">
-        <span className="text-xs font-black text-ug-teal tracking-[0.2em] mb-2 block">Step 1 of 5: Identity</span>
-        <h2 className="text-3xl font-black text-ug-navy tracking-tight">Organization Profile</h2>
+        <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 1 of 5: Identity</span>
+        <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Organization Profile</h2>
         <p className="text-gray-400 text-sm font-medium mt-2">Tell us about your organization or fund. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
       </div>
 
@@ -502,7 +502,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             }
             navigateToStep('entity_focus');
           }}
-          className="w-full bg-ug-navy text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+          className="w-full bg-ug-navy text-white py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
         >
           Next: Focus & Intentions <ChevronRight size={18} />
         </button>
@@ -586,26 +586,26 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
     return (
       <div className="max-w-2xl mx-auto p-8">
-        <button onClick={() => navigateToStep('entity_identity')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-widest transition-colors font-sans focus:outline-none cursor-pointer">
+        <button onClick={() => navigateToStep('entity_identity')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
           <ChevronLeft size={16} /> Back
         </button>
 
         <div className="mb-10">
-          <span className="text-xs font-black text-ug-teal tracking-[0.2em] mb-2 block">Step 2 of 5: Intentions</span>
-          <h2 className="text-3xl font-black text-ug-navy tracking-tight">Focus & Core Capabilities</h2>
+          <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 2 of 5: Intentions</span>
+          <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Focus & Core Capabilities</h2>
           <p className="text-gray-400 text-sm font-medium mt-2">Define focus tracks and resource exchanges. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
         </div>
 
         <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth pb-6">
           {/* SECTOR VECTOR TRACKS */}
-          <div className={`p-4 rounded-3xl transition-all ${fieldErrors.sectorVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+          <div className={`p-4 rounded-2xl transition-all ${fieldErrors.sectorVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("Focus Tracks", "sectorVector")}
             <div className="flex flex-wrap gap-2.5 mb-4">
               {defaultSectors.map(sector => (
                 <button
                   key={sector}
                   onClick={() => toggleSector(sector)}
-                  className={`py-2 px-4 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                  className={`py-2 px-4 rounded-xl border-2 text-[11px] font-semibold tracking-wider transition-all cursor-pointer ${
                     answers.sectorVector?.includes(sector) ? 'bg-ug-navy text-white border-ug-navy' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                   }`}
                 >
@@ -616,7 +616,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 <button
                   key={custom}
                   onClick={() => toggleSector(custom)}
-                  className="py-2 px-4 rounded-xl border-2 bg-ug-teal text-white border-ug-teal text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                  className="py-2 px-4 rounded-xl border-2 bg-ug-teal text-white border-ug-teal text-[11px] font-semibold tracking-wider transition-all cursor-pointer"
                 >
                   {custom}
                 </button>
@@ -632,19 +632,19 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 onKeyDown={(e) => e.key === 'Enter' && addCustomSector()}
                 className="flex-1 bg-gray-50 border-2 border-gray-100 rounded-xl py-2 px-4 outline-none focus:bg-white focus:border-ug-teal text-xs font-bold"
               />
-              <button onClick={addCustomSector} className="px-4 py-2 bg-ug-navy text-white rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer">Add</button>
+              <button onClick={addCustomSector} className="px-4 py-2 bg-ug-navy text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer">Add</button>
             </div>
           </div>
 
           {/* Core Value Offerings */}
-          <div className={`p-4 rounded-3xl transition-all ${fieldErrors.offerVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+          <div className={`p-4 rounded-2xl transition-all ${fieldErrors.offerVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("What Can You Offer the Ecosystem?", "offerVector")}
             <div className="flex flex-wrap gap-2 mb-4">
               {offersOptions.map(offer => (
                 <button
                   key={offer}
                   onClick={() => toggleOffer(offer)}
-                  className={`py-2.5 px-4 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                  className={`py-2.5 px-4 rounded-xl border-2 text-[11px] font-semibold tracking-wider transition-all cursor-pointer ${
                     answers.offerVector?.includes(offer) ? 'bg-ug-navy text-white border-ug-navy' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                   }`}
                 >
@@ -655,7 +655,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 <button
                   key={custom}
                   onClick={() => toggleOffer(custom)}
-                  className="py-2.5 px-4 rounded-xl border-2 bg-ug-teal text-white border-ug-teal text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                  className="py-2.5 px-4 rounded-xl border-2 bg-ug-teal text-white border-ug-teal text-[11px] font-semibold tracking-wider transition-all cursor-pointer"
                 >
                   {custom}
                 </button>
@@ -671,19 +671,19 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 onKeyDown={(e) => e.key === 'Enter' && addCustomOffer()}
                 className="flex-1 bg-gray-50 border-2 border-gray-100 rounded-xl py-2 px-4 outline-none focus:bg-white focus:border-ug-teal text-xs font-bold"
               />
-              <button onClick={addCustomOffer} className="px-4 py-2 bg-ug-navy text-white rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer">Add</button>
+              <button onClick={addCustomOffer} className="px-4 py-2 bg-ug-navy text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer">Add</button>
             </div>
           </div>
 
           {/* Looking For (Needs) */}
-          <div className={`p-4 rounded-3xl transition-all ${fieldErrors.needVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+          <div className={`p-4 rounded-2xl transition-all ${fieldErrors.needVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("What Are You Actively Looking For?", "needVector")}
             <div className="flex flex-wrap gap-2 mb-4">
               {needsOptions.map(need => (
                 <button
                   key={need}
                   onClick={() => toggleNeed(need)}
-                  className={`py-2.5 px-4 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                  className={`py-2.5 px-4 rounded-xl border-2 text-[11px] font-semibold tracking-wider transition-all cursor-pointer ${
                     answers.needVector?.includes(need) ? 'bg-ug-navy text-white border-ug-navy' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                   }`}
                 >
@@ -694,7 +694,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 <button
                   key={custom}
                   onClick={() => toggleNeed(custom)}
-                  className="py-2.5 px-4 rounded-xl border-2 bg-ug-teal text-white border-ug-teal text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer"
+                  className="py-2.5 px-4 rounded-xl border-2 bg-ug-teal text-white border-ug-teal text-[11px] font-semibold tracking-wider transition-all cursor-pointer"
                 >
                   {custom}
                 </button>
@@ -710,7 +710,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 onKeyDown={(e) => e.key === 'Enter' && addCustomNeed()}
                 className="flex-1 bg-gray-50 border-2 border-gray-100 rounded-xl py-2 px-4 outline-none focus:bg-white focus:border-ug-teal text-xs font-bold"
               />
-              <button onClick={addCustomNeed} className="px-4 py-2 bg-ug-navy text-white rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer">Add</button>
+              <button onClick={addCustomNeed} className="px-4 py-2 bg-ug-navy text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer">Add</button>
             </div>
           </div>
 
@@ -728,7 +728,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               }
               navigateToStep('entity_model');
             }}
-            className="w-full bg-ug-navy text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full bg-ug-navy text-white py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
           >
             Next: Operation Model <ChevronRight size={18} />
           </button>
@@ -785,19 +785,19 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
     return (
       <div className="max-w-2xl mx-auto p-8">
-        <button onClick={() => navigateToStep('entity_focus')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-widest transition-colors font-sans focus:outline-none cursor-pointer">
+        <button onClick={() => navigateToStep('entity_focus')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
           <ChevronLeft size={16} /> Back
         </button>
 
         <div className="mb-10">
-          <span className="text-xs font-black text-ug-teal tracking-[0.2em] mb-2 block">Step 3 of 5: Model</span>
-          <h2 className="text-3xl font-black text-ug-navy tracking-tight">Collaboration Model</h2>
+          <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 3 of 5: Model</span>
+          <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Collaboration Model</h2>
           <p className="text-gray-400 text-sm font-medium mt-2">Specify engagement workflows and target readiness. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
         </div>
 
         <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth pb-6">
           {/* Collaboration Models */}
-          <div className={`p-4 rounded-3xl transition-all ${fieldErrors.collaborationVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+          <div className={`p-4 rounded-2xl transition-all ${fieldErrors.collaborationVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("Preferred Collaboration Models", "collaborationVector")}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {collaborationOptions.map(collab => {
@@ -806,7 +806,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                   <button
                     key={collab}
                     onClick={() => toggleCollab(collab)}
-                    className={`py-3.5 px-6 rounded-xl border-2 text-[10px] font-black uppercase text-left tracking-wide transition-all cursor-pointer ${
+                    className={`py-3.5 px-6 rounded-xl border-2 text-[11px] font-semibold text-left tracking-wide transition-all cursor-pointer ${
                       isSelected ? 'bg-ug-navy text-white border-ug-navy shadow-md' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                     }`}
                   >
@@ -818,7 +818,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
           </div>
 
           {/* Innovation Readiness Preferences */}
-          <div className={`p-4 rounded-3xl transition-all ${fieldErrors.readinessVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+          <div className={`p-4 rounded-2xl transition-all ${fieldErrors.readinessVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("Target Maturity Stages", "readinessVector")}
             <div className="space-y-3">
               {readinessOptions.map(readiness => {
@@ -827,7 +827,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                   <button
                     key={readiness}
                     onClick={() => toggleReadiness(readiness)}
-                    className={`w-full py-3.5 px-6 rounded-xl border-2 text-[10px] font-black uppercase text-left tracking-wide transition-all flex justify-between items-center cursor-pointer ${
+                    className={`w-full py-3.5 px-6 rounded-xl border-2 text-[11px] font-semibold text-left tracking-wide transition-all flex justify-between items-center cursor-pointer ${
                       isSelected ? 'bg-ug-navy text-white border-ug-navy' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                     }`}
                   >
@@ -842,7 +842,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
           {/* INVESTOR ADDITIONAL CRITERIA */}
           {selectedRole === UserRole.Investor && (
             <div className="pt-6 border-t border-gray-100 space-y-6">
-              <div className={`p-4 rounded-3xl transition-all ${fieldErrors.investmentRange ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+              <div className={`p-4 rounded-2xl transition-all ${fieldErrors.investmentRange ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
                 {renderFieldLabel("Investment Ticket Range", "investmentRange")}
                 <div className="grid grid-cols-2 gap-3">
                   {fundingRangeOptions.map(option => (
@@ -852,7 +852,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                         setAnswers({...answers, investmentRange: option.val});
                         clearFieldError("investmentRange");
                       }}
-                      className={`py-3 px-4 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                      className={`py-3 px-4 rounded-xl border-2 text-[11px] font-semibold tracking-wider transition-all cursor-pointer ${
                         answers.investmentRange === option.val ? 'bg-ug-navy text-white border-ug-navy' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                       }`}
                     >
@@ -862,7 +862,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 </div>
               </div>
 
-              <div className={`p-4 rounded-3xl transition-all ${fieldErrors.fundingStage ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+              <div className={`p-4 rounded-2xl transition-all ${fieldErrors.fundingStage ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
                 {renderFieldLabel("Active Funding Stages", "fundingStage")}
                 <div className="flex flex-wrap gap-2.5">
                   {['Pre-Seed', 'Seed Stage', 'Venture Funding', 'Grant/Philanthropy Aid'].map(stage => {
@@ -871,7 +871,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                       <button
                         key={stage}
                         onClick={() => toggleFundingStage(stage)}
-                        className={`py-2 px-4 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                        className={`py-2 px-4 rounded-xl border-2 text-[11px] font-semibold tracking-wider transition-all cursor-pointer ${
                           isSelected ? 'bg-ug-navy text-white border-ug-navy' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                         }`}
                       >
@@ -901,7 +901,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               }
               navigateToStep('entity_competencies');
             }}
-            className="w-full bg-ug-navy text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full bg-ug-navy text-white py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
           >
             Next: Match Competencies <ChevronRight size={18} />
           </button>
@@ -942,18 +942,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
     return (
       <div className="max-w-2xl mx-auto p-8">
-        <button onClick={() => navigateToStep('entity_model')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-widest transition-colors font-sans focus:outline-none cursor-pointer">
+        <button onClick={() => navigateToStep('entity_model')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
           <ChevronLeft size={16} /> Back
         </button>
 
         <div className="mb-10">
-          <span className="text-xs font-black text-ug-teal tracking-[0.2em] mb-2 block">Step 4 of 5: Competencies</span>
-          <h2 className="text-3xl font-black text-ug-navy tracking-tight">Ecosystem Competencies</h2>
+          <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 4 of 5: Competencies</span>
+          <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Ecosystem Competencies</h2>
           <p className="text-gray-400 text-sm font-medium mt-2">Select capabilities your organization values or validates. Mandatory fields marked with (<span className="text-red-500 font-bold">*</span>).</p>
         </div>
 
         <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth pb-6">
-          <div className={`p-4 rounded-3xl transition-all ${fieldErrors.capabilityVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+          <div className={`p-4 rounded-2xl transition-all ${fieldErrors.capabilityVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("Specific Competencies We Support / Value", "capabilityVector")}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               {competenciesList.map(comp => {
@@ -962,7 +962,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                   <button
                     key={comp}
                     onClick={() => toggleCapability(comp)}
-                    className={`py-3 px-4 rounded-xl border-2 text-[10px] text-left font-black uppercase tracking-wide transition-all cursor-pointer ${
+                    className={`py-3 px-4 rounded-xl border-2 text-[11px] text-left font-semibold tracking-wide transition-all cursor-pointer ${
                       isSelected ? 'bg-ug-navy text-white border-ug-navy shadow-inner' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                     }`}
                   >
@@ -974,7 +974,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 <button
                   key={custom}
                   onClick={() => toggleCapability(custom)}
-                  className="py-3 px-4 rounded-xl border-2 bg-ug-teal text-white border-ug-teal text-[10px] text-left font-black uppercase tracking-wide transition-all cursor-pointer"
+                  className="py-3 px-4 rounded-xl border-2 bg-ug-teal text-white border-ug-teal text-[11px] text-left font-semibold tracking-wide transition-all cursor-pointer"
                 >
                   {custom}
                 </button>
@@ -990,7 +990,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 onKeyDown={(e) => e.key === 'Enter' && addCustomCapability()}
                 className="flex-1 bg-gray-50 border-2 border-gray-100 rounded-xl py-2 px-4 outline-none focus:bg-white focus:border-ug-teal text-xs font-bold"
               />
-              <button onClick={addCustomCapability} className="px-4 py-2 bg-ug-navy text-white rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer">Add</button>
+              <button onClick={addCustomCapability} className="px-4 py-2 bg-ug-navy text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer">Add</button>
             </div>
           </div>
 
@@ -1003,7 +1003,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               }
               navigateToStep('entity_ai_questions');
             }}
-            className="w-full bg-ug-navy text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full bg-ug-navy text-white py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
           >
             Next: AI Setup Questions <ChevronRight size={18} />
           </button>
@@ -1014,13 +1014,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
   const renderEntityAIQuestions = () => (
     <div className="max-w-2xl mx-auto p-8">
-      <button onClick={() => navigateToStep('entity_competencies')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-widest transition-colors font-sans focus:outline-none cursor-pointer">
+      <button onClick={() => navigateToStep('entity_competencies')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
         <ChevronLeft size={16} /> Back
       </button>
 
       <div className="mb-10">
-        <span className="text-xs font-black text-ug-teal tracking-[0.2em] mb-2 block">Step 5 of 5: AI Core Matching</span>
-        <h2 className="text-3xl font-black text-ug-navy tracking-tight">Smart Match Synthesis</h2>
+        <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 5 of 5: AI Core Matching</span>
+        <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Smart Match Synthesis</h2>
         <p className="text-gray-400 text-sm font-medium mt-2">Fill out these open-ended statements to power high-fidelity semantic re-ranking. Mandatory fields marked with (<span className="text-red-500 font-bold">*</span>).</p>
       </div>
 
@@ -1078,7 +1078,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             }
             processAIProfile();
           }}
-          className="w-full bg-ug-navy text-white py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+          className="w-full bg-ug-navy text-white py-5 rounded-[2rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
         >
           Initialize AI Matching Twin <Sparkles size={18} />
         </button>
@@ -1088,13 +1088,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
   const renderQuestionnaire = () => (
     <div className="max-w-2xl mx-auto p-8">
-      <button onClick={() => navigateToStep('role')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-widest transition-colors cursor-pointer">
+      <button onClick={() => navigateToStep('role')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors cursor-pointer">
         <ChevronLeft size={16} /> Back
       </button>
 
       <div className="mb-10">
-        <span className="text-xs font-black text-ug-teal tracking-[0.2em] mb-2 block">Step 2 of 4</span>
-        <h2 className="text-3xl font-black text-ug-navy tracking-tight">Your Intentions</h2>
+        <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 2 of 4</span>
+        <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Your Intentions</h2>
         <p className="text-gray-400 text-sm font-medium mt-2">Tell us what you want to achieve today. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
       </div>
 
@@ -1114,7 +1114,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
           />
         </div>
 
-        <div className={`p-4 rounded-3xl transition-all ${fieldErrors.looking_for ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
+        <div className={`p-4 rounded-2xl transition-all ${fieldErrors.looking_for ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
           {renderFieldLabel("What are you currently looking for? (Select at least one)", "looking_for")}
           <div className="grid grid-cols-2 gap-3">
             {(selectedRole === UserRole.Researcher 
@@ -1136,7 +1136,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                     handleLookingForToggle(option);
                     clearFieldError("looking_for");
                   }}
-                  className={`py-3 px-4 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                  className={`py-3 px-4 rounded-xl border-2 text-[11px] font-semibold tracking-wider transition-all cursor-pointer ${
                     isSelected ? 'bg-ug-navy text-white border-ug-navy' : 'bg-white border-gray-100 text-gray-400 hover:border-ug-teal'
                   }`}
                 >
@@ -1210,7 +1210,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 onChange={(e) => setAnswers({...answers, funding_needed: e.target.checked})}
                 className="w-5 h-5 rounded-lg border-2 border-ug-teal text-ug-teal focus:ring-ug-teal cursor-pointer"
               />
-              <label htmlFor="needs_funding" className="text-xs font-black text-ug-navy uppercase tracking-widest cursor-pointer">Seeking External Funding</label>
+              <label htmlFor="needs_funding" className="text-xs font-bold text-ug-navy uppercase tracking-wide cursor-pointer">Seeking External Funding</label>
             </div>
           </div>
         )}
@@ -1327,7 +1327,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
             navigateToStep('resume');
           }}
-          className="w-full bg-ug-navy text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+          className="w-full bg-ug-navy text-white py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
         >
           Next Step <ChevronRight size={18} />
         </button>
@@ -1341,25 +1341,25 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
     return (
       <div className="max-w-2xl mx-auto p-8">
-        <button onClick={() => navigateToStep('questionnaire')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-widest transition-colors cursor-pointer">
+        <button onClick={() => navigateToStep('questionnaire')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors cursor-pointer">
           <ChevronLeft size={16} /> Back
         </button>
 
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-black text-ug-teal tracking-[0.2em] block">Step 3 of 4</span>
+            <span className="text-xs font-bold text-ug-teal tracking-[0.2em] block">Step 3 of 4</span>
             {isCvRequired && (
-              <span className="px-3 py-1 bg-red-100 text-red-700 font-black text-[9px] uppercase tracking-wider rounded-full border border-red-200">
+              <span className="px-3 py-1 bg-red-100 text-red-700 font-semibold text-[11px] tracking-wider rounded-full border border-red-200">
                 Mandatory Step *
               </span>
             )}
           </div>
-          <h2 className="text-3xl font-black text-ug-navy tracking-tight">Experience Import & CV Parse</h2>
+          <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Experience Import & CV Parse</h2>
           <p className="text-gray-400 text-sm font-medium mt-2">
             {isCvRequired ? (
               <strong className="text-red-600 font-extrabold">CV Submission Required (*): </strong>
             ) : null}
-            Upload your CV to the <strong className="text-ug-teal font-black">AI Parser</strong> in PDF or TXT format for instant extraction, or paste your complete CV/resume text in the area below.
+            Upload your CV to the <strong className="text-ug-teal font-bold">AI Parser</strong> in PDF or TXT format for instant extraction, or paste your complete CV/resume text in the area below.
           </p>
         </div>
 
@@ -1392,20 +1392,20 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                   : 'bg-gray-50 border-gray-100 hover:border-gray-200'
               }`}
             >
-              <div className={`p-6 rounded-3xl ${hasCvError ? 'bg-red-500 text-white' : cvText ? 'bg-ug-teal text-white' : 'bg-white text-gray-300 shadow-sm'} transition-colors`}>
+              <div className={`p-6 rounded-2xl ${hasCvError ? 'bg-red-500 text-white' : cvText ? 'bg-ug-teal text-white' : 'bg-white text-gray-300 shadow-sm'} transition-colors`}>
                 {isUploading ? <Loader2 className="animate-spin" size={32} /> : (cvText ? <Check size={32} /> : <Upload size={32} />)}
               </div>
               <div className="text-center">
-                <p className={`text-sm font-black uppercase tracking-widest ${hasCvError ? 'text-red-600 font-extrabold' : 'text-ug-navy'}`}>
+                <p className={`text-sm font-bold uppercase tracking-wide ${hasCvError ? 'text-red-600 font-extrabold' : 'text-ug-navy'}`}>
                   {isUploading ? 'Extracting Data...' : (cvText ? 'CV Payload Registered' : 'Drop CV / Resume File *')}
                 </p>
-                <p className="text-[10px] text-ug-teal font-bold uppercase tracking-widest mt-1">Direct Extraction: PDF & TXT</p>
+                <p className="text-[11px] text-ug-teal font-bold tracking-wide mt-1">Direct Extraction: PDF & TXT</p>
               </div>
             </label>
           </div>
 
           <div className="text-center">
-            <span className={`text-[10px] font-black uppercase tracking-[0.3em] ${hasCvError ? 'text-red-600 font-extrabold' : 'text-gray-400'}`}>
+            <span className={`text-[11px] font-semibold tracking-[0.3em] ${hasCvError ? 'text-red-600 font-extrabold' : 'text-gray-400'}`}>
               Or paste CV text directly below <span className="text-red-500 font-bold">*</span>
             </span>
           </div>
@@ -1434,7 +1434,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               }
               processAIProfile();
             }}
-            className="w-full bg-ug-navy text-white py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full bg-ug-navy text-white py-5 rounded-[2rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
           >
             Initialize Intelligence <Sparkles size={18} />
           </button>
@@ -1456,7 +1456,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
           className="absolute -inset-8 bg-ug-teal/10 rounded-full blur-3xl z-[-1]"
         />
       </div>
-      <h2 className="text-3xl font-black text-ug-navy tracking-tighter mb-4 animate-bounce">Generating Digital Twin...</h2>
+      <h2 className="text-3xl font-bold text-ug-navy tracking-tighter mb-4 animate-bounce">Generating Digital Twin...</h2>
       <p className="text-gray-400 font-bold text-xs uppercase tracking-[0.2em] max-w-sm mx-auto leading-loose">
         Normalizing research datasets, classifying technical competencies, and identifying optimal ecosystem nodes.
       </p>
@@ -1469,14 +1469,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         <div className="flex-1">
           <div className="mb-10">
             <div className="flex items-center gap-4 mb-4">
-              <div className="px-4 py-2 bg-ug-navy text-white rounded-xl text-[10px] font-black uppercase tracking-widest">
+              <div className="px-4 py-2 bg-ug-navy text-white rounded-xl text-[11px] font-semibold tracking-wide">
                 {extractedProfile?.professional_profile?.current_role || 'Member'}
               </div>
-              <div className="px-4 py-2 bg-ug-teal text-white rounded-xl text-[10px] font-black uppercase tracking-widest">
+              <div className="px-4 py-2 bg-ug-teal text-white rounded-xl text-[11px] font-semibold tracking-wide">
                 {extractedProfile?.professional_profile?.experience_level || 'General'}
               </div>
             </div>
-            <h1 className="text-5xl font-black text-ug-navy tracking-tighter mb-6 leading-none">
+            <h1 className="text-5xl font-bold text-ug-navy tracking-tighter mb-6 leading-none">
                 Intelligence Extraction <span className="text-ug-teal">Complete.</span>
             </h1>
             <p className="text-gray-500 font-medium leading-relaxed italic text-lg">
@@ -1486,21 +1486,21 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
             <div>
-              <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Technical Assets</h4>
+              <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide mb-4">Technical Assets</h4>
               <div className="flex flex-wrap gap-2">
                 {Array.from(new Set([
                   ...(extractedProfile?.skills?.technical_skills || []), 
                   ...(extractedProfile?.skills?.tools_and_technologies || [])
                 ])).slice(0, 10).map(s => (
-                  <span key={s} className="px-3 py-1.5 bg-gray-50 rounded-lg text-[9px] font-bold text-gray-600 uppercase border border-gray-100">{s}</span>
+                  <span key={s} className="px-3 py-1.5 bg-gray-50 rounded-lg text-[11px] font-bold text-gray-600 border border-gray-100">{s}</span>
                 ))}
               </div>
             </div>
             <div>
-              <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Strategic Intent</h4>
+              <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide mb-4">Strategic Intent</h4>
               <div className="flex flex-wrap gap-2">
                 {(extractedProfile?.collaboration_profile?.looking_for || []).map(l => (
-                  <span key={l} className="px-3 py-1.5 bg-ug-teal/10 rounded-lg text-[9px] font-bold text-ug-teal uppercase border border-ug-teal/20">{l}</span>
+                  <span key={l} className="px-3 py-1.5 bg-ug-teal/10 rounded-lg text-[11px] font-bold text-ug-teal border border-ug-teal/20">{l}</span>
                 ))}
               </div>
             </div>
@@ -1508,14 +1508,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
           {(extractedProfile?.work_experience?.length || 0) > 0 && (
             <div className="mb-12">
-              <h4 className="text-[10px] font-black text-ug-teal uppercase tracking-widest mb-4 flex items-center gap-2">
+              <h4 className="text-[11px] font-semibold text-ug-teal tracking-wide mb-4 flex items-center gap-2">
                 <Users size={14} /> Professional Trajectory
               </h4>
               <div className="space-y-4">
                 {extractedProfile?.work_experience?.slice(0, 2).map((exp, i) => (
                   <div key={i} className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <p className="text-xs font-black text-ug-navy uppercase">{exp.role} @ {exp.organization}</p>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">{exp.duration}</p>
+                    <p className="text-xs font-bold text-ug-navy uppercase">{exp.role} @ {exp.organization}</p>
+                    <p className="text-[11px] text-gray-400 font-bold mt-1">{exp.duration}</p>
                   </div>
                 ))}
               </div>
@@ -1524,7 +1524,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
           {(extractedProfile?.projects?.length || 0) > 0 && (
             <div className="mb-12">
-              <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide mb-4 flex items-center gap-2">
                 <Rocket size={14} /> Ecosystem Initiatives
               </h4>
               <div className="space-y-4">
@@ -1540,15 +1540,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
           <button 
             onClick={onComplete}
-            className="w-full md:w-auto bg-ug-navy text-white px-12 py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-ug-navy/40 hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 group"
+            className="w-full md:w-auto bg-ug-navy text-white px-12 py-6 rounded-[2rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/40 hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 group"
           >
             Enter Dashboard <Rocket size={20} className="group-hover:translate-x-2 transition-transform" />
           </button>
         </div>
 
         <div className="w-full md:w-80 space-y-6">
-          <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-2xl shadow-gray-200/50">
-            <h4 className="text-[10px] font-black text-ug-navy uppercase tracking-widest mb-6 border-b border-gray-50 pb-4">Digital Identity</h4>
+          <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50">
+            <h4 className="text-[11px] font-semibold text-ug-navy tracking-wide mb-6 border-b border-gray-50 pb-4">Digital Identity</h4>
             <div className="space-y-6">
                 {[
                     { label: 'Education', val: extractedProfile?.education?.[0]?.degree, icon: GraduationCap },
@@ -1558,8 +1558,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                     <div key={i} className="flex gap-4">
                         <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 shrink-0"><item.icon size={18}/></div>
                         <div>
-                            <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest">{item.label}</p>
-                            <p className="text-[11px] font-bold text-ug-navy uppercase tracking-tight">{item.val || 'N/A'}</p>
+                            <p className="text-[11px] font-semibold text-gray-300 tracking-wide">{item.label}</p>
+                            <p className="text-[11px] font-bold text-ug-navy tracking-tight">{item.val || 'N/A'}</p>
                         </div>
                     </div>
                 ))}
@@ -1578,9 +1578,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         {/* Simplified Header for Embedded status monitoring */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-100 pb-6 mb-8 relative z-10 gap-4">
           <div className="flex flex-col">
-            <span className="text-[10px] font-black text-ug-teal uppercase tracking-[0.2em] mb-1">Interactive Match Setup</span>
+            <span className="text-[11px] font-semibold text-ug-teal tracking-[0.2em] mb-1">Interactive Match Setup</span>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-black text-ug-navy uppercase tracking-tight">AI Matching Portal</span>
+              <span className="text-lg font-bold text-ug-navy uppercase tracking-tight">AI Matching Portal</span>
             </div>
           </div>
           <div className="flex items-center gap-6 self-stretch sm:self-auto justify-between sm:justify-start">
@@ -1594,7 +1594,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             {onSkip && (
               <button 
                 onClick={onSkip} 
-                className="text-gray-400 hover:text-ug-navy font-black text-[9px] uppercase tracking-widest transition-colors border border-gray-200 hover:border-gray-300 px-3.5 py-2 rounded-xl active:scale-95 duration-150 shrink-0"
+                className="text-gray-400 hover:text-ug-navy font-semibold text-[11px] tracking-wide transition-colors border border-gray-200 hover:border-gray-300 px-3.5 py-2 rounded-xl active:scale-95 duration-150 shrink-0"
               >
                 Close Portal
               </button>
@@ -1639,7 +1639,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             <div className="bg-ug-navy p-2 rounded-2xl text-white shadow-xl shadow-ug-navy/20">
                 <GraduationCap size={24} />
             </div>
-            <span className="font-black tracking-[0.3em] uppercase text-sm">UG Hub</span>
+            <span className="font-bold tracking-[0.3em] uppercase text-sm">UG Hub</span>
         </div>
         <div className="flex items-center gap-3 sm:gap-10">
             <div className="hidden md:flex gap-2">
@@ -1652,12 +1652,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             {onSkip && (
               <button 
                 onClick={onSkip} 
-                className="bg-ug-teal/10 hover:bg-ug-teal text-ug-navy hover:text-white px-4 py-2 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all shadow-sm active:scale-95"
+                className="bg-ug-teal/10 hover:bg-ug-teal text-ug-navy hover:text-white px-4 py-2 rounded-xl font-semibold text-[11px] tracking-wide transition-all shadow-sm active:scale-95"
               >
                 Skip Setup
               </button>
             )}
-            <button onClick={() => navigate('/')} className="text-gray-400 hover:text-ug-navy font-black text-[10px] uppercase tracking-widest transition-colors">Abort</button>
+            <button onClick={() => navigate('/')} className="text-gray-400 hover:text-ug-navy font-semibold text-[11px] tracking-wide transition-colors">Abort</button>
         </div>
       </header>
       

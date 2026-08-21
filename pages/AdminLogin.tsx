@@ -70,14 +70,14 @@ export const AdminLogin: React.FC = () => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex p-4 rounded-3xl bg-ug-teal/10 border border-ug-teal/20 mb-4 text-ug-teal"
+            className="inline-flex p-4 rounded-2xl bg-ug-teal/10 border border-ug-teal/20 mb-4 text-ug-teal"
           >
             <ShieldAlert size={36} />
           </motion.div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white uppercase leading-tight block">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white uppercase leading-tight block">
             Administrative Access
           </h2>
-          <p className="text-[10px] sm:text-xs text-gray-400 max-w-sm mx-auto leading-relaxed uppercase tracking-wider font-bold pt-1">
+          <p className="text-[11px] sm:text-xs text-gray-400 max-w-sm mx-auto leading-relaxed tracking-wider font-bold pt-1">
             Authorized Personnel Only. Please verify credentials to access directories and security metrics.
           </p>
         </div>
@@ -87,12 +87,12 @@ export const AdminLogin: React.FC = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="bg-gray-900 border border-white/5 shadow-2xl rounded-[2.5rem] p-8 md:p-10 space-y-6"
+          className="bg-gray-900 border border-white/5 shadow-xl rounded-[2.5rem] p-8 md:p-10 space-y-6"
         >
           <form onSubmit={handleAdminAuth} className="space-y-4 text-left">
             {/* Email field */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 font-mono">
+              <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1 font-mono">
                 Administrative Email
               </label>
               <div className="relative">
@@ -110,7 +110,7 @@ export const AdminLogin: React.FC = () => {
 
             {/* Password field */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 font-mono">
+              <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1 font-mono">
                 Security Access Phrase
               </label>
               <div className="relative">
@@ -130,7 +130,7 @@ export const AdminLogin: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-ug-teal hover:bg-ug-teal/80 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-lg transition flex items-center justify-center gap-2 mt-6 active:scale-95 disabled:opacity-50"
+              className="w-full h-12 bg-ug-teal hover:bg-ug-teal/80 text-white font-semibold text-[11px] tracking-wide rounded-2xl shadow-lg transition flex items-center justify-center gap-2 mt-6 active:scale-95 disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -148,7 +148,7 @@ export const AdminLogin: React.FC = () => {
         </motion.div>
 
         {/* Dynamic Trust Badges */}
-        <div className="flex items-center justify-center gap-6 text-gray-500 text-[9px] uppercase tracking-widest font-mono pt-4">
+        <div className="flex items-center justify-center gap-6 text-gray-500 text-[11px] tracking-wide font-mono pt-4">
           <div className="flex items-center gap-1.5 font-bold">
             <CheckCircle size={10} className="text-ug-teal" />
             <span>Encrypted Pipeline</span>

@@ -63,13 +63,13 @@ const MobileNav: React.FC<{ activeTab: string; setActiveTab: (t: any) => void; r
             <div className="relative flex items-center justify-center">
               <tab.icon size={20} strokeWidth={isActive ? 2.2 : 1.8} className="transition-transform duration-200" />
               {tab.id === 'messages' && unreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 bg-ug-teal text-white text-[9px] font-black flex items-center justify-center rounded-full shadow-sm">
+                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 bg-ug-teal text-white text-[11px] font-semibold flex items-center justify-center rounded-full shadow-sm">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
             </div>
 
-            <span className={`text-[10px] tracking-tight capitalize ${isActive ? 'text-ug-navy font-black' : 'text-gray-400 font-bold'}`}>
+            <span className={`text-[11px] tracking-tight capitalize ${isActive ? 'text-ug-navy font-semibold' : 'text-gray-400 font-bold'}`}>
               {tab.label}
             </span>
           </button>
@@ -92,7 +92,7 @@ const Sidebar: React.FC<{
 }> = ({ activeTab, setActiveTab, role, user, adminSubTab = 'metrics', setAdminSubTab, isCollapsed, setIsCollapsed }) => {
   const tabs = [
     { id: 'overview', icon: LayoutGrid, label: 'Overview' },
-    { id: 'matches', icon: Target, label: 'MY MATCHES', sparkles: true },
+    { id: 'matches', icon: Target, label: 'Matches' },
     { id: 'messages', icon: MessageSquare, label: 'Messages' },
     { id: 'profile', icon: UserIcon, label: 'Profile' },
   ];
@@ -122,7 +122,7 @@ const Sidebar: React.FC<{
       {/* Dynamic Floating Toggle Button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute top-1/2 -right-3.5 -translate-y-1/2 bg-white border border-gray-200 text-[#0a0b2c] hover:bg-[#0a0b2c] hover:text-white h-7 w-7 rounded-full flex items-center justify-center shadow-md cursor-pointer transition-all duration-300 z-50 hover:scale-105 active:scale-95 group"
+        className="absolute top-1/2 -right-3.5 -translate-y-1/2 bg-white border border-gray-200 text-[#1a1a4b] hover:bg-[#1a1a4b] hover:text-white h-7 w-7 rounded-full flex items-center justify-center shadow-md cursor-pointer transition-all duration-300 z-50 hover:scale-105 active:scale-95 group"
         title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
       >
         <ChevronLeft 
@@ -136,7 +136,7 @@ const Sidebar: React.FC<{
           <GraduationCap size={20} />
         </div>
         {!isCollapsed && (
-          <h2 className="text-sm font-black text-ug-navy uppercase tracking-widest leading-none block animate-fade-in">
+          <h2 className="text-sm font-bold text-ug-navy  tracking-wide leading-none block animate-fade-in">
             {getPortalTitle()}<br/><span className="text-ug-teal">PORTAL</span>
           </h2>
         )}
@@ -164,7 +164,7 @@ const Sidebar: React.FC<{
               <div className="flex items-center gap-3">
                 <tab.icon size={18} className="shrink-0" />
                 {!isCollapsed && (
-                  <span className="text-xs font-black tracking-widest uppercase whitespace-nowrap">
+                  <span className="text-xs font-bold tracking-wide  whitespace-nowrap">
                     {tab.label}
                   </span>
                 )}
@@ -185,20 +185,17 @@ const Sidebar: React.FC<{
               }`}
               title={isCollapsed ? tab.label : undefined}
             >
-              <div className="flex items-center gap-3">
-                <tab.icon size={18} className="shrink-0" />
-                {!isCollapsed && (
-                  <span className="text-xs font-black tracking-widest uppercase whitespace-nowrap">
-                    {tab.label}
-                  </span>
-                )}
-              </div>
-              {!isCollapsed && tab.sparkles && (
-                <Sparkles size={12} className={activeTab === tab.id ? 'text-ug-teal' : 'text-gray-300 opacity-0 group-hover:opacity-100 transition'} />
-              )}
-            </button>
-          ))
-        )}
+                <div className="flex items-center gap-3">
+                  <tab.icon size={18} className="shrink-0" />
+                  {!isCollapsed && (
+                    <span className="text-xs font-bold tracking-wide  whitespace-nowrap">
+                      {tab.label}
+                    </span>
+                  )}
+                </div>
+              </button>
+            ))
+          )}
       </nav>
     </div>
   );
@@ -209,13 +206,13 @@ const Sidebar: React.FC<{
 const StatCard: React.FC<{ label: string; value: string | number; trend?: string; icon: any; color?: string }> = ({ label, value, trend, icon: Icon }) => (
   <div className="bg-white p-4 md:p-5 rounded-xl border border-gray-100 shadow-sm relative group hover:shadow-md transition-all flex flex-col gap-2">
     <div className="flex justify-between items-start">
-      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{label}</span>
+      <span className="text-[11px] font-bold text-gray-400 tracking-wider">{label}</span>
       <Icon size={16} className="text-gray-300 group-hover:text-ug-teal transition duration-500" />
     </div>
     <div className="flex items-baseline justify-between gap-2">
       <h3 className="text-xl md:text-2xl font-bold text-ug-navy tracking-tight">{value}</h3>
       {trend && (
-        <span className="text-[8px] font-bold text-ug-teal bg-ug-teal/5 px-2 py-0.5 rounded-full tracking-wider leading-none">
+        <span className="text-[11px] font-bold text-ug-teal bg-ug-teal/5 px-2 py-0.5 rounded-full tracking-wider leading-none">
           {trend}
         </span>
       )}
@@ -225,7 +222,7 @@ const StatCard: React.FC<{ label: string; value: string | number; trend?: string
 
 const SectionTitle: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
   <div className="mb-6">
-    <h2 className="text-xl font-black text-ug-navy flex items-center gap-2">
+    <h2 className="text-xl font-bold text-ug-navy flex items-center gap-2">
       <div className="h-6 w-1 bg-ug-teal rounded-full"></div> {title}
     </h2>
     {subtitle && <p className="text-sm text-gray-500 mt-1 font-medium ml-3">{subtitle}</p>}
@@ -254,11 +251,11 @@ const HubStreamSidebar: React.FC = () => {
   );
 
   return (
-    <aside className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-gray-100 shadow-sm sticky top-24 z-10">
+    <aside className="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm sticky top-24 z-10">
        <div className="flex justify-between items-center mb-8">
           <div>
-            <h3 className="text-lg font-black text-ug-navy">Hub Stream</h3>
-            <p className="text-[10px] font-black text-ug-teal uppercase tracking-[0.2em] mt-1">Trending Innovations</p>
+            <h3 className="text-lg font-bold text-ug-navy">Hub Stream</h3>
+            <p className="text-[11px] font-semibold text-ug-teal tracking-[0.2em] mt-1">Trending Innovations</p>
           </div>
           <div className="h-10 w-10 bg-ug-navy text-white rounded-2xl flex items-center justify-center animate-pulse shadow-lg">
              <Zap size={18} className="text-ug-teal" />
@@ -270,7 +267,7 @@ const HubStreamSidebar: React.FC = () => {
             <div 
               key={p.id} 
               onClick={() => navigate(`/projects/${p.id}`)}
-              className="group bg-gray-50/50 border border-transparent rounded-[2rem] p-5 hover:bg-white hover:border-ug-teal/20 hover:shadow-xl transition-all cursor-pointer relative overflow-hidden"
+              className="group bg-gray-50/50 border border-transparent rounded-2xl p-5 hover:bg-white hover:border-ug-teal/20 hover:shadow-xl transition-all cursor-pointer relative overflow-hidden"
             >
                <div className="flex gap-4">
                   <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-sm shrink-0 border border-white">
@@ -278,15 +275,15 @@ const HubStreamSidebar: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[8px] font-black text-ug-teal uppercase tracking-widest">{p.research_area}</span>
+                        <span className="text-[11px] font-semibold text-ug-teal tracking-wide">{p.research_area}</span>
                         <div className="h-1 w-1 bg-gray-200 rounded-full"></div>
-                        <span className="text-[8px] font-black text-ug-success uppercase tracking-widest">{p.status}</span>
+                        <span className="text-[11px] font-semibold text-ug-success tracking-wide">{p.status}</span>
                      </div>
-                     <h4 className="font-black text-ug-navy text-xs leading-tight line-clamp-2 group-hover:text-ug-teal transition">{p.title}</h4>
+                     <h4 className="font-bold text-ug-navy text-xs leading-tight line-clamp-2 group-hover:text-ug-teal transition">{p.title}</h4>
                   </div>
                </div>
                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-[8px] font-black uppercase text-gray-400 tracking-widest">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 tracking-wide">
                      <Users size={10} /> Active Engagement
                   </div>
                   <div className="text-ug-navy group-hover:translate-x-1 transition-transform">
@@ -415,15 +412,15 @@ const ProjectFormModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-start justify-center p-4 md:p-10 bg-ug-navy/95 backdrop-blur-md overflow-y-auto custom-scrollbar">
-      <div className="bg-white rounded-[3rem] md:rounded-[4rem] w-full max-w-5xl p-6 md:p-12 shadow-2xl relative my-8">
+      <div className="bg-white rounded-2xl md:rounded-2xl w-full max-w-5xl p-6 md:p-12 shadow-xl relative my-8">
         <div className="flex justify-between items-start mb-10">
           <div className="flex items-center gap-4">
              <div className="w-12 h-12 bg-ug-teal text-white rounded-2xl flex items-center justify-center shadow-lg">
                 <FileCode size={24} />
              </div>
              <div>
-               <h2 className="text-2xl md:text-3xl font-black text-ug-navy tracking-tight">{project ? 'Update Disclosure' : 'New Project Disclosure'}</h2>
-               <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mt-1">University of Ghana Research Intelligence</p>
+               <h2 className="text-2xl md:text-3xl font-bold text-ug-navy tracking-tight">{project ? 'Update Disclosure' : 'New Project Disclosure'}</h2>
+               <p className="text-[11px] font-semibold text-gray-400 tracking-[0.3em] mt-1">University of Ghana Research Intelligence</p>
              </div>
           </div>
           <button onClick={onClose} className="p-3 hover:bg-gray-100 rounded-2xl transition hover:rotate-90 duration-300"><X size={24} /></button>
@@ -435,22 +432,22 @@ const ProjectFormModal: React.FC<{
             <div className="space-y-4">
                <div className="flex items-center gap-2 mb-2">
                   <div className="h-4 w-1 bg-ug-teal rounded-full"></div>
-                  <span className="text-[10px] font-black text-ug-navy uppercase tracking-widest">Identification</span>
+                  <span className="text-[11px] font-semibold text-ug-navy tracking-wide">Identification</span>
                </div>
                <div className="space-y-2">
-                 <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Research Title / Product Name</label>
+                 <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Research Title / Product Name</label>
                  <input required type="text" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 font-bold text-ug-navy focus:ring-2 focus:ring-ug-teal/20 outline-none transition" placeholder="Enter formal project title..." />
                </div>
  
                <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
-                   <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Research Area</label>
+                   <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Research Area</label>
                    <select value={formData.research_area || ''} onChange={e => setFormData({...formData, research_area: e.target.value as ResearchArea})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 font-bold text-ug-navy focus:ring-2 focus:ring-ug-teal/20 outline-none cursor-pointer">
                      {Object.values(ResearchArea).map(area => <option key={area} value={area}>{area}</option>)}
                    </select>
                  </div>
                  <div className="space-y-2">
-                   <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Department</label>
+                   <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Department</label>
                    <input required type="text" value={formData.department || ''} onChange={e => setFormData({...formData, department: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 font-bold text-ug-navy focus:ring-2 focus:ring-ug-teal/20 outline-none" placeholder="e.g. Computer Science" />
                  </div>
                </div>
@@ -459,15 +456,15 @@ const ProjectFormModal: React.FC<{
             <div className="space-y-4">
                <div className="flex items-center gap-2 mb-2">
                   <div className="h-4 w-1 bg-ug-teal rounded-full"></div>
-                  <span className="text-[10px] font-black text-ug-navy uppercase tracking-widest">Content & Maturity</span>
+                  <span className="text-[11px] font-semibold text-ug-navy tracking-wide">Content & Maturity</span>
                </div>
                <div className="space-y-2">
-                 <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Executive Summary</label>
+                 <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Executive Summary</label>
                  <textarea required rows={4} value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 font-medium text-gray-600 focus:ring-2 focus:ring-ug-teal/20 outline-none resize-none leading-relaxed" placeholder="Describe your research methodology and potential impact..." />
                </div>
  
                <div className="space-y-2">
-                 <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Status</label>
+                 <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Status</label>
                  <select 
                    value={formData.status || ''} 
                    onChange={e => setFormData({...formData, status: e.target.value as ProjectStatus, trl: Object.values(ProjectStatus).indexOf(e.target.value as ProjectStatus) + 1})}
@@ -481,32 +478,32 @@ const ProjectFormModal: React.FC<{
             <div className="space-y-4 pt-4">
                <div className="flex items-center gap-2 mb-2">
                   <div className="h-4 w-1 bg-ug-teal rounded-full"></div>
-                  <span className="text-[10px] font-black text-ug-navy uppercase tracking-widest">Visual Evidence</span>
+                  <span className="text-[11px] font-semibold text-ug-navy tracking-wide">Visual Evidence</span>
                </div>
                <div className="grid grid-cols-2 gap-4">
-                  <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-100 rounded-[2.5rem] cursor-pointer bg-gray-50 hover:bg-white hover:border-ug-teal/30 transition group overflow-hidden">
+                  <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-100 rounded-2xl cursor-pointer bg-gray-50 hover:bg-white hover:border-ug-teal/30 transition group overflow-hidden">
                     {mainImage ? (
                        <div className="w-full h-full p-2">
-                          <img src={URL.createObjectURL(mainImage)} className="w-full h-full object-cover rounded-[2rem]" alt="" />
+                          <img src={URL.createObjectURL(mainImage)} className="w-full h-full object-cover rounded-2xl" alt="" />
                        </div>
                     ) : (
                       <div className="text-center group-hover:scale-110 transition duration-500">
                         <Camera size={24} className="text-gray-300 mx-auto mb-2" />
-                        <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Primary Image</p>
+                        <p className="text-[11px] font-semibold text-gray-400 tracking-wide">Primary Image</p>
                       </div>
                     )}
                     <input type="file" accept="image/*" className="hidden" onChange={e => setMainImage(e.target.files?.[0] || null)} />
                   </label>
 
-                  <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-100 rounded-[2.5rem] cursor-pointer bg-gray-50 hover:bg-white hover:border-ug-teal/30 transition group overflow-hidden">
+                  <label className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-gray-100 rounded-2xl cursor-pointer bg-gray-50 hover:bg-white hover:border-ug-teal/30 transition group overflow-hidden">
                     {evidenceImage ? (
                        <div className="w-full h-full p-2">
-                          <img src={URL.createObjectURL(evidenceImage)} className="w-full h-full object-cover rounded-[2rem]" alt="" />
+                          <img src={URL.createObjectURL(evidenceImage)} className="w-full h-full object-cover rounded-2xl" alt="" />
                        </div>
                     ) : (
                       <div className="text-center group-hover:scale-110 transition duration-500">
                         <ImageIcon size={24} className="text-gray-300 mx-auto mb-2" />
-                        <p className="text-[8px] font-black uppercase text-gray-400 tracking-widest">Secondary Proof</p>
+                        <p className="text-[11px] font-semibold text-gray-400 tracking-wide">Secondary Proof</p>
                       </div>
                     )}
                     <input type="file" accept="image/*" className="hidden" onChange={e => setEvidenceImage(e.target.files?.[0] || null)} />
@@ -516,22 +513,22 @@ const ProjectFormModal: React.FC<{
           </div>
 
           {/* Right Column: Technical & Logistics */}
-          <div className="lg:col-span-5 space-y-8 bg-gray-50/50 p-6 md:p-8 rounded-[3rem] border border-gray-100">
+          <div className="lg:col-span-5 space-y-8 bg-gray-50/50 p-6 md:p-8 rounded-2xl border border-gray-100">
             <div className="space-y-6">
               <div className="flex items-center gap-2 mb-2">
                  <div className="h-4 w-1 bg-ug-teal rounded-full"></div>
-                 <span className="text-[10px] font-black text-ug-navy uppercase tracking-widest">Logistics & Funding</span>
+                 <span className="text-[11px] font-semibold text-ug-navy tracking-wide">Logistics & Funding</span>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Budget Estimate</label>
+                  <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Budget Estimate</label>
                   <div className="relative">
                     <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                     <input type="text" value={formData.budget || ''} onChange={e => setFormData({...formData, budget: e.target.value})} className="w-full pl-10 pr-4 py-3.5 bg-white border border-gray-100 rounded-2xl font-bold text-ug-navy focus:ring-2 focus:ring-ug-teal/20 outline-none" placeholder="$0.00" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Start Date</label>
+                  <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Start Date</label>
                   <div className="relative">
                     <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                     <input type="date" value={formData.start_date || ''} onChange={e => setFormData({...formData, start_date: e.target.value})} className="w-full pl-10 pr-4 py-3.5 bg-white border border-gray-100 rounded-2xl font-bold text-ug-navy focus:ring-2 focus:ring-ug-teal/20 outline-none" />
@@ -540,7 +537,7 @@ const ProjectFormModal: React.FC<{
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Key Achievements & Milestones</label>
+                <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Key Achievements & Milestones</label>
                 <textarea 
                   rows={4} 
                   value={tmpAchievementsText} 
@@ -599,24 +596,24 @@ const ProjectFormModal: React.FC<{
               </div>
 
               <div className="space-y-2">
-                 <label className="text-[10px] font-black text-gray-400 tracking-widest ml-1">Technical Briefing (PDF/DOC)</label>
+                 <label className="text-[11px] font-semibold text-gray-400 tracking-wide ml-1">Technical Briefing (PDF/DOC)</label>
                  <label className="flex items-center gap-4 w-full p-4 bg-white border border-gray-100 rounded-2xl cursor-pointer hover:shadow-xl transition group">
                     <div className="p-3 bg-ug-navy text-ug-teal rounded-xl shadow-lg group-hover:scale-110 transition">
                       <FileUp size={20} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-black text-ug-navy truncate">
+                      <p className="text-sm font-bold text-ug-navy truncate">
                          {technicalBrief ? technicalBrief.name : 'Upload Document'}
                       </p>
-                      <p className="text-[10px] font-black text-gray-400 tracking-widest">Formal Disclosure Brief</p>
+                      <p className="text-[11px] font-semibold text-gray-400 tracking-wide">Formal Disclosure Brief</p>
                     </div>
                     <input type="file" className="hidden" onChange={e => setTechnicalBrief(e.target.files?.[0] || null)} />
                  </label>
               </div>
 
-              <div className="p-6 bg-white rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
+              <div className="p-6 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-4">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="collab" className="text-[10px] font-black text-ug-navy uppercase tracking-widest cursor-pointer select-none">Open to Collaboration</label>
+                  <label htmlFor="collab" className="text-[11px] font-semibold text-ug-navy tracking-wide cursor-pointer select-none">Open to Collaboration</label>
                   <label htmlFor="collab" className="relative inline-flex items-center h-6 rounded-full w-11 cursor-pointer select-none">
                     <input 
                       type="checkbox" 
@@ -628,7 +625,7 @@ const ProjectFormModal: React.FC<{
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-ug-teal after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
                   </label>
                 </div>
-                <p className="text-[8px] font-medium text-gray-400 leading-normal">Enabling this makes your research discoverable to verified industry partners and technical investors.</p>
+                <p className="text-[11px] font-medium text-gray-400 leading-normal">Enabling this makes your research discoverable to verified industry partners and technical investors.</p>
               </div>
 
               <div className="pt-6 space-y-4">
@@ -637,7 +634,7 @@ const ProjectFormModal: React.FC<{
                     type="submit" 
                     onClick={(e) => handleSubmit(e)}
                     disabled={loading} 
-                    className="w-full bg-ug-navy text-white py-5 rounded-[1.5rem] font-black uppercase text-[10px] tracking-[0.25em] shadow-xl hover:bg-ug-teal active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                    className="w-full bg-ug-navy text-white py-3.5 rounded-xl font-semibold text-[11px] tracking-[0.25em] shadow-xl hover:bg-ug-teal active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                   >
                     {loading ? <Loader2 className="animate-spin" size={18} /> : <ShieldCheck size={18} />}
                     Apply Disclosure Changes
@@ -648,7 +645,7 @@ const ProjectFormModal: React.FC<{
                       type="button" 
                       onClick={(e) => handleSubmit(e, DisclosureStatus.Submitted)}
                       disabled={loading} 
-                      className="w-full bg-ug-teal text-white py-5 rounded-[1.5rem] font-black uppercase text-[10px] tracking-[0.25em] shadow-xl hover:bg-ug-navy active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
+                      className="w-full bg-ug-teal text-white py-3.5 rounded-xl font-semibold text-[11px] tracking-[0.25em] shadow-xl hover:bg-ug-navy active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 cursor-pointer"
                     >
                       {loading ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} />}
                       Submit for Academic Review
@@ -657,13 +654,13 @@ const ProjectFormModal: React.FC<{
                       type="button" 
                       onClick={(e) => handleSubmit(e, DisclosureStatus.Draft)}
                       disabled={loading} 
-                      className="w-full bg-gray-100 text-ug-navy hover:bg-gray-200 py-4 rounded-[1.5rem] font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center justify-center gap-3 cursor-pointer"
+                      className="w-full bg-gray-100 text-ug-navy hover:bg-gray-200 py-3 rounded-xl font-semibold text-[11px] tracking-[0.2em] transition-all flex items-center justify-center gap-3 cursor-pointer"
                     >
                       Save as Draft
                     </button>
                   </>
                 )}
-                <button type="button" onClick={onClose} className="w-full py-4 text-gray-400 font-black uppercase text-[9px] tracking-widest hover:text-red-500 transition-colors">
+                <button type="button" onClick={onClose} className="w-full py-4 text-gray-400 font-semibold text-[11px] tracking-wide hover:text-red-500 transition-colors">
                   Discard & Close
                 </button>
               </div>
@@ -969,13 +966,13 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
   };
 
   return (
-    <div className="bg-white md:rounded-[2rem] border-x md:border border-gray-200 shadow-sm overflow-hidden h-[calc(100vh-180px)] md:h-[750px] flex flex-col md:flex-row animate-fade-in font-sans relative">
+    <div className="bg-white md:rounded-2xl border-x md:border border-gray-200 shadow-sm overflow-hidden h-[calc(100vh-180px)] md:h-[750px] flex flex-col md:flex-row animate-fade-in font-sans relative">
       {/* Mobile Messages UI (Accordion Style) */}
       <div className="md:hidden flex-1 flex flex-col overflow-y-auto custom-scrollbar bg-white">
         {!selectedThread ? (
           <div className="flex flex-col">
             <div className="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
-              <h2 className="text-sm font-black text-ug-navy uppercase tracking-widest">Communications</h2>
+              <h2 className="text-sm font-bold text-ug-navy  tracking-wide">Communications</h2>
               <button 
                 onClick={() => setIsComposing(true)}
                 className="p-2 bg-ug-teal text-white rounded-xl shadow-lg"
@@ -1006,13 +1003,13 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                   >
                     <div className="flex items-center gap-4">
                       <cat.icon size={20} className={activeCategory === cat.id ? 'text-blue-600' : 'text-gray-400'} />
-                      <span className={`text-sm tracking-wide ${activeCategory === cat.id ? 'font-black text-blue-700' : 'font-bold text-gray-700'}`}>
+                      <span className={`text-sm tracking-wide ${activeCategory === cat.id ? 'font-bold text-blue-700' : 'font-bold text-gray-700'}`}>
                         {cat.label}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
                       {cat.count ? (
-                        <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                        <span className="bg-blue-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
                           {cat.count}
                         </span>
                       ) : null}
@@ -1029,7 +1026,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                         className="overflow-hidden bg-gray-50/50"
                       >
                         {filteredThreads.length === 0 ? (
-                          <div className="p-10 text-center text-gray-400 text-[10px] font-bold uppercase tracking-widest">
+                          <div className="p-10 text-center text-gray-400 text-[11px] font-bold tracking-wide">
                             No {cat.label.toLowerCase()} yet
                           </div>
                         ) : (
@@ -1049,17 +1046,17 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-center mb-1">
-                                      <span className={`text-xs truncate ${isUnread ? 'font-black text-gray-900' : 'font-bold text-gray-700'}`}>
+                                      <span className={`text-xs truncate ${isUnread ? 'font-bold text-gray-900' : 'font-bold text-gray-700'}`}>
                                         {lastMsg.user_name}
                                       </span>
-                                      <span className="text-[9px] font-bold text-gray-400 uppercase">
+                                      <span className="text-[11px] font-bold text-gray-400">
                                         {new Date(lastMsg.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                       </span>
                                     </div>
                                     <h4 className={`text-[11px] truncate mb-1 ${isUnread ? 'font-bold text-blue-600' : 'text-gray-500'}`}>
                                       {lastMsg.projects?.title || 'General Inquiry'}
                                     </h4>
-                                    <p className="text-[10px] text-gray-400 line-clamp-1 italic">
+                                    <p className="text-[11px] text-gray-400 line-clamp-1 italic">
                                       "{parseMessageWithAttachments(lastMsg.message).textContent}"
                                     </p>
                                   </div>
@@ -1088,7 +1085,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
               </button>
               <div className="flex-1 min-w-0">
                 <h4 className="font-bold text-gray-900 text-sm truncate">{selectedThread[0].projects?.title || 'General Inquiry'}</h4>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest truncate">{selectedThread[0].user_name}</p>
+                <p className="text-[11px] text-gray-400 font-bold tracking-wide truncate">{selectedThread[0].user_name}</p>
               </div>
             </div>
 
@@ -1146,7 +1143,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                                     href={att.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition text-[10px] font-semibold text-gray-700 shadow-sm truncate"
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition text-[11px] font-semibold text-gray-700 shadow-sm truncate"
                                   >
                                     <File size={12} className="text-blue-500 shrink-0" />
                                     <span className="truncate max-w-[100px]">{att.name}</span>
@@ -1166,35 +1163,35 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleAcceptReveal(msg)}
-                                className="flex-1 bg-ug-teal hover:bg-emerald-600 text-white font-black text-[9px] uppercase tracking-wider py-2 rounded-xl transition shadow-sm active:scale-95"
+                                className="flex-1 bg-ug-teal hover:bg-emerald-600 text-white font-semibold text-[11px] tracking-wider py-2 rounded-xl transition shadow-sm active:scale-95"
                               >
                                 Accept Request
                               </button>
                               <button
                                 onClick={() => handleDeclineReveal(msg)}
-                                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black text-[9px] uppercase tracking-wider py-2 rounded-xl transition shadow-sm active:scale-95"
+                                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold text-[11px] tracking-wider py-2 rounded-xl transition shadow-sm active:scale-95"
                               >
                                 Decline
                               </button>
                             </div>
                           ) : (
-                            <div className="flex items-center gap-1.5 justify-center py-1.5 bg-pink-50 text-pink-700 rounded-xl border border-pink-100 text-[9px] font-black uppercase tracking-wider">
+                            <div className="flex items-center gap-1.5 justify-center py-1.5 bg-pink-50 text-pink-700 rounded-xl border border-pink-100 text-[11px] font-semibold tracking-wider">
                               🔒 Clearance Pending
                             </div>
                           )
                         ) : msg.status.startsWith('released') ? (
-                          <div className="flex items-center gap-1.5 justify-center py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 text-[9px] font-black uppercase tracking-wider">
+                          <div className="flex items-center gap-1.5 justify-center py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 text-[11px] font-semibold tracking-wider">
                             <Check size={12} strokeWidth={3} /> Access Granted
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1.5 justify-center py-1.5 bg-red-50 text-red-700 rounded-xl border border-red-100 text-[9px] font-black uppercase tracking-wider">
+                          <div className="flex items-center gap-1.5 justify-center py-1.5 bg-red-50 text-red-700 rounded-xl border border-red-100 text-[11px] font-semibold tracking-wider">
                             Access Declined 🔴
                           </div>
                         )}
                       </div>
                     )}
 
-                    <div className={`text-[8px] mt-2 opacity-60 text-right ${msg.sender_id === user?.id ? 'text-white' : 'text-gray-400'}`}>
+                    <div className={`text-[11px] mt-2 opacity-60 text-right ${msg.sender_id === user?.id ? 'text-white' : 'text-gray-400'}`}>
                       {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
@@ -1204,7 +1201,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
 
             <div className="p-4 border-t border-gray-100 bg-white">
               <div className="flex items-end gap-3">
-                <div className="flex-1 bg-gray-50 rounded-[1.5rem] p-2 flex flex-col border border-gray-100 focus-within:bg-white focus-within:shadow-lg transition-all">
+                <div className="flex-1 bg-gray-50 rounded-xl p-2 flex flex-col border border-gray-100 focus-within:bg-white focus-within:shadow-lg transition-all">
                   <textarea 
                     value={reply}
                     onChange={(e) => setReply(e.target.value)}
@@ -1217,7 +1214,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                   {replyAttachments.length > 0 && (
                     <div className="px-2 py-1.5 flex flex-wrap gap-1.5 border-t border-gray-100/30">
                       {replyAttachments.map((att, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5 pl-2 pr-1 py-0.5 bg-white border border-gray-200 rounded-lg text-[10px] font-medium text-gray-700 shadow-sm animate-fade-in">
+                        <div key={idx} className="flex items-center gap-1.5 pl-2 pr-1 py-0.5 bg-white border border-gray-200 rounded-lg text-[11px] font-medium text-gray-700 shadow-sm animate-fade-in">
                           {att.type === 'image' ? <ImageIcon size={10} className="text-emerald-500 shrink-0" /> : <File size={10} className="text-blue-500 shrink-0" />}
                           <span className="truncate max-w-[80px]">{att.name}</span>
                           <button 
@@ -1232,7 +1229,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                   )}
 
                   {uploadingReply && (
-                    <div className="px-2 py-1 flex items-center gap-1.5 text-[9px] text-blue-600 font-semibold animate-pulse border-t border-gray-100/30">
+                    <div className="px-2 py-1 flex items-center gap-1.5 text-[11px] text-blue-600 font-semibold animate-pulse border-t border-gray-100/30">
                       <Loader2 size={10} className="animate-spin" />
                       <span>Uploading...</span>
                     </div>
@@ -1312,7 +1309,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
               }}
               className={`w-full md:w-[95%] flex items-center justify-between px-6 py-3 md:py-2.5 rounded-2xl md:rounded-r-full text-sm transition-all mb-1 ${
                 activeCategory === cat.id 
-                  ? 'bg-blue-50 text-blue-700 font-black' 
+                  ? 'bg-blue-50 text-blue-700 font-bold' 
                   : 'text-gray-600 hover:bg-gray-100 font-medium'
               }`}
             >
@@ -1321,7 +1318,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                 {cat.label}
               </div>
               {cat.count ? (
-                <span className={`text-xs ${activeCategory === cat.id ? 'font-black' : 'font-bold'}`}>
+                <span className={`text-xs ${activeCategory === cat.id ? 'font-bold' : 'font-bold'}`}>
                   {cat.count}
                 </span>
               ) : null}
@@ -1367,7 +1364,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                 <h4 className="font-bold text-gray-800 truncate text-sm md:text-base">
                   {selectedThread[0].projects?.title || 'General Inquiry'}
                 </h4>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest truncate">{selectedThread[0].user_name}</p>
+                <p className="text-[11px] text-gray-400 font-bold tracking-wide truncate">{selectedThread[0].user_name}</p>
               </div>
               <button className="md:hidden p-2 text-gray-400"><Trash size={18} /></button>
             </div>
@@ -1386,10 +1383,10 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-gray-900 text-sm">{msg.user_name}</span>
                             {msg.user_name !== 'UG Industry Hub Admin' && (
-                              <span className="text-[10px] text-gray-400 font-medium hidden sm:inline">&lt;{msg.sender_id.substring(0, 8)}...&gt;</span>
+                              <span className="text-[11px] text-gray-400 font-medium hidden sm:inline">&lt;{msg.sender_id.substring(0, 8)}...&gt;</span>
                             )}
                           </div>
-                          <span className="text-[10px] text-gray-400">
+                          <span className="text-[11px] text-gray-400">
                             {new Date(msg.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                           </span>
                         </div>
@@ -1457,28 +1454,28 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                                 <div className="flex gap-2">
                                   <button
                                     onClick={() => handleAcceptReveal(msg)}
-                                    className="flex-1 bg-ug-teal hover:bg-emerald-600 text-white font-black text-[9px] uppercase tracking-wider py-2 rounded-xl transition shadow-sm active:scale-95"
+                                    className="flex-1 bg-ug-teal hover:bg-emerald-600 text-white font-semibold text-[11px] tracking-wider py-2 rounded-xl transition shadow-sm active:scale-95"
                                   >
                                     Accept Request
                                   </button>
                                   <button
                                     onClick={() => handleDeclineReveal(msg)}
-                                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black text-[9px] uppercase tracking-wider py-2 rounded-xl transition shadow-sm active:scale-95"
+                                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold text-[11px] tracking-wider py-2 rounded-xl transition shadow-sm active:scale-95"
                                   >
                                     Decline
                                   </button>
                                 </div>
                               ) : (
-                                <div className="flex items-center gap-1.5 justify-center py-1.5 bg-pink-50 text-pink-700 rounded-xl border border-pink-100 text-[9px] font-black uppercase tracking-wider">
+                                <div className="flex items-center gap-1.5 justify-center py-1.5 bg-pink-50 text-pink-700 rounded-xl border border-pink-100 text-[11px] font-semibold tracking-wider">
                                   🔒 Clearance Pending
                                 </div>
                               )
                             ) : msg.status.startsWith('released') ? (
-                              <div className="flex items-center gap-1.5 justify-center py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 text-[9px] font-black uppercase tracking-wider">
+                              <div className="flex items-center gap-1.5 justify-center py-1.5 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 text-[11px] font-semibold tracking-wider">
                                 <Check size={12} strokeWidth={3} /> Access Granted
                               </div>
                             ) : (
-                              <div className="flex items-center gap-1.5 justify-center py-1.5 bg-red-50 text-red-700 rounded-xl border border-red-100 text-[9px] font-black uppercase tracking-wider">
+                              <div className="flex items-center gap-1.5 justify-center py-1.5 bg-red-50 text-red-700 rounded-xl border border-red-100 text-[11px] font-semibold tracking-wider">
                                 Access Declined 🔴
                               </div>
                             )}
@@ -1573,11 +1570,11 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
           /* Thread List View */
           <div className="flex-1 overflow-y-auto">
             {filteredThreads.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-400 p-10 md:p-20 text-center">
+              <div className="flex flex-col items-center justify-center h-full text-gray-400 p-10 md:p-16 text-center">
                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                   <MailOpen size={40} className="opacity-20" />
                 </div>
-                <p className="text-sm font-black uppercase tracking-widest">No messages found</p>
+                <p className="text-sm font-bold  tracking-wide">No messages found</p>
                 <p className="text-xs mt-2 text-gray-400">Your conversations in {activeCategory} will appear here.</p>
               </div>
             ) : (
@@ -1600,10 +1597,10 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className={`text-sm truncate w-32 md:w-48 ${isUnread ? 'font-black text-gray-900' : 'font-bold text-gray-700'}`}>
+                          <span className={`text-sm truncate w-32 md:w-48 ${isUnread ? 'font-bold text-gray-900' : 'font-bold text-gray-700'}`}>
                             {lastMsg.user_name}
                           </span>
-                          <span className={`text-[10px] shrink-0 font-bold uppercase tracking-tighter ${isUnread ? 'text-blue-600' : 'text-gray-400'}`}>
+                          <span className={`text-[11px] shrink-0 font-bold tracking-tighter ${isUnread ? 'text-blue-600' : 'text-gray-400'}`}>
                             {new Date(lastMsg.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                           </span>
                         </div>
@@ -1628,16 +1625,16 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
 
       {/* Compose Modal (Gmail Style) - Responsive Width */}
       {isComposing && (
-        <div className="fixed inset-0 md:inset-auto md:bottom-0 md:right-10 md:w-[500px] md:h-[600px] bg-white shadow-2xl md:rounded-t-3xl border border-gray-200 z-[300] flex flex-col animate-slide-up">
+        <div className="fixed inset-0 md:inset-auto md:bottom-0 md:right-10 md:w-[500px] md:h-[600px] bg-white shadow-xl md:rounded-t-3xl border border-gray-200 z-[300] flex flex-col animate-slide-up">
           <div className="bg-ug-navy text-white px-6 py-6 md:py-4 md:rounded-t-3xl flex items-center justify-between shrink-0">
-            <span className="text-sm font-black uppercase tracking-widest text-ug-teal">New Interaction</span>
+            <span className="text-sm font-bold  tracking-wide text-ug-teal">New Interaction</span>
             <button onClick={() => setIsComposing(false)} className="p-2 hover:bg-white/10 rounded-2xl transition">
               <X size={24} className="md:w-5 md:h-5" />
             </button>
           </div>
           <div className="p-6 md:p-8 flex-1 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
             <div className="relative">
-              <label className="text-[10px] font-black text-gray-400 tracking-widest block mb-2">Recipient</label>
+              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block mb-2">Recipient</label>
               <div className="relative group">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={16} />
                 <input 
@@ -1659,7 +1656,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
               </div>
 
               {recipientResults.length > 0 && !selectedRecipient && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-3xl shadow-2xl z-[310] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl z-[310] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="p-2 space-y-1">
                     {recipientResults.map((u) => (
                       <button
@@ -1674,8 +1671,8 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                           <UserIcon size={20} />
                         </div>
                         <div className="text-left">
-                          <p className="text-sm font-black text-gray-900 group-hover:text-blue-700 transition">{u.name}</p>
-                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{u.role}</p>
+                          <p className="text-sm font-bold text-gray-900 group-hover:text-blue-700 transition">{u.name}</p>
+                          <p className="text-[11px] text-gray-400 font-bold tracking-wide">{u.role}</p>
                         </div>
                       </button>
                     ))}
@@ -1685,7 +1682,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
             </div>
 
             <div>
-              <label className="text-[10px] font-black text-gray-400 tracking-widest block mb-2">Topic</label>
+              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block mb-2">Topic</label>
               <input 
                 type="text" 
                 placeholder="Brief subject description" 
@@ -1696,7 +1693,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
             </div>
 
             <div className="flex-1 min-h-[200px] flex flex-col">
-              <label className="text-[10px] font-black text-gray-400 tracking-widest block mb-2">Message</label>
+              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block mb-2">Message</label>
               <textarea 
                 placeholder="Share your thoughts or research proposal..." 
                 value={composeMessage}
@@ -1734,7 +1731,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
             <button 
               onClick={handleSendDirectMessage}
               disabled={sending || uploadingCompose || !selectedRecipient || (!composeMessage.trim() && composeAttachments.length === 0)}
-              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-[1.5rem] font-black text-[12px] uppercase tracking-[0.2em] transition-all shadow-[0_10px_30px_-10px_rgba(37,99,235,0.4)] disabled:opacity-50 active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
+              className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-xl font-bold text-[12px]  tracking-[0.2em] transition-all shadow-[0_10px_30px_-10px_rgba(37,99,235,0.4)] disabled:opacity-50 active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
             >
               {sending ? <Loader2 size={18} className="animate-spin" /> : <><SendIcon size={18} /> Transmit Message</>}
             </button>
@@ -1949,11 +1946,11 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
         <header className="bg-ug-navy text-white flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 shrink-0 shadow-xl z-50 border-b border-white/10">
           {/* Mobile Brand Identity */}
           <div className="flex sm:hidden items-center gap-2 cursor-pointer group" onClick={() => navigate('/')} title="Return to Home">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-ug-teal via-teal-600 to-teal-800 flex items-center justify-center font-black text-white text-xs shadow-md shadow-teal-900/40 ring-1 ring-white/20 group-hover:scale-105 transition-transform shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-ug-teal via-teal-600 to-teal-800 flex items-center justify-center font-bold text-white text-xs shadow-md shadow-teal-900/40 ring-1 ring-white/20 group-hover:scale-105 transition-transform shrink-0">
               <HomeIcon size={16} />
             </div>
             <div className="flex flex-col">
-              <span className="font-black text-xs tracking-tight text-white leading-none group-hover:text-ug-teal transition-colors">UG Industry Hub</span>
+              <span className="font-bold text-xs tracking-tight text-white leading-none group-hover:text-ug-teal transition-colors">UG Industry Hub</span>
             </div>
           </div>
 
@@ -1963,7 +1960,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                <button 
                  key={link} 
                  onClick={() => navigate(link === 'Home' ? '/' : `/${link.toLowerCase()}`)}
-                 className="text-xs font-black uppercase tracking-wider hover:text-ug-teal transition-colors cursor-pointer text-white/80 hover:text-white"
+                 className="text-xs font-bold   hover:text-ug-teal transition-colors cursor-pointer text-white/80 hover:text-white"
                >
                  {link}
                </button>
@@ -1974,7 +1971,6 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
             <div className="hidden md:flex items-center gap-2.5 px-4 py-1.5 bg-white/5 rounded-full border border-white/10 text-xs shadow-inner">
               <span className="font-light text-white/50">Welcome,</span>
               <span className="font-extrabold text-ug-teal">{getWelcomeName(localUser?.name || user?.name || '')}</span>
-              <span className="animate-bounce inline-block">👋</span>
               <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse ml-0.5"></span>
             </div>
           )}
@@ -1987,7 +1983,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
               title="Return to Home"
             >
               <HomeIcon size={18} className="text-ug-teal" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Home</span>
+              <span className="text-[11px] font-bold tracking-wider">Home</span>
             </button>
 
             <button 
@@ -1998,7 +1994,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
               <Bell size={18} className="sm:w-[20px] sm:h-[20px]" />
               {internalUnread > 0 && (
                 <>
-                  <span className="absolute -top-1 -right-1 sm:top-0.5 sm:right-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-ug-teal text-white text-[8px] sm:text-[9px] font-black flex items-center justify-center rounded-full border border-ug-navy z-10 shadow-lg animate-pulse">
+                  <span className="absolute -top-1 -right-1 sm:top-0.5 sm:right-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-ug-teal text-white text-[11px] sm:text-[11px] font-semibold flex items-center justify-center rounded-full border border-ug-navy z-10 shadow-lg animate-pulse">
                     {internalUnread > 9 ? '9+' : internalUnread}
                   </span>
                   <span className="absolute -top-1 -right-1 sm:top-0.5 sm:right-0.5 w-4 h-4 sm:w-5 sm:h-5 bg-ug-teal rounded-full border border-ug-navy animate-ping opacity-75"></span>
@@ -2078,20 +2074,20 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
             <div className="space-y-6 md:space-y-10 animate-fade-in">
               <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between border-b border-gray-100 pb-6 md:pb-8">
                 <div>
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-ug-navy tracking-tight uppercase">Researcher Portfolio</h2>
-                  <p className="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] sm:tracking-[0.4em] mt-1">Verified Hub Identity Management</p>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-ug-navy tracking-tight ">Researcher Portfolio</h2>
+                  <p className="text-[11px] sm:text-[11px] font-semibold text-gray-400 tracking-[0.2em] sm:tracking-[0.4em] mt-1">Verified Hub Identity Management</p>
                 </div>
                 {!isRerunningOnboarding && (
-                  <div className="flex w-full sm:w-auto bg-gray-100 p-1 rounded-xl sm:rounded-3xl shadow-inner">
+                  <div className="flex w-full sm:w-auto bg-gray-100 p-1 rounded-xl sm:rounded-2xl shadow-inner">
                     <button 
                       onClick={() => setProfileMode('identity')}
-                      className={`flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-[2rem] text-[8px] sm:text-[10px] font-black uppercase tracking-widest transition-all ${profileMode === 'identity' ? 'bg-ug-navy text-white shadow-xl' : 'text-gray-400 hover:text-ug-navy'}`}
+                      className={`flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-2xl text-[11px] sm:text-[11px] font-semibold tracking-wide transition-all ${profileMode === 'identity' ? 'bg-ug-navy text-white shadow-xl' : 'text-gray-400 hover:text-ug-navy'}`}
                     >
                       Identity & Narrative
                     </button>
                     <button 
                       onClick={() => setProfileMode('insights')}
-                      className={`flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-[2rem] text-[8px] sm:text-[10px] font-black uppercase tracking-widest transition-all ${profileMode === 'insights' ? 'bg-ug-navy text-white shadow-xl' : 'text-gray-400 hover:text-ug-navy'}`}
+                      className={`flex-1 sm:flex-none px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-2xl text-[11px] sm:text-[11px] font-semibold tracking-wide transition-all ${profileMode === 'insights' ? 'bg-ug-navy text-white shadow-xl' : 'text-gray-400 hover:text-ug-navy'}`}
                     >
                       AI Research Analysis
                     </button>
@@ -2117,13 +2113,13 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
               ) : (
                 <>
                   {!localUser?.ai_profile && (
-                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 p-6 md:p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 shadow-sm">
+                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 shadow-sm">
                       <div className="flex gap-4 items-start">
                         <div className="w-12 h-12 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center shrink-0">
                           <AlertCircle size={24} />
                         </div>
                         <div className="space-y-1 text-center md:text-left">
-                          <h4 className="text-sm font-black text-ug-navy uppercase tracking-wider">Complete Your AI Match Profile</h4>
+                          <h4 className="text-sm font-bold text-ug-navy  ">Complete Your AI Match Profile</h4>
                           <p className="text-xs text-gray-500 font-medium leading-relaxed">
                             You currently do not have an active AI Match Profile. Industry delegates, researchers, and students rely on high-fidelity AI recommendations to discover you. Complete the interactive setup to get matched!
                           </p>
@@ -2131,7 +2127,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                       </div>
                       <button 
                         onClick={() => setIsRerunningOnboarding(true)}
-                        className="w-full md:w-auto bg-amber-600 hover:bg-amber-750 text-white px-8 py-3.5 rounded-2xl font-black text-[9px] uppercase tracking-widest transition shadow-md active:scale-95 duration-150 shrink-0 flex items-center justify-center gap-2"
+                        className="w-full md:w-auto bg-amber-600 hover:bg-amber-750 text-white px-8 py-3.5 rounded-2xl font-semibold text-[11px] tracking-wide transition shadow-md active:scale-95 duration-150 shrink-0 flex items-center justify-center gap-2"
                       >
                         <Sparkles size={14} /> Start Interactive Onboarding
                       </button>
@@ -2158,8 +2154,8 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                           </div>
                           <div className="relative z-10 space-y-4">
                             <div>
-                              <h4 className="text-[8px] font-black text-ug-teal/80 uppercase tracking-widest mb-0.5">Ecosystem Compliance</h4>
-                              <h3 className="text-sm font-black tracking-wide uppercase leading-tight text-white">AI Profile Sync</h3>
+                              <h4 className="text-[11px] font-semibold text-ug-teal/80 tracking-wide mb-0.5">Ecosystem Compliance</h4>
+                              <h3 className="text-sm font-bold tracking-wide  leading-tight text-white">AI Profile Sync</h3>
                             </div>
                             <p className="text-[9.5px] font-medium leading-relaxed text-white/70 italic font-sans">
                               "Insights are compiled from your verified academic records. Re-indexing occurs automatically within 24 hours of profile edits."
@@ -2167,14 +2163,14 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                             <div className="flex items-center justify-between p-2.5 bg-white/5 rounded-xl border border-white/5">
                               <div className="flex items-center gap-2">
                                 <div className="w-6 h-6 bg-ug-teal/20 text-ug-teal rounded-lg flex items-center justify-center"><Zap size={12} className="animate-pulse" /></div>
-                                <span className="text-[9px] font-bold text-white/90 uppercase tracking-wider">Matching Fidelity</span>
+                                <span className="text-[11px] font-bold text-white/90 tracking-wider">Matching Fidelity</span>
                               </div>
-                              <span className="text-[10px] font-black text-ug-teal">98.4% Accuracy</span>
+                              <span className="text-[11px] font-semibold text-ug-teal">98.4% Accuracy</span>
                             </div>
                             {localUser?.ai_profile && (
                               <button
                                 onClick={() => setIsRerunningOnboarding(true)}
-                                className="w-full bg-ug-teal text-ug-navy hover:bg-white text-center cursor-pointer font-black transition duration-150 py-2 rounded-lg text-[8px] uppercase tracking-widest shadow-md hover:shadow-ug-teal/10"
+                                className="w-full bg-ug-teal text-ug-navy hover:bg-white text-center cursor-pointer font-semibold transition duration-150 py-2 rounded-lg text-[11px] tracking-wide shadow-md hover:shadow-ug-teal/10"
                               >
                                 Sync Profile Engine
                               </button>
@@ -2185,8 +2181,8 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                         <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-2">
                            <div className="flex items-center justify-between">
                               <div>
-                                 <h4 className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Directory Visibility</h4>
-                                 <span className="text-[10px] font-black text-ug-navy uppercase tracking-tight">
+                                 <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide">Directory Visibility</h4>
+                                 <span className="text-[11px] font-semibold text-ug-navy tracking-tight">
                                     {localUser?.ai_profile?.portfolio_visible !== false ? 'Public Discovery' : 'Hidden / Private'}
                                  </span>
                               </div>
@@ -2466,14 +2462,14 @@ const ResearcherDashboard = ({
           <ActiveProjectHero project={activeProject} />
         )}
 
-        <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-[2rem] border border-gray-100 shadow-sm">
+        <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-6 md:mb-8">
             <SectionTitle title="My Disclosures" subtitle="Secure Research Record Management" />
           </div>
           <div className="space-y-4">
             {projects.length === 0 ? (
-              <div className="py-10 md:py-12 text-center bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                <p className="text-gray-400 font-bold uppercase text-[9px] md:text-[10px] tracking-widest px-4">No assets disclosed yet.</p>
+              <div className="py-10 md:py-12 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                <p className="text-gray-400 font-bold text-[11px] md:text-[11px] tracking-wide px-4">No assets disclosed yet.</p>
               </div>
             ) : projects.map(p => {
               const isExpanded = expandedProjectId === p.id;
@@ -2495,7 +2491,7 @@ const ResearcherDashboard = ({
               const reqDocsCount = Array.isArray(p.requested_documents) ? p.requested_documents.length : 0;
 
               return (
-                <div key={p.id} className="border border-gray-100 rounded-3xl bg-gray-50/20 hover:shadow-md transition duration-300 overflow-hidden">
+                <div key={p.id} className="border border-gray-100 rounded-2xl bg-gray-50/20 hover:shadow-md transition duration-300 overflow-hidden">
                   {/* Summary row */}
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between p-5 md:p-6 gap-4">
                     <div className="flex items-start gap-4 cursor-pointer flex-1 min-w-0" onClick={() => navigate(`/projects/${p.id}`)}>
@@ -2504,14 +2500,14 @@ const ResearcherDashboard = ({
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                          <span className="text-[10px] md:text-xs font-bold text-ug-teal uppercase tracking-wider">{p.research_area}</span>
-                          <span className="text-[10px] text-gray-400">•</span>
-                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Submitted: {new Date(p.created_at || '').toLocaleDateString()}</span>
+                          <span className="text-[11px] md:text-xs font-bold text-ug-teal tracking-wider">{p.research_area}</span>
+                          <span className="text-[11px] text-gray-400">•</span>
+                          <span className="text-[11px] text-gray-400 font-bold tracking-wider">Submitted: {new Date(p.created_at || '').toLocaleDateString()}</span>
                         </div>
-                        <h4 className="font-black text-ug-navy text-sm md:text-base group-hover:text-ug-teal transition truncate">{p.title}</h4>
+                        <h4 className="font-bold text-ug-navy text-sm md:text-base group-hover:text-ug-teal transition truncate">{p.title}</h4>
                         
                         {/* Highlights & Metadata list */}
-                        <div className="flex flex-wrap items-center gap-4 mt-2.5 text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                        <div className="flex flex-wrap items-center gap-4 mt-2.5 text-[11px] md:text-[11px] font-bold tracking-wider text-gray-400">
                           <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full ${
                              p.disclosure_status === 'Published' ? 'bg-green-50 text-green-600' :
                              p.disclosure_status === 'Approved' ? 'bg-blue-50 text-blue-600' :
@@ -2548,13 +2544,13 @@ const ResearcherDashboard = ({
                       {/* Badge stats */}
                       <div className="flex items-center gap-2">
                         {msgCount > 0 && (
-                          <div className="flex items-center gap-1 bg-blue-50 text-blue-500 text-[9px] font-black px-2.5 py-1 rounded-full tracking-wider" title="Conversation thread activity">
+                          <div className="flex items-center gap-1 bg-blue-50 text-blue-500 text-[11px] font-semibold px-2.5 py-1 rounded-full tracking-wider" title="Conversation thread activity">
                             <MessageSquare size={10} />
                             {msgCount} MSG
                           </div>
                         )}
                         {reqDocsCount > 0 && (
-                          <div className="flex items-center gap-1 bg-amber-50 text-amber-600 text-[9px] font-black px-2.5 py-1 rounded-full tracking-wider" title="Requested support documents">
+                          <div className="flex items-center gap-1 bg-amber-50 text-amber-600 text-[11px] font-semibold px-2.5 py-1 rounded-full tracking-wider" title="Requested support documents">
                             <File size={10} />
                             {reqDocsCount} DOCS
                           </div>
@@ -2602,7 +2598,7 @@ const ResearcherDashboard = ({
                   {isExpanded && (
                     <div className="border-t border-gray-100 bg-white p-6 md:p-8 space-y-8 animate-fadeIn">
                       <div>
-                        <h5 className="text-[10px] font-black text-ug-navy tracking-widest uppercase mb-4 flex items-center gap-2">
+                        <h5 className="text-[11px] font-semibold text-ug-navy tracking-wide mb-4 flex items-center gap-2">
                           <Clock size={12} className="text-ug-teal" />
                           DISCLOSURE WORKFLOW PROGRESS TRACKER
                         </h5>
@@ -2622,7 +2618,7 @@ const ResearcherDashboard = ({
                             return (
                               <div key={idx} className="flex flex-col items-start gap-2 relative">
                                 <div className="flex items-center gap-2 w-full">
-                                  <div className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                                  <div className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
                                     isActive ? 'bg-ug-teal text-white ring-4 ring-ug-teal/15' :
                                     isCompleted ? 'bg-ug-teal/10 text-ug-teal border border-ug-teal/30' :
                                     'bg-gray-100 text-gray-400'
@@ -2634,10 +2630,10 @@ const ResearcherDashboard = ({
                                   )}
                                 </div>
                                 <div>
-                                  <p className={`text-[9px] font-black uppercase tracking-wider ${isActive ? 'text-ug-teal' : isCompleted ? 'text-ug-navy' : 'text-gray-400'}`}>
+                                  <p className={`text-[11px] font-semibold tracking-wider ${isActive ? 'text-ug-teal' : isCompleted ? 'text-ug-navy' : 'text-gray-400'}`}>
                                     {stage.label}
                                   </p>
-                                  <p className="text-[8px] text-gray-400 leading-normal mt-0.5">{stage.desc}</p>
+                                  <p className="text-[11px] text-gray-400 leading-normal mt-0.5">{stage.desc}</p>
                                 </div>
                               </div>
                             );
@@ -2649,11 +2645,11 @@ const ResearcherDashboard = ({
                       <div className="bg-gray-50/50 rounded-2xl p-5 md:p-6 border border-gray-100 space-y-4">
                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                           <div>
-                            <h6 className="text-[10px] font-extrabold text-ug-navy tracking-widest uppercase flex items-center gap-2">
+                            <h6 className="text-[11px] font-extrabold text-ug-navy tracking-wide flex items-center gap-2">
                               <FileUp size={14} className="text-amber-500" />
                               ADMINISTRATIVE COOPERATIVE FILE INTERACTION
                             </h6>
-                            <p className="text-[9px] md:text-xs font-semibold text-gray-500 mt-1 max-w-xl">
+                            <p className="text-[11px] md:text-xs font-semibold text-gray-500 mt-1 max-w-xl">
                               Support documents, proof of certifications, or technical specifications requested during administrative reviews can be directly uploaded here.
                             </p>
                           </div>
@@ -2668,7 +2664,7 @@ const ResearcherDashboard = ({
                                 navigate('/dashboard?tab=messages');
                               }
                             }}
-                            className="text-[9px] font-extrabold text-ug-teal tracking-wider uppercase hover:underline shrink-0 text-left"
+                            className="text-[11px] font-extrabold text-ug-teal tracking-wider hover:underline shrink-0 text-left"
                           >
                             Open Message Thread →
                           </button>
@@ -2678,10 +2674,10 @@ const ResearcherDashboard = ({
                           {/* Option 1: File Request Upload */}
                           <div className="bg-white p-4 rounded-xl border border-gray-100 flex flex-col justify-between hover:border-ug-teal/30 transition shadow-sm">
                             <div>
-                              <p className="text-[10px] font-black text-ug-navy uppercase tracking-wider mb-1">Upload Requested Document</p>
-                              <p className="text-[8px] text-gray-400 mb-3">Supporting tables, letters, approvals, certificates, etc.</p>
+                              <p className="text-[11px] font-semibold text-ug-navy tracking-wider mb-1">Upload Requested Document</p>
+                              <p className="text-[11px] text-gray-400 mb-3">Supporting tables, letters, approvals, certificates, etc.</p>
                             </div>
-                            <label className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-ug-navy/5 text-ug-navy rounded-xl cursor-pointer hover:bg-ug-navy/10 active:scale-95 transition text-[9px] font-black tracking-wider uppercase">
+                            <label className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-ug-navy/5 text-ug-navy rounded-xl cursor-pointer hover:bg-ug-navy/10 active:scale-95 transition text-[11px] font-semibold tracking-wider">
                               <Upload size={12} />
                               {uploadingDocId === p.id ? 'Uploading Security Document...' : 'Select & Upload Document'}
                               <input 
@@ -2699,10 +2695,10 @@ const ResearcherDashboard = ({
                           {/* Option 2: Upload Revised technical detail brief */}
                           <div className="bg-white p-4 rounded-xl border border-gray-100 flex flex-col justify-between hover:border-ug-teal/30 transition shadow-sm">
                             <div>
-                              <p className="text-[10px] font-black text-ug-navy uppercase tracking-wider mb-1">Submit Updated Technical Brief</p>
-                              <p className="text-[8px] text-gray-400 mb-3">Replaces the active PDF draft brief with a revised version.</p>
+                              <p className="text-[11px] font-semibold text-ug-navy tracking-wider mb-1">Submit Updated Technical Brief</p>
+                              <p className="text-[11px] text-gray-400 mb-3">Replaces the active PDF draft brief with a revised version.</p>
                             </div>
-                            <label className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-ug-teal/5 text-ug-teal rounded-xl cursor-pointer hover:bg-ug-teal/10 active:scale-95 transition text-[9px] font-black tracking-wider uppercase">
+                            <label className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-ug-teal/5 text-ug-teal rounded-xl cursor-pointer hover:bg-ug-teal/10 active:scale-95 transition text-[11px] font-semibold tracking-wider">
                               <FileUp size={12} />
                               {uploadingRevisedId === p.id ? 'Replacing Active Brief...' : 'Upload Revised Brief'}
                               <input 
@@ -2724,21 +2720,21 @@ const ResearcherDashboard = ({
                             {/* Pending Requests */}
                             {p.requested_documents?.some((doc: any) => !doc.url || doc.status === 'requested') && (
                               <div className="bg-amber-50/40 p-4 rounded-xl border border-amber-100/50 text-left">
-                                <p className="text-[10px] font-black text-amber-800 uppercase tracking-wider mb-3">REQUIRED DOCUMENT SLOTS (AWAITING UPLOAD)</p>
+                                <p className="text-[11px] font-semibold text-amber-800 tracking-wider mb-3">REQUIRED DOCUMENT SLOTS (AWAITING UPLOAD)</p>
                                 <div className="space-y-2">
                                   {p.requested_documents?.filter((doc: any) => !doc.url || doc.status === 'requested').map((doc: any, dIdx: number) => (
                                     <div key={doc.id || dIdx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-white border border-amber-100 rounded-xl">
                                       <div className="flex items-start gap-2.5 min-w-0 text-left">
                                         <div className="h-5 w-5 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0 mt-0.5">
-                                          <span className="text-[9px] font-bold text-amber-600">!</span>
+                                          <span className="text-[11px] font-bold text-amber-600">!</span>
                                         </div>
                                         <div className="min-w-0">
-                                          <p className="text-[10px] font-black text-gray-800 leading-normal">{doc.name}</p>
-                                          <p className="text-[8px] text-gray-400 mt-0.5">Requested {new Date(doc.requested_at).toLocaleDateString()}</p>
+                                          <p className="text-[11px] font-semibold text-gray-800 leading-normal">{doc.name}</p>
+                                          <p className="text-[11px] text-gray-400 mt-0.5">Requested {new Date(doc.requested_at).toLocaleDateString()}</p>
                                         </div>
                                       </div>
                                       
-                                      <label className="flex items-center justify-center gap-1.5 py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer transition text-[9px] font-black tracking-wider uppercase shrink-0">
+                                      <label className="flex items-center justify-center gap-1.5 py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg cursor-pointer transition text-[11px] font-semibold tracking-wider shrink-0">
                                         <Upload size={10} />
                                         {uploadingDocId === doc.id ? 'Uploading...' : 'Upload File'}
                                         <input 
@@ -2760,15 +2756,15 @@ const ResearcherDashboard = ({
                             {/* Completed Uploads */}
                             {p.requested_documents?.some((doc: any) => doc.url) && (
                               <div className="bg-white p-4 rounded-xl border border-gray-100 text-left">
-                                <p className="text-[10px] font-black text-ug-navy uppercase tracking-wider mb-3">ACTIVE SUBMITTED SUPPORT DOCUMENTS</p>
+                                <p className="text-[11px] font-semibold text-ug-navy tracking-wider mb-3">ACTIVE SUBMITTED SUPPORT DOCUMENTS</p>
                                 <div className="space-y-2">
                                   {p.requested_documents?.filter((doc: any) => doc.url).map((doc: any, dIdx: number) => (
-                                    <div key={doc.id || dIdx} className="flex justify-between items-center p-2.5 bg-gray-50 rounded-lg text-[9px] font-bold text-gray-600 border border-gray-100 text-left">
+                                    <div key={doc.id || dIdx} className="flex justify-between items-center p-2.5 bg-gray-50 rounded-lg text-[11px] font-bold text-gray-600 border border-gray-100 text-left">
                                       <div className="flex items-center gap-2 truncate">
                                         <div className="h-4 w-4 rounded-full bg-green-50 border border-green-200 flex items-center justify-center shrink-0">
-                                          <span className="text-[8px] font-bold text-green-600">✓</span>
+                                          <span className="text-[11px] font-bold text-green-600">✓</span>
                                         </div>
-                                        <span className="truncate font-black">{doc.name}</span>
+                                        <span className="truncate font-bold">{doc.name}</span>
                                         <span className="text-[7px] text-gray-400 font-medium">Uploaded by {doc.by || 'PI'}</span>
                                       </div>
                                       <a href={doc.url} target="_blank" rel="noreferrer" className="text-ug-teal hover:underline flex items-center gap-1 shrink-0 ml-1">
@@ -2786,23 +2782,23 @@ const ResearcherDashboard = ({
 
                       {/* Audit Log / Timeline section */}
                       <div className="bg-gray-50/30 p-5 rounded-2xl border border-gray-100">
-                        <h6 className="text-[10px] font-extrabold text-ug-navy tracking-widest uppercase mb-3 flex items-center gap-2">
+                        <h6 className="text-[11px] font-extrabold text-ug-navy tracking-wide mb-3 flex items-center gap-2">
                           <Activity size={12} className="text-gray-400" />
                           PERMANENT DISCLOSURE GOVERNANCE LEDGER & AUDIT TRAIL
                         </h6>
                         {timeline.length === 0 ? (
-                          <p className="text-[9px] font-medium text-gray-400 leading-normal">No entries recorded in this disclosure ledgers yet. System lifecycle transitions are registered here dynamically.</p>
+                          <p className="text-[11px] font-medium text-gray-400 leading-normal">No entries recorded in this disclosure ledgers yet. System lifecycle transitions are registered here dynamically.</p>
                         ) : (
                           <div className="space-y-3.5 border-l-2 border-gray-100 pl-4 ml-2.5 mt-2.5">
                             {timeline.map((event: any, evIdx: number) => (
                               <div key={evIdx} className="relative">
                                 <div className="absolute -left-[23px] top-1.5 h-2.5 w-2.5 rounded-full bg-ug-teal/30 border border-white"></div>
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <span className="text-[9px] font-black uppercase text-ug-teal px-1.5 py-0.5 bg-ug-teal/5 rounded tracking-wider">{event.event || event.status}</span>
-                                  <span className="text-[8px] text-gray-400">{new Date(event.timestamp).toLocaleString()}</span>
-                                  <span className="text-[8px] text-gray-400">by {event.user_name || event.by || 'Board Administrator'}</span>
+                                  <span className="text-[11px] font-semibold text-ug-teal px-1.5 py-0.5 bg-ug-teal/5 rounded tracking-wider">{event.event || event.status}</span>
+                                  <span className="text-[11px] text-gray-400">{new Date(event.timestamp).toLocaleString()}</span>
+                                  <span className="text-[11px] text-gray-400">by {event.user_name || event.by || 'Board Administrator'}</span>
                                 </div>
-                                <p className="text-[9px] font-medium text-gray-600 mt-1">{event.details}</p>
+                                <p className="text-[11px] font-medium text-gray-600 mt-1">{event.details}</p>
                               </div>
                             ))}
                           </div>
@@ -2817,7 +2813,7 @@ const ResearcherDashboard = ({
         </section>
 
         {/* INBOUND PORTAL - INTERACTION HUB */}
-        <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-[2rem] border border-gray-100 shadow-sm mt-6 sm:mt-8">
+        <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm mt-6 sm:mt-8">
           {/* Header & Filter Controls */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
             <div>
@@ -2836,7 +2832,7 @@ const ResearcherDashboard = ({
                   }`}
                 >
                   <span>All</span>
-                  <span className={`px-1.5 py-0.5 text-[10px] rounded-md font-black ${eoiFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-200/70 text-gray-700'}`}>
+                  <span className={`px-1.5 py-0.5 text-[11px] rounded-md font-semibold ${eoiFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-200/70 text-gray-700'}`}>
                     {eois.length}
                   </span>
                 </button>
@@ -2849,7 +2845,7 @@ const ResearcherDashboard = ({
                   }`}
                 >
                   <span>Pending</span>
-                  <span className={`px-1.5 py-0.5 text-[10px] rounded-md font-black ${eoiFilter === 'pending' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800'}`}>
+                  <span className={`px-1.5 py-0.5 text-[11px] rounded-md font-semibold ${eoiFilter === 'pending' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800'}`}>
                     {eois.filter(e => !e.status || e.status === 'pending').length}
                   </span>
                 </button>
@@ -2862,7 +2858,7 @@ const ResearcherDashboard = ({
                   }`}
                 >
                   <span>Disclosures</span>
-                  <span className={`px-1.5 py-0.5 text-[10px] rounded-md font-black ${eoiFilter === 'disclosures' ? 'bg-white/20 text-white' : 'bg-pink-100 text-pink-800'}`}>
+                  <span className={`px-1.5 py-0.5 text-[11px] rounded-md font-semibold ${eoiFilter === 'disclosures' ? 'bg-white/20 text-white' : 'bg-pink-100 text-pink-800'}`}>
                     {eois.filter(e => e.message?.includes('[REVEAL_REQUEST]') || e.message?.includes('🔐 Technical Disclosure Request')).length}
                   </span>
                 </button>
@@ -2875,7 +2871,7 @@ const ResearcherDashboard = ({
                   }`}
                 >
                   <span>Applications</span>
-                  <span className={`px-1.5 py-0.5 text-[10px] rounded-md font-black ${eoiFilter === 'applications' ? 'bg-white/20 text-white' : 'bg-teal-100 text-teal-800'}`}>
+                  <span className={`px-1.5 py-0.5 text-[11px] rounded-md font-semibold ${eoiFilter === 'applications' ? 'bg-white/20 text-white' : 'bg-teal-100 text-teal-800'}`}>
                     {eois.filter(e => e.message?.includes('[ASSISTANTSHIP_APPLICATION]') || e.message?.includes('[SCHOLARSHIP_APPLICATION]') || e.message?.includes('[LAB_WORKSPACE_ACCESS]')).length}
                   </span>
                 </button>
@@ -3010,7 +3006,7 @@ const ResearcherDashboard = ({
                                 </span>
 
                                 {matchScoreVal && (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-md shadow-2xs">
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-md shadow-2xs">
                                     ⚡ {matchScoreVal} Match Score
                                   </span>
                                 )}
@@ -3069,14 +3065,14 @@ const ResearcherDashboard = ({
                               {/* Metadata Strip */}
                               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-white p-3.5 rounded-xl border border-gray-200/80 shadow-2xs">
                                 <div>
-                                  <p className="text-gray-400 font-bold uppercase text-[10px] tracking-wider mb-0.5">Applicant / Sender</p>
+                                  <p className="text-gray-400 font-bold text-[11px] tracking-wider mb-0.5">Applicant / Sender</p>
                                   <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="font-black text-ug-navy text-xs">{eoi.user_name}</span>
+                                    <span className="font-bold text-ug-navy text-xs">{eoi.user_name}</span>
                                     {portfolioPathVal && (
                                       <Link 
                                         to={portfolioPathVal}
                                         onClick={(e) => e.stopPropagation()}
-                                        className="inline-flex items-center gap-1 text-ug-teal hover:underline font-extrabold text-[10px] bg-ug-teal/10 px-2.5 py-1 rounded-md border border-ug-teal/30"
+                                        className="inline-flex items-center gap-1 text-ug-teal hover:underline font-extrabold text-[11px] bg-ug-teal/10 px-2.5 py-1 rounded-md border border-ug-teal/30"
                                       >
                                         <UserIcon size={11} /> View Researcher Portfolio
                                       </Link>
@@ -3085,13 +3081,13 @@ const ResearcherDashboard = ({
                                 </div>
 
                                 <div>
-                                  <p className="text-gray-400 font-bold uppercase text-[10px] tracking-wider mb-0.5">Associated Research Asset / Challenge</p>
+                                  <p className="text-gray-400 font-bold text-[11px] tracking-wider mb-0.5">Associated Research Asset / Challenge</p>
                                   <p className="font-bold text-ug-navy text-xs truncate">{eoi.projects?.title || 'Industry Challenge Match'}</p>
                                 </div>
 
                                 {eoi.created_at && (
                                   <div>
-                                    <p className="text-gray-400 font-bold uppercase text-[10px] tracking-wider mb-0.5">Received Date</p>
+                                    <p className="text-gray-400 font-bold text-[11px] tracking-wider mb-0.5">Received Date</p>
                                     <p className="font-medium text-gray-700 text-xs">{new Date(eoi.created_at).toLocaleString()}</p>
                                   </div>
                                 )}
@@ -3099,7 +3095,7 @@ const ResearcherDashboard = ({
 
                               {/* Message Callout Box */}
                               <div>
-                                <p className="text-gray-400 font-bold uppercase text-[10px] tracking-wider mb-1.5">Submitted Application Message</p>
+                                <p className="text-gray-400 font-bold text-[11px] tracking-wider mb-1.5">Submitted Application Message</p>
                                 <p className="text-gray-800 text-xs md:text-sm font-medium leading-relaxed italic bg-white border-l-4 border-ug-teal p-4 rounded-r-xl border-y border-r border-gray-200/80 whitespace-pre-wrap shadow-2xs">
                                   "{cleanMessage}"
                                 </p>
@@ -3212,16 +3208,16 @@ const UnifiedDashboardProfile = ({ user, onAction, actionLabel }: { user: User |
 
     <div className="flex-1 text-center md:text-left min-w-0">
       <h2 className="text-xl md:text-2xl font-bold text-ug-navy tracking-tight mb-1 truncate">{user?.name}</h2>
-      <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 truncate">{user?.role} • {user?.department || 'University of Ghana'}</p>
+      <p className="text-[11px] md:text-xs font-semibold text-gray-400 tracking-wider mb-2 truncate">{user?.role} • {user?.department || 'University of Ghana'}</p>
       <div className="flex items-center justify-center md:justify-start gap-1.5 bg-gray-50 w-fit px-2.5 py-1 rounded-lg border border-gray-100 mx-auto md:mx-0">
         <Plus size={10} className="text-ug-teal" />
-        <span className="text-[10px] font-bold text-ug-navy uppercase tracking-[0.15em]">Identity Verified</span>
+        <span className="text-[11px] font-bold text-ug-navy tracking-[0.15em]">Identity Verified</span>
       </div>
     </div>
 
     <button 
       onClick={onAction}
-      className="w-full md:w-auto bg-ug-navy text-white px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg hover:bg-ug-teal transition-all flex items-center justify-center gap-2 active:scale-95"
+      className="w-full md:w-auto bg-ug-navy text-white px-6 py-3.5 rounded-xl font-bold text-xs  tracking-wide shadow-lg hover:bg-ug-teal transition-all flex items-center justify-center gap-2 active:scale-95"
     >
       <Plus size={14} /> {actionLabel}
     </button>
@@ -3237,7 +3233,7 @@ const ActiveProjectHero = ({ project }: { project: Project }) => (
       <img src={project.image_url && project.image_url.trim() !== '' ? project.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover group-hover:scale-105 transition duration-1000" alt="" />
       <div className="absolute inset-0 bg-gradient-to-t from-ug-navy via-ug-navy/50 to-transparent"></div>
       <div className="absolute top-3 left-3 md:top-4 md:left-4 flex flex-col gap-1.5 max-w-[90%]">
-        <div className="bg-ug-teal text-white px-2.5 py-1 rounded-md text-[8px] md:text-[9px] font-bold uppercase tracking-wider shadow-md animate-pulse w-fit">
+        <div className="bg-ug-teal text-white px-2.5 py-1 rounded-md text-[11px] md:text-[11px] font-bold tracking-wider shadow-md animate-pulse w-fit">
           ACTIVE PROJECT
         </div>
         <h3 className="text-lg md:text-2xl font-bold text-white tracking-tight drop-shadow-md line-clamp-2">{project.title}</h3>
@@ -3247,8 +3243,8 @@ const ActiveProjectHero = ({ project }: { project: Project }) => (
     <div className="p-5 space-y-4">
       <div>
         <div className="flex justify-between items-center mb-3">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Status</span>
-          <span className="text-[10px] md:text-xs font-bold text-ug-teal uppercase tracking-wider">{project.status}</span>
+          <span className="text-[11px] font-bold text-gray-400 tracking-wider">Status</span>
+          <span className="text-[11px] md:text-xs font-bold text-ug-teal tracking-wider">{project.status}</span>
         </div>
         
         <div className="relative pt-1">
@@ -3268,7 +3264,7 @@ const ActiveProjectHero = ({ project }: { project: Project }) => (
 
           <div className="flex justify-between mt-2 overflow-hidden">
              {Object.values(ProjectStatus).map((s, i) => (
-               <span key={s} className={`text-[8px] md:text-[9px] font-semibold ${s === project.status ? 'text-ug-teal' : 'text-gray-300'} max-w-[40px] truncate`}>{s}</span>
+               <span key={s} className={`text-[11px] md:text-[11px] font-semibold ${s === project.status ? 'text-ug-teal' : 'text-gray-300'} max-w-[40px] truncate`}>{s}</span>
              ))}
           </div>
         </div>
@@ -3276,20 +3272,20 @@ const ActiveProjectHero = ({ project }: { project: Project }) => (
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-100 font-sans">
         <div>
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 block">Collaborators</span>
+          <span className="text-[11px] font-bold text-gray-400 tracking-wider mb-2 block">Collaborators</span>
           <div className="flex items-center -space-x-2">
              {['AS', 'JM', 'EV'].map((initials, i) => (
-               <div key={i} className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-[9px] font-bold text-ug-navy shadow-sm ring-2 ring-white">
+               <div key={i} className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-[11px] font-bold text-ug-navy shadow-sm ring-2 ring-white">
                  {initials}
                </div>
              ))}
-             <div className="w-8 h-8 rounded-full bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center text-[9px] font-bold text-gray-400 shadow-sm">+3</div>
+             <div className="w-8 h-8 rounded-full bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center text-[11px] font-bold text-gray-400 shadow-sm">+3</div>
           </div>
         </div>
         <div>
-           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 block">Next Milestone</span>
+           <span className="text-[11px] font-bold text-gray-400 tracking-wider mb-2 block">Next Milestone</span>
            <p className="text-xs font-bold text-ug-navy leading-none">Clinical Pilot (Sept 24)</p>
-           <p className="text-[8px] font-medium text-gray-400 mt-1 uppercase tracking-wider">Awaiting Ethics Approval</p>
+           <p className="text-[11px] font-medium text-gray-400 mt-1 tracking-wider">Awaiting Ethics Approval</p>
         </div>
       </div>
     </div>
@@ -3298,11 +3294,11 @@ const ActiveProjectHero = ({ project }: { project: Project }) => (
 
 const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onRefresh?: () => void }) => {
   if (!profile) return (
-    <div className="bg-ug-navy/5 border border-dashed border-ug-navy/20 p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] text-center">
-      <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100">
+    <div className="bg-ug-navy/5 border border-dashed border-ug-navy/20 p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl text-center">
+      <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100">
         <Sparkles size={32} className="text-ug-teal/50" />
       </div>
-      <h3 className="text-sm font-black text-ug-navy uppercase tracking-widest mb-2">Neural Profile Pending</h3>
+      <h3 className="text-sm font-bold text-ug-navy  tracking-wide mb-2">Neural Profile Pending</h3>
       <p className="text-[11px] text-gray-500 font-medium italic max-w-xs mx-auto">Upload your academic documents or resume in the overview to unlock AI-powered semantic matching and profile insights.</p>
     </div>
   );
@@ -3310,17 +3306,17 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
   return (
     <div className="space-y-8 animate-fade-in group/insight">
       {/* Narrative Section */}
-      <div className="bg-white p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm relative overflow-hidden group">
+      <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group">
         <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:opacity-10 transition-opacity">
           <Target size={180} />
         </div>
         
         <div className="flex justify-between items-start mb-8 relative z-10">
           <div>
-            <h4 className="text-[10px] font-black text-ug-teal uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
+            <h4 className="text-[11px] font-semibold text-ug-teal tracking-[0.2em] mb-1 flex items-center gap-2">
               <Sparkles size={12} /> Researcher Intelligence
             </h4>
-            <h3 className="text-xl font-black text-ug-navy uppercase tracking-tight">AI Narrative Summary</h3>
+            <h3 className="text-xl font-bold text-ug-navy  tracking-tight">AI Narrative Summary</h3>
           </div>
           <button 
             onClick={onRefresh}
@@ -3337,32 +3333,32 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10 pt-10 border-t border-gray-50 relative z-10">
            <div className="space-y-1">
-              <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest block">Experience Level</span>
-              <span className="text-[10px] font-black text-ug-navy uppercase bg-ug-navy/5 px-3 py-1 rounded-full inline-block">{profile.professional_profile?.experience_level || 'General'}</span>
+              <span className="text-[11px] font-semibold text-gray-400 tracking-wide block">Experience Level</span>
+              <span className="text-[11px] font-semibold text-ug-navy bg-ug-navy/5 px-3 py-1 rounded-full inline-block">{profile.professional_profile?.experience_level || 'General'}</span>
            </div>
            <div className="space-y-1">
-              <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest block">Collab Mode</span>
-              <span className="text-[10px] font-black text-ug-navy uppercase bg-ug-navy/5 px-3 py-1 rounded-full inline-block">{profile.collaboration_profile?.preferred_collaboration_types?.[0] || 'Flexible'}</span>
+              <span className="text-[11px] font-semibold text-gray-400 tracking-wide block">Collab Mode</span>
+              <span className="text-[11px] font-semibold text-ug-navy bg-ug-navy/5 px-3 py-1 rounded-full inline-block">{profile.collaboration_profile?.preferred_collaboration_types?.[0] || 'Flexible'}</span>
            </div>
            <div className="space-y-1">
-              <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest block">Projects</span>
-              <span className="text-[10px] font-black text-ug-navy uppercase">{profile.projects?.length || 0} Initiatives</span>
+              <span className="text-[11px] font-semibold text-gray-400 tracking-wide block">Projects</span>
+              <span className="text-[11px] font-semibold text-ug-navy">{profile.projects?.length || 0} Initiatives</span>
            </div>
            <div className="space-y-1">
-              <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest block">Education</span>
-              <span className="text-[10px] font-black text-ug-navy uppercase">{profile.education?.length || 0} Credentials</span>
+              <span className="text-[11px] font-semibold text-gray-400 tracking-wide block">Education</span>
+              <span className="text-[11px] font-semibold text-ug-navy">{profile.education?.length || 0} Credentials</span>
            </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Skills Stack */}
-        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm flex flex-col">
+        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm flex flex-col">
           <div className="flex items-center gap-3 mb-8">
              <div className="w-10 h-10 bg-ug-navy text-white rounded-xl flex items-center justify-center shadow-lg"><FileCode size={20} /></div>
              <div>
-               <h4 className="text-sm font-black text-ug-navy uppercase tracking-tight">Technological Stack</h4>
-               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Validated Skillsets</p>
+               <h4 className="text-sm font-bold text-ug-navy  tracking-tight">Technological Stack</h4>
+               <p className="text-[11px] font-bold text-gray-400 tracking-wide">Validated Skillsets</p>
              </div>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -3371,7 +3367,7 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
               const tools = profile.skills?.tools_and_technologies || [];
               return [...tech, ...tools];
             })().map((s, i) => (
-              <span key={i} className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-bold text-gray-600 uppercase transition hover:border-ug-teal/30 hover:bg-white hover:text-ug-teal cursor-default">
+              <span key={i} className="px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-[11px] font-bold text-gray-600 transition hover:border-ug-teal/30 hover:bg-white hover:text-ug-teal cursor-default">
                 {s}
               </span>
             ))}
@@ -3379,12 +3375,12 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
         </div>
 
         {/* Education Stack */}
-        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3 mb-8">
              <div className="w-10 h-10 bg-ug-teal text-white rounded-xl flex items-center justify-center shadow-lg"><Award size={20} /></div>
              <div>
-               <h4 className="text-sm font-black text-ug-navy uppercase tracking-tight">Verified Education</h4>
-               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Academic Credentials</p>
+               <h4 className="text-sm font-bold text-ug-navy  tracking-tight">Verified Education</h4>
+               <p className="text-[11px] font-bold text-gray-400 tracking-wide">Academic Credentials</p>
              </div>
           </div>
           <div className="space-y-6">
@@ -3394,12 +3390,12 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
                   <GraduationCap size={18} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-black text-ug-navy leading-tight mb-1 uppercase tracking-tight">{edu.degree}</p>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{edu.institution}</p>
+                  <p className="text-xs font-bold text-ug-navy leading-tight mb-1  tracking-tight">{edu.degree}</p>
+                  <p className="text-[11px] font-bold text-gray-400 tracking-wide">{edu.institution}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[9px] font-bold text-ug-teal uppercase">{edu.field_of_study}</span>
-                    <span className="text-[9px] text-gray-300">•</span>
-                    <span className="text-[9px] font-bold text-gray-400">{edu.graduation_year}</span>
+                    <span className="text-[11px] font-bold text-ug-teal">{edu.field_of_study}</span>
+                    <span className="text-[11px] text-gray-300">•</span>
+                    <span className="text-[11px] font-bold text-gray-400">{edu.graduation_year}</span>
                   </div>
                 </div>
               </div>
@@ -3410,24 +3406,24 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
 
       {/* Initiatives Feed */}
       {(profile.projects?.length || 0) > 0 && (
-        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-gray-100 shadow-sm relative overflow-hidden group/projects">
+        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group/projects">
            <div className="flex items-center gap-3 mb-10">
              <div className="w-10 h-10 bg-ug-teal/10 text-ug-teal rounded-xl flex items-center justify-center"><Rocket size={20} /></div>
              <div>
-               <h4 className="text-sm font-black text-ug-navy uppercase tracking-tight">Key Initiatives</h4>
-               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Project Portfolio Analysis</p>
+               <h4 className="text-sm font-bold text-ug-navy  tracking-tight">Key Initiatives</h4>
+               <p className="text-[11px] font-bold text-gray-400 tracking-wide">Project Portfolio Analysis</p>
              </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
             {(profile.projects || []).map((p, i) => (
-              <div key={i} className="p-6 bg-gray-50/50 border border-gray-100 rounded-[2rem] hover:bg-white hover:shadow-xl hover:border-ug-teal/20 transition-all text-left group/p">
+              <div key={i} className="p-6 bg-gray-50/50 border border-gray-100 rounded-2xl hover:bg-white hover:shadow-xl hover:border-ug-teal/20 transition-all text-left group/p">
                 <div className="flex justify-between items-start mb-3">
-                  <span className="text-[9px] font-black text-ug-teal uppercase tracking-widest">{p.industry}</span>
+                  <span className="text-[11px] font-semibold text-ug-teal tracking-wide">{p.industry}</span>
                   <div className="text-gray-200 group-hover/p:text-ug-teal transition"><LinkIcon size={14} /></div>
                 </div>
-                <h5 className="text-xs font-black text-ug-navy uppercase leading-tight mb-2">{p.project_name}</h5>
-                <p className="text-[10px] text-gray-400 font-medium leading-relaxed line-clamp-2">Research focused on {p.industry.toLowerCase()} innovation and technical implementation.</p>
+                <h5 className="text-xs font-bold text-ug-navy  leading-tight mb-2">{p.project_name}</h5>
+                <p className="text-[11px] text-gray-400 font-medium leading-relaxed line-clamp-2">Research focused on {p.industry.toLowerCase()} innovation and technical implementation.</p>
               </div>
             ))}
           </div>
@@ -3506,7 +3502,7 @@ const MatchesView = ({
 
     if (type === 'collab') {
       return {
-        subject: `🧪 Academic Collaboration Proposal: "${projTitle}"`,
+        subject: `Academic Collaboration Proposal: "${projTitle}"`,
         body: `Dear ${recipientName},
 
 My name is ${senderName} from the ${senderDept} at the University of Ghana. I am reaching out to explore potential research synergy on your active project, "${projTitle}".
@@ -3522,7 +3518,7 @@ Let's set up a quick 10-minute sync at the department or via video call to excha
       };
     } else {
       return {
-        subject: `🚀 Expression of Interest: "${projTitle}"`,
+        subject: `Expression of Interest: "${projTitle}"`,
         body: `Dear ${recipientName},
 
 My name is ${senderName} from the ${senderDept} at the University of Ghana. I recently reviewed your project, "${projTitle}" on the University of Ghana Virtual Industry Hub, and wanted to express our strong interest in exploring potential collaboration.
@@ -3709,7 +3705,7 @@ ${senderName}`
     
     setIsRerunning(true);
     MatchingService.clearCache(); // Wipe match cache for fresh rerun
-    showToast("Analyzing profile and regenerating neural vectors...", "info");
+    showToast("Updating your matches...", "info");
     
     try {
       let freshProfile: AIProfile;
@@ -3748,7 +3744,7 @@ ${senderName}`
         semantic_summary: freshProfile.semantic_summary || user.semantic_summary
       });
       
-      showToast("Neural matching vector regenerated successfully!", "success");
+      showToast("Matches updated successfully!", "success");
       
       // If we have parent profile refresh, invoke it
       if (onProfileUpdate) {
@@ -3793,39 +3789,39 @@ ${senderName}`
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
+      <div className="flex flex-col items-center justify-center py-14 gap-4">
         <Loader2 className="animate-spin text-ug-teal" size={40} />
-        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse">Running Neural Matching Engines...</p>
+        <p className="text-[11px] font-semibold text-gray-400 tracking-wide animate-pulse">Finding matches...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 md:space-y-10 font-sans">
+    <div className="space-y-4 sm:space-y-6 font-sans">
       
       {/* Sub-navigation tabs */}
-      <div className="flex border-b border-gray-100 pb-2 gap-4">
+      <div className="grid grid-cols-2 sm:flex sm:gap-6 border-b border-gray-100">
         <button
           onClick={() => setActiveTabSub('challenges')}
-          className={`flex items-center gap-2 pb-3 px-1 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${
+          className={`flex items-center justify-center sm:justify-start gap-2 pb-3 px-1 text-xs font-bold tracking-wide border-b-2 transition-all ${
             activeTabSub === 'challenges'
               ? 'border-ug-teal text-ug-teal'
               : 'border-transparent text-gray-400 hover:text-ug-navy'
           }`}
         >
-          <Sparkles size={14} className={activeTabSub === 'challenges' ? 'text-ug-teal animate-pulse' : ''} />
-          Industry Challenges Matcher
+          <Sparkles size={14} className={activeTabSub === 'challenges' ? 'text-ug-teal' : ''} />
+          Challenges
         </button>
         <button
           onClick={() => setActiveTabSub('traditional')}
-          className={`flex items-center gap-2 pb-3 px-1 text-xs font-black uppercase tracking-widest border-b-2 transition-all ${
+          className={`flex items-center justify-center sm:justify-start gap-2 pb-3 px-1 text-xs font-bold tracking-wide border-b-2 transition-all ${
             activeTabSub === 'traditional'
               ? 'border-ug-teal text-ug-teal'
               : 'border-transparent text-gray-400 hover:text-ug-navy'
           }`}
         >
           <Target size={14} />
-          University Projects & Collaborators
+          Projects & People
         </button>
       </div>
 
@@ -3839,49 +3835,38 @@ ${senderName}`
         />
       ) : (
         <>
-          <div className="bg-white p-4 sm:p-6 md:p-8 lg:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-gray-100 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
-          <Sparkles size={120} className="text-ug-teal" />
-        </div>
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4 relative z-10 border-b border-gray-100 pb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-ug-teal/10 rounded-2xl text-ug-teal">
-              <Target size={24} />
-            </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-black text-ug-navy uppercase">Intelligent Research Alignment</h2>
-            </div>
-          </div>
-          
+          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
+          <h2 className="text-base sm:text-lg font-bold text-ug-navy">Project Matches</h2>
+
           {/* Controls: Rerun Matching and Status */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleRerunMatching}
               disabled={isRerunning || isProcessing}
-              className={`group flex items-center gap-2.5 px-6 py-3 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-sm ${
+              className={`group flex items-center gap-2 px-3.5 py-2 rounded-xl border text-[11px] font-semibold tracking-wide transition-all duration-300 shadow-sm ${
                 isRerunning
                   ? 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-white border-ug-teal text-ug-teal hover:bg-ug-teal hover:text-white hover:shadow-md hover:shadow-ug-teal/15 active:scale-95 cursor-pointer'
+                  : 'bg-white border-ug-teal text-ug-teal hover:bg-ug-teal hover:text-white active:scale-95 cursor-pointer'
               }`}
             >
               {isRerunning ? (
                 <>
                   <Loader2 size={13} className="animate-spin text-gray-400" />
-                  Rerunning Match Vector...
+                  Rerunning...
                 </>
               ) : (
                 <>
                   <Zap size={13} className="fill-current text-ug-teal group-hover:text-white transition-colors duration-200" />
-                  Rerun AI Matching
+                  Rerun
                 </>
               )}
             </button>
-            <div className="flex items-center gap-2 bg-ug-teal/5 border border-ug-teal/20 px-5 py-3 rounded-full shadow-sm">
-              <span className={`w-2 h-2 bg-ug-teal rounded-full ${isProcessing || isRerunning ? 'animate-ping' : 'animate-pulse'}`}></span>
-              <span className="text-[9px] font-black text-ug-teal uppercase tracking-widest">
-                {isRerunning ? 'Regenerating...' : (isProcessing ? 'AI Agent Reasoning...' : 'Neural Stream Active')}
-              </span>
-            </div>
+            {(isProcessing || isRerunning) && (
+              <div className="flex items-center gap-2 bg-ug-teal/5 border border-ug-teal/20 px-3 py-2 rounded-full">
+                <span className="w-2 h-2 bg-ug-teal rounded-full animate-pulse"></span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -3889,19 +3874,26 @@ ${senderName}`
 
         <div className="space-y-4">
           {(showAllProjects ? projectMatches : projectMatches.slice(0, 5)).map((proj, i) => (
-            <div key={proj.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-5 md:p-6 border border-gray-100 rounded-[2rem] bg-gray-50/30 hover:bg-white hover:border-ug-teal/20 hover:shadow-xl transition-all cursor-pointer group gap-4 text-left">
-              <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0">
-                <div className="w-12 h-12 md:w-16 md:h-16 bg-ug-navy/5 rounded-2xl flex items-center justify-center text-ug-navy group-hover:bg-ug-teal group-hover:text-white transition shrink-0 overflow-hidden">
-                  {proj.image_url && proj.image_url.trim() !== '' ? 
+            <div key={proj.id} className="p-4 sm:p-5 border border-gray-100 rounded-2xl bg-white hover:border-ug-teal/30 transition-all text-left">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="w-12 h-12 bg-ug-navy/5 rounded-xl flex items-center justify-center text-ug-navy shrink-0 overflow-hidden">
+                  {proj.image_url && proj.image_url.trim() !== '' ?
                     <img src={proj.image_url.split('|')[0] || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" /> :
-                    <Globe size={24} />
+                    <Globe size={20} />
                   }
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="text-[8px] font-black text-ug-teal uppercase tracking-widest px-2 py-0.5 bg-ug-teal/5 rounded-full">{proj.ai_label || 'Project Match'}</span>
-                    <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{proj.research_area}</span>
-                    <span className={`px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest ${
+                  <div className="flex items-start justify-between gap-3">
+                    <h4 className="font-bold text-ug-navy text-sm tracking-tight leading-snug min-w-0">{proj.title}</h4>
+                    {proj.ai_score !== undefined && proj.ai_score !== null && !isNaN(Number(proj.ai_score)) && (
+                      <span className="shrink-0 text-[11px] font-bold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-full">
+                        {Math.round(Number(proj.ai_score))}%
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                    {proj.research_area && <span className="text-[11px] font-semibold text-gray-400">{proj.research_area}</span>}
+                    <span className={`px-2 py-0.5 rounded-full border text-[11px] font-semibold ${
                       proj.status === ProjectStatus.Concept ? 'bg-gray-50 text-gray-600 border-gray-100' :
                       proj.status === ProjectStatus.ProofOfConcept ? 'bg-blue-50 text-blue-700 border-blue-100' :
                       proj.status === ProjectStatus.Prototype ? 'bg-purple-50 text-purple-700 border-purple-100' :
@@ -3913,151 +3905,120 @@ ${senderName}`
                       {proj.status || 'Active'}
                     </span>
                   </div>
-                  <h4 className="font-black text-ug-navy text-sm group-hover:text-ug-teal transition truncate uppercase tracking-tight">{proj.title}</h4>
-                  <p className="text-xs md:text-sm text-gray-500 font-medium line-clamp-2 mt-1 italic">"{proj.ai_reasoning || proj.description}"</p>
+                  <p className="text-xs text-gray-500 font-medium line-clamp-2 mt-1.5">"{proj.ai_reasoning || proj.description}"</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between lg:justify-end gap-4 border-t lg:border-t-0 pt-4 lg:pt-0 border-gray-100 flex-wrap">
-                 <div className="text-left sm:text-right mr-2">
-                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">AI Match Score</p>
-                    <p className="text-lg md:text-xl font-black text-ug-teal">
-                      {proj.ai_score !== undefined && proj.ai_score !== null && !isNaN(Number(proj.ai_score)) 
-                        ? `${Math.round(Number(proj.ai_score))}%` 
-                        : '80%'
-                      }
-                    </p>
-                 </div>
-                 <div className="flex gap-2">
-                   <button onClick={(e) => { e.stopPropagation(); handleExpressInterestClick(proj); }} className="bg-ug-navy text-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-ug-teal transition shadow-lg shrink-0">Express Interest</button>
-                 </div>
+              <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
+                <button onClick={(e) => { e.stopPropagation(); handleExpressInterestClick(proj); }} className="bg-ug-navy text-white px-4 py-2 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition active:scale-95">Express Interest</button>
               </div>
             </div>
           ))}
           {projectMatches.length > 5 && !showAllProjects && (
             <button 
               onClick={() => setShowAllProjects(true)}
-              className="w-full py-4 border-2 border-dashed border-gray-100 rounded-[2rem] text-[10px] font-black text-gray-400 uppercase tracking-widest hover:border-ug-teal hover:text-ug-teal transition-all"
+              className="w-full py-3.5 border-2 border-dashed border-gray-100 rounded-2xl text-[11px] font-semibold text-gray-400 tracking-wide hover:border-ug-teal hover:text-ug-teal transition-all"
             >
               See {projectMatches.length - 5} More Projects
             </button>
           )}
 
           {projectMatches.length === 0 && (
-            <div className="py-16 text-center bg-gray-50/50 rounded-[2.5rem] border-2 border-dashed border-gray-100">
-               <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm text-gray-200">
-                  <Rocket size={32} />
+            <div className="py-10 text-center bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100 p-6">
+               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm text-gray-200">
+                  <Rocket size={28} />
                </div>
-               <h4 className="text-sm font-black text-ug-navy mb-2">No Strategic Project Matches Yet</h4>
-               <p className="text-[10px] font-medium text-gray-400 max-w-xs mx-auto leading-relaxed mb-6">
-                 We couldn't find any initiatives that perfectly align with your current research vector. Try exploring the global project directory.
+               <h4 className="text-sm font-bold text-ug-navy mb-2">No project matches yet</h4>
+               <p className="text-[11px] font-medium text-gray-400 max-w-xs mx-auto leading-relaxed mb-4">
+                 No initiatives align with your profile yet. Try exploring the project directory.
                </p>
-               <button 
+               <button
                  onClick={() => navigate('/projects')}
-                 className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-[9px] font-black uppercase tracking-widest hover:border-ug-teal hover:text-ug-teal transition-all"
+                 className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-[11px] font-semibold tracking-wide hover:border-ug-teal hover:text-ug-teal transition-all"
                >
-                 Explore Project Discovery
+                 Explore Projects
                </button>
             </div>
           )}
         </div>
       </div>
 
-      <div className="bg-white p-4 sm:p-6 md:p-8 lg:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-3 mb-6 md:mb-8">
-          <Users size={20} className="text-ug-teal" />
-          <h2 className="text-lg md:text-xl font-black text-ug-navy">Strategic Research Collaborators</h2>
+      <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex items-center gap-2.5 mb-4">
+          <Users size={18} className="text-ug-teal" />
+          <h2 className="text-lg md:text-xl font-bold text-ug-navy">Suggested Collaborators</h2>
         </div>
 
         <div className="space-y-4">
            {(showAllProfiles ? profileMatches : profileMatches.slice(0, 5)).map((collab, i) => (
-             <div key={collab.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-5 md:p-6 border border-gray-100 rounded-[2rem] bg-gray-50/30 hover:bg-white hover:border-ug-teal/20 hover:shadow-xl transition-all cursor-pointer group gap-6 text-left">
-               <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0 flex-col sm:flex-row text-center sm:text-left">
-                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-md border-2 border-white overflow-hidden bg-ug-navy shrink-0 relative group-hover:scale-105 transition-transform duration-500">
-                   {collab.avatar_url || collab.image_url ? 
+             <div key={collab.id} className="p-4 sm:p-5 border border-gray-100 rounded-2xl bg-white hover:border-ug-teal/30 transition-all text-left">
+               <div className="flex items-start gap-3 sm:gap-4">
+                 <div className="w-12 h-12 rounded-xl overflow-hidden bg-ug-navy shrink-0">
+                   {collab.avatar_url || collab.image_url ?
                      <img src={collab.avatar_url || collab.image_url} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt="" /> :
-                     <UserIcon className="w-full h-full p-5 text-white/20" />
+                     <UserIcon className="w-full h-full p-3.5 text-white/20" />
                    }
                  </div>
                  <div className="min-w-0 flex-1">
-                   <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2 mb-1.5">
-                     <span className="text-[8px] font-black text-ug-teal bg-ug-teal/10 px-2.5 py-1 rounded-full uppercase tracking-widest">{collab.ai_label || 'High Alignment'}</span>
-                     <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Rank #{i + 1}</span>
+                   <div className="flex items-start justify-between gap-3">
+                     <div className="min-w-0">
+                       <h4 className="font-bold text-ug-navy text-sm tracking-tight truncate">{collab.name || 'UG Science Partner'}</h4>
+                       <p className="text-[11px] font-semibold text-ug-teal tracking-wide truncate">{collab.role}</p>
+                     </div>
+                     {collab.ai_score !== undefined && collab.ai_score !== null && !isNaN(Number(collab.ai_score)) && (
+                       <span className="shrink-0 text-[11px] font-bold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-full">
+                         {Math.round(Number(collab.ai_score))}%
+                       </span>
+                     )}
                    </div>
-                   <h4 className="font-black text-ug-navy text-sm md:text-base uppercase tracking-tight mb-1 truncate">{collab.name || 'UG Science Partner'}</h4>
-                   <p className="text-[10px] font-bold text-ug-teal uppercase tracking-widest">{collab.role}</p>
+                   <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mt-1.5">
+                     "{collab.ai_reasoning || collab.semantic_summary || 'Profile matches your research interests.'}"
+                   </p>
                  </div>
                </div>
-
-               {/* Reason for match block */}
-               <div className="p-4 bg-white/50 rounded-2xl border border-gray-100 mb-0 text-left shadow-sm max-w-full lg:max-w-md xl:max-w-lg w-full flex-1">
-                 <p className="text-[9px] font-black text-ug-teal uppercase tracking-widest mb-1 flex items-center gap-1">
-                   <Sparkles size={11} className="stroke-[2.5]" /> Reason for Match
-                 </p>
-                 <p className="text-xs text-gray-700 font-medium leading-relaxed italic">
-                   "{collab.ai_reasoning || collab.semantic_summary || 'Semantic profile match detected.'}"
-                 </p>
-               </div>
-
-               {/* Right side compatibility & buttons */}
-               <div className="flex items-center justify-between lg:justify-end gap-6 border-t lg:border-t-0 pt-4 lg:pt-0 border-gray-100 flex-wrap">
-                 <div className="text-left sm:text-right mr-2 shrink-0">
-                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Compatibility</p>
-                    <p className="text-lg md:text-xl font-black text-ug-teal">
-                      {collab.ai_score !== undefined && collab.ai_score !== null && !isNaN(Number(collab.ai_score)) 
-                        ? `${Math.round(Number(collab.ai_score))}%` 
-                        : '80%'
-                      }
-                    </p>
-                 </div>
-                 <div className="flex gap-2 shrink-0">
-                   <button 
-                     onClick={(e) => { e.stopPropagation(); handleInitiateCollaborationClick(collab); }} 
-                     className="bg-ug-navy text-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-ug-teal transition shadow-lg shrink-0"
-                   >
-                     Initiate Proposal
-                   </button>
-                   <button 
-                     onClick={(e) => {
-                       e.stopPropagation();
-                       if (setLocalInitialThreadId && setActiveTab) {
-                         setLocalInitialThreadId(collab.id);
-                         setActiveTab('messages');
-                       }
-                     }} 
-                     className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-4 py-2.5 md:py-3 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition flex items-center gap-1 shrink-0"
-                     title="Open instant direct chat"
-                   >
-                     <MessageSquare size={12} />
-                     Quick Chat
-                   </button>
-                 </div>
+               <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end gap-2">
+                 <button
+                   onClick={(e) => {
+                     e.stopPropagation();
+                     if (setLocalInitialThreadId && setActiveTab) {
+                       setLocalInitialThreadId(collab.id);
+                       setActiveTab('messages');
+                     }
+                   }}
+                   className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3.5 py-2 rounded-xl text-[11px] font-semibold tracking-wide transition active:scale-95"
+                   title="Open direct chat"
+                 >
+                   <span className="flex items-center gap-1"><MessageSquare size={12} /> Chat</span>
+                 </button>
+                 <button
+                   onClick={(e) => { e.stopPropagation(); handleInitiateCollaborationClick(collab); }}
+                   className="bg-ug-navy text-white px-4 py-2 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition active:scale-95"
+                 >
+                   Initiate Proposal
+                 </button>
                </div>
              </div>
            ))}
-           
-           {profileMatches.length > 5 && !showAllProfiles && (
-              <button 
-                onClick={() => setShowAllProfiles(true)}
-                className="col-span-full py-6 border-2 border-dashed border-gray-100 rounded-[2rem] text-[10px] font-black text-gray-400 uppercase tracking-widest hover:border-ug-teal hover:text-ug-teal transition-all"
-              >
-                Reveal {profileMatches.length - 5} More Strategic Collaborators
-              </button>
+
+            {profileMatches.length > 5 && !showAllProfiles && (
+               <button
+                 onClick={() => setShowAllProfiles(true)}
+                 className="w-full py-3.5 border-2 border-dashed border-gray-100 rounded-2xl text-[11px] font-semibold text-gray-400 tracking-wide hover:border-ug-teal hover:text-ug-teal transition-all"
+               >
+                 See {profileMatches.length - 5} More Collaborators
+               </button>
+             )}
+
+            {profileMatches.length === 0 && (
+              <div className="py-10 text-center border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50/50 p-6">
+                 <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm text-gray-200">
+                    <Users size={28} />
+                 </div>
+                 <h4 className="text-sm font-bold text-ug-navy mb-2">No collaborators yet</h4>
+                 <p className="text-[11px] font-medium text-gray-400 max-w-xs mx-auto leading-relaxed">
+                   As more researchers and partners join, matches will appear here. Refine your research summary to improve results.
+                 </p>
+              </div>
             )}
-
-           {profileMatches.length === 0 && (
-             <div className="col-span-full py-20 text-center border-2 border-dashed border-gray-100 rounded-[3rem] bg-gray-50/50">
-                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm text-gray-200">
-                   <Users size={40} />
-                </div>
-                <h4 className="text-sm font-black text-ug-navy mb-2">No Strategic Collaborators Found</h4>
-                <p className="text-[10px] font-medium text-gray-400 max-w-md mx-auto leading-relaxed px-10">
-                  Your research fingerprint is unique. As more researchers and industry partners join the ecosystem, you'll see high-fidelity matches here. 
-                  <br/><br/>
-                  <span className="text-ug-teal">Pro-tip: Refine your research summary to improve matching precision.</span>
-                </p>
-
-             </div>
-           )}
         </div>
       </div>
 
@@ -4070,40 +4031,40 @@ ${senderName}`
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative w-full max-w-2xl bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden flex flex-col p-6 md:p-10 space-y-6"
+              className="relative w-full max-w-2xl bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden flex flex-col p-5 sm:p-6 md:p-8 space-y-5"
             >
               {/* Header */}
-              <div className="flex items-start justify-between border-b border-gray-100 pb-5">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-ug-navy/5 rounded-2xl flex items-center justify-center text-ug-navy">
-                    {proposalType === 'collab' ? <Handshake size={24} /> : <Sparkles size={24} className="text-ug-teal" />}
+              <div className="flex items-start justify-between border-b border-gray-100 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-ug-navy/5 rounded-xl flex items-center justify-center text-ug-navy shrink-0">
+                    {proposalType === 'collab' ? <Handshake size={20} /> : <Sparkles size={20} className="text-ug-teal" />}
                   </div>
                   <div>
-                    <h3 className="font-black text-ug-navy text-sm md:text-base uppercase tracking-tight">
-                      {proposalType === 'collab' ? 'Academics Collaboration Proposal' : 'Express Research Interest'}
+                    <h3 className="font-bold text-ug-navy text-sm tracking-tight">
+                      {proposalType === 'collab' ? 'Collaboration Proposal' : 'Express Interest'}
                     </h3>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Configure Dynamic AI Referral Parameters</p>
+                    <p className="text-[11px] text-gray-400 font-medium">Review and edit before sending</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsProposalModalOpen(false)}
-                  className="p-2.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-ug-navy transition"
+                  className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-ug-navy transition"
                 >
                   <X size={18} />
                 </button>
               </div>
 
               {/* Match Details Box */}
-              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-55/40 bg-gray-50/50 border border-gray-100 rounded-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50/50 border border-gray-100 rounded-2xl">
                 <div>
-                  <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Sender Profile</p>
-                  <p className="font-extrabold text-xs text-ug-navy">{user?.name || 'My Profile'}</p>
-                  <p className="text-[9px] text-gray-500 truncate font-semibold">{user?.department || 'UG Research Directorate'}</p>
+                  <p className="text-[11px] font-semibold text-gray-400 tracking-wide leading-none mb-1">From</p>
+                  <p className="font-bold text-xs text-ug-navy">{user?.name || 'My Profile'}</p>
+                  <p className="text-[11px] text-gray-500 truncate font-medium">{user?.department || 'UG Research Directorate'}</p>
                 </div>
-                <div className="border-l border-gray-200/60 pl-4">
-                  <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Recipient Destination</p>
-                  <p className="font-extrabold text-xs text-ug-navy truncate">{selectedMatch.name || selectedMatch.owner_name || 'Ecosystem Partner'}</p>
-                  <p className="text-[9px] text-ug-teal font-bold truncate uppercase tracking-wider">{selectedMatch.role || 'Principal Investigator'}</p>
+                <div className="sm:border-l border-gray-200/60 sm:pl-4">
+                  <p className="text-[11px] font-semibold text-gray-400 tracking-wide leading-none mb-1">To</p>
+                  <p className="font-bold text-xs text-ug-navy truncate">{selectedMatch.name || selectedMatch.owner_name || 'Ecosystem Partner'}</p>
+                  <p className="text-[11px] text-ug-teal font-semibold truncate">{selectedMatch.role || 'Principal Investigator'}</p>
                 </div>
               </div>
 
@@ -4111,7 +4072,7 @@ ${senderName}`
               {proposalType === 'collab' && (
                 <div className="space-y-4">
                   <div className="text-left">
-                    <label className="block text-[10px] font-black text-ug-navy tracking-widest mb-1.5">Select Your Active Research Asset / Focus topic</label>
+                    <label className="block text-[11px] font-semibold text-ug-navy tracking-wide mb-1.5">Your project</label>
                     <select
                       value={selectedProject?.id || 'custom'}
                       onChange={(e) => handleProjectChangeInModal(e.target.value)}
@@ -4122,13 +4083,13 @@ ${senderName}`
                           {proj.title} ({proj.research_area || 'Tech Innovation'})
                         </option>
                       ))}
-                      <option value="custom">General / Custom Collaboration Topic</option>
+                      <option value="custom">General / Custom Topic</option>
                     </select>
                   </div>
 
                   {(!selectedProject) && (
                     <div className="text-left">
-                      <label className="block text-[10px] font-black text-ug-navy tracking-widest mb-1.5">Specify Custom Collaboration Topic</label>
+                      <label className="block text-[11px] font-semibold text-ug-navy tracking-wide mb-1.5">Custom topic</label>
                       <input
                         type="text"
                         placeholder="e.g. Biomedical Laboratory Device Co-validation"
@@ -4143,7 +4104,7 @@ ${senderName}`
 
               {/* Subject Editor */}
               <div className="text-left space-y-1.5">
-                <label className="block text-[10px] font-black text-ug-navy tracking-widest">Referral Vector Subject Line</label>
+                <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Subject</label>
                 <input
                   type="text"
                   value={subject}
@@ -4154,7 +4115,7 @@ ${senderName}`
 
               {/* Message Body Editor */}
               <div className="text-left space-y-1.5">
-                <label className="block text-[10px] font-black text-ug-navy tracking-widest">Enriched Message Body</label>
+                <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Message</label>
                 <textarea
                   rows={8}
                   value={messageBody}
@@ -4163,20 +4124,20 @@ ${senderName}`
                 />
               </div>
 
-              {/* Security Guard tiny warning */}
-              <div className="flex items-center gap-2 p-3.5 bg-blue-50/30 rounded-xl border border-blue-100/50 text-left">
+              {/* Security note */}
+              <div className="flex items-center gap-2 p-3 bg-blue-50/30 rounded-xl border border-blue-100/50 text-left">
                 <Info size={14} className="text-blue-600 shrink-0" />
-                <p className="text-[9px] text-blue-800 font-medium leading-normal">
-                  <strong>Secure Channel Policy</strong>: To ensure institutional integrity, copyable links to your secure digital researcher portfolio will automatically be attached to your recipient's inbox portal.
+                <p className="text-[11px] text-blue-800 font-medium leading-normal">
+                  A link to your researcher portfolio is attached automatically.
                 </p>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-4 border-t border-gray-100 pt-5">
+              <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
                 <button
                   type="button"
                   onClick={() => setIsProposalModalOpen(false)}
-                  className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-[9px] font-black uppercase tracking-widest hover:border-red-500 hover:text-red-500 transition-all font-bold active:scale-95"
+                  className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-gray-50 transition-all active:scale-95"
                 >
                   Cancel
                 </button>
@@ -4184,15 +4145,15 @@ ${senderName}`
                   type="button"
                   disabled={isSending}
                   onClick={handleSendProposal}
-                  className="px-8 py-3 bg-ug-navy text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-ug-teal transition-all flex items-center gap-2 shadow-lg hover:shadow-ug-teal/15 disabled:bg-gray-100 disabled:text-gray-400 active:scale-95"
+                  className="px-6 py-2.5 bg-ug-navy text-white rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition-all flex items-center gap-2 disabled:bg-gray-100 disabled:text-gray-400 active:scale-95"
                 >
                   {isSending ? (
                     <>
-                      <Loader2 className="animate-spin" size={13} /> Transmitting Referral...
+                      <Loader2 className="animate-spin" size={13} /> Sending...
                     </>
                   ) : (
                     <>
-                      <SendIcon size={12} /> Transmit Strategic Proposal
+                      <SendIcon size={12} /> Send Proposal
                     </>
                   )}
                 </button>
@@ -4423,24 +4384,24 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 items-start">
             <div className="md:col-span-2 lg:col-span-8 space-y-8">
                {/* COLLABORATION CALLS */}
-               <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm">
+               <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm">
                   <SectionTitle title="Collaboration Calls" subtitle="Active Research Projects Seeking Talent" />
                   <div className="space-y-4 mt-6">
                      {openOpportunities.length === 0 ? (
                        <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                          <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">No active collaboration calls listed.</p>
+                          <p className="text-gray-400 text-xs font-bold  ">No active collaboration calls listed.</p>
                        </div>
                      ) : (
                        openOpportunities.slice(0, 3).map(p => (
-                          <div key={p.id} className="flex flex-col md:flex-row md:items-center justify-between p-6 border border-gray-100 rounded-3xl bg-white hover:shadow-lg transition gap-4">
+                          <div key={p.id} className="flex flex-col md:flex-row md:items-center justify-between p-6 border border-gray-100 rounded-2xl bg-white hover:shadow-lg transition gap-4">
                              <div className="flex gap-4">
                                 <div className="w-14 h-14 bg-ug-navy/5 rounded-2xl flex items-center justify-center text-ug-navy shrink-0"><Briefcase size={24} /></div>
                                 <div>
-                                   <h4 className="font-black text-ug-navy text-lg">{p.title}</h4>
+                                   <h4 className="font-bold text-ug-navy text-lg">{p.title}</h4>
                                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                                      <span className="text-[10px] font-black uppercase text-ug-teal tracking-widest">{p.department}</span>
-                                      <span className="text-gray-300 text-[10px]">•</span>
-                                      <span className={`px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest ${
+                                      <span className="text-[11px] font-semibold text-ug-teal tracking-wide">{p.department}</span>
+                                      <span className="text-gray-300 text-[11px]">•</span>
+                                      <span className={`px-2 py-0.5 rounded-full border text-[11px] font-semibold tracking-wide ${
                                         p.status === ProjectStatus.Concept ? 'bg-gray-50 text-gray-600 border-gray-100' :
                                         p.status === ProjectStatus.ProofOfConcept ? 'bg-blue-50 text-blue-700 border-blue-100' :
                                         p.status === ProjectStatus.Prototype ? 'bg-purple-50 text-purple-700 border-purple-100' :
@@ -4455,8 +4416,8 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                                 </div>
                              </div>
                              <div className="flex gap-2">
-                                <button onClick={() => navigate(`/projects/${p.id}`)} className="bg-gray-100 text-ug-navy px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 transition">View</button>
-                                <button onClick={() => openApplicationDrawer(p, 'Research Assistantship')} className="bg-ug-navy text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-ug-teal transition">Apply for Assistantship</button>
+                                <button onClick={() => navigate(`/projects/${p.id}`)} className="bg-gray-100 text-ug-navy px-4 py-2 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-gray-200 transition">View</button>
+                                <button onClick={() => openApplicationDrawer(p, 'Research Assistantship')} className="bg-ug-navy text-white px-5 py-2 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition">Apply for Assistantship</button>
                              </div>
                           </div>
                        ))
@@ -4465,7 +4426,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                </section>
 
                {/* SCHOLARSHIPS */}
-               <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm mt-6 sm:mt-8">
+               <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm mt-6 sm:mt-8">
                   <SectionTitle title="Scholarships & Research Fellowships" subtitle="Academically Funded Pathways to Support Innovation" />
                   <div className="space-y-4 mt-6">
                      {[
@@ -4473,21 +4434,21 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                         { title: "West African Vaccines Research Fellowship", provider: "Noguchi Medical Research Institute", amount: "GH₵ 40,000 / yr", openTo: "PhD Candidates", icon: Zap },
                         { title: "UG Innovate Technical Mentee Grant", provider: "Institute of Applied Science & Technology", amount: "GH₵ 12,000 / sem", openTo: "BSc Senior Students", icon: BookOpen }
                      ].map((sch, index) => (
-                        <div key={index} className="flex flex-col md:flex-row md:items-center justify-between p-6 border border-gray-50 rounded-3xl bg-gray-50/10 hover:bg-white hover:shadow-lg transition gap-4 animate-fade-in-up">
+                        <div key={index} className="flex flex-col md:flex-row md:items-center justify-between p-6 border border-gray-50 rounded-2xl bg-gray-50/10 hover:bg-white hover:shadow-lg transition gap-4 animate-fade-in-up">
                            <div className="flex gap-4">
                               <div className="w-12 h-12 bg-ug-teal/5 rounded-2xl flex items-center justify-center text-ug-teal shrink-0"><sch.icon size={20} /></div>
                               <div>
-                                 <span className="text-[8px] font-black text-ug-teal uppercase tracking-widest mb-1 block">{sch.openTo}</span>
-                                 <h4 className="font-black text-ug-navy text-xs leading-snug">{sch.title}</h4>
-                                 <p className="text-[8px] font-black text-gray-400 mt-1 uppercase tracking-widest">{sch.provider}</p>
+                                 <span className="text-[11px] font-semibold text-ug-teal tracking-wide mb-1 block">{sch.openTo}</span>
+                                 <h4 className="font-bold text-ug-navy text-xs leading-snug">{sch.title}</h4>
+                                 <p className="text-[11px] font-semibold text-gray-400 mt-1 tracking-wide">{sch.provider}</p>
                               </div>
                            </div>
                            <div className="flex items-center gap-4 justify-between md:justify-end">
                               <div className="text-left md:text-right shrink-0">
-                                 <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest block">Stipend Amount</span>
-                                 <span className="text-xs font-black text-ug-navy">{sch.amount}</span>
+                                 <span className="text-[11px] font-bold text-gray-400 tracking-wide block">Stipend Amount</span>
+                                 <span className="text-xs font-bold text-ug-navy">{sch.amount}</span>
                               </div>
-                              <button onClick={() => handleInquireScholarship(sch.title, sch.provider)} className="bg-ug-navy text-white px-4 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest hover:bg-ug-teal transition cursor-pointer">Inquire</button>
+                              <button onClick={() => handleInquireScholarship(sch.title, sch.provider)} className="bg-ug-navy text-white px-4 py-2 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition cursor-pointer">Inquire</button>
                            </div>
                         </div>
                      ))}
@@ -4496,20 +4457,20 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
 
                {/* STUDENT SPECIFIC RECOMMENDATIONS */}
                {recommendations.length > 0 && (
-                 <section className="bg-gradient-to-tr from-ug-navy/[0.02] to-ug-teal/[0.02] p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm mt-6 sm:mt-8">
+                 <section className="bg-gradient-to-tr from-ug-navy/[0.02] to-ug-teal/[0.02] p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm mt-6 sm:mt-8">
                     <SectionTitle title="Recommended for You" subtitle="Personalized research matches based on your program and profile keywords" />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                        {recommendations.map(({ project: p, reason }) => (
-                          <div key={p.id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                          <div key={p.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
                              <div>
-                                <span className="bg-ug-teal/10 text-ug-teal text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full mb-3 inline-block">
+                                <span className="bg-ug-teal/10 text-ug-teal text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-full mb-3 inline-block">
                                    {reason}
                                 </span>
-                                <h4 className="font-black text-ug-navy text-sm leading-snug line-clamp-2 mb-2 hover:text-ug-teal transition cursor-pointer" onClick={() => navigate(`/projects/${p.id}`)}>{p.title}</h4>
-                                <p className="text-gray-400 text-[9px] uppercase tracking-wider font-bold mb-4">{p.department}</p>
+                                <h4 className="font-bold text-ug-navy text-sm leading-snug line-clamp-2 mb-2 hover:text-ug-teal transition cursor-pointer" onClick={() => navigate(`/projects/${p.id}`)}>{p.title}</h4>
+                                <p className="text-gray-400 text-[11px] tracking-wider font-bold mb-4">{p.department}</p>
                              </div>
                              <div className="flex gap-2">
-                                <button onClick={() => openApplicationDrawer(p)} className="flex-1 text-center bg-ug-navy hover:bg-ug-teal text-white py-2 rounded-xl text-[8px] font-black uppercase tracking-widest transition">Apply</button>
+                                <button onClick={() => openApplicationDrawer(p)} className="flex-1 text-center bg-ug-navy hover:bg-ug-teal text-white py-2 rounded-xl text-[11px] font-semibold tracking-wide transition">Apply</button>
                              </div>
                           </div>
                        ))}
@@ -4518,38 +4479,38 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                )}
 
                {/* APPLICATION HISTORY */}
-               <section className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm mt-8">
+               <section className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm mt-8">
                   <SectionTitle title="My Applications & Request Tracker" subtitle="Live tracking of your assistantships, fellowship inquiries, and workspace permissions" />
                   <div className="space-y-4 mt-6">
                      {loading ? (
                        <div className="text-center py-8">
-                          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Loading records...</p>
+                          <p className="text-gray-400 text-xs font-bold  tracking-wide">Loading records...</p>
                        </div>
                      ) : applications.length === 0 ? (
-                       <div className="text-center py-12 bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                       <div className="text-center py-12 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
                           <Inbox className="mx-auto text-gray-300 mb-3" size={32} />
-                          <h4 className="font-black text-ug-navy text-sm">No Active Submissions</h4>
-                          <p className="text-gray-400 text-[10px] uppercase font-bold mt-1 tracking-wider">Your formal submissions will accumulate here.</p>
+                          <h4 className="font-bold text-ug-navy text-sm">No Active Submissions</h4>
+                          <p className="text-gray-400 text-[11px] font-bold mt-1 tracking-wider">Your formal submissions will accumulate here.</p>
                        </div>
                      ) : (
                        applications.map(app => {
                           const type = parseAppType(app.message);
                           const isExpanded = expandedAppId === app.id;
                           return (
-                             <div key={app.id} className="p-6 border border-gray-100 rounded-3xl bg-white hover:border-gray-200 transition">
+                             <div key={app.id} className="p-6 border border-gray-100 rounded-2xl bg-white hover:border-gray-200 transition">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                    <div className="flex items-start gap-4">
                                       <div className="w-10 h-10 bg-ug-teal/5 rounded-xl flex items-center justify-center text-ug-teal shrink-0">
                                          <Clock size={18} />
                                       </div>
                                       <div>
-                                         <span className="text-[8px] font-black text-ug-teal uppercase tracking-widest block mb-1">{type}</span>
-                                         <h4 className="font-black text-ug-navy text-sm">{app.projects?.title || 'General Department Grant'}</h4>
-                                         <p className="text-[8px] font-medium text-gray-400 mt-0.5">Submitted: {new Date(app.created_at).toLocaleDateString([], { dateStyle: 'medium' })}</p>
+                                         <span className="text-[11px] font-semibold text-ug-teal tracking-wide block mb-1">{type}</span>
+                                         <h4 className="font-bold text-ug-navy text-sm">{app.projects?.title || 'General Department Grant'}</h4>
+                                         <p className="text-[11px] font-medium text-gray-400 mt-0.5">Submitted: {new Date(app.created_at).toLocaleDateString([], { dateStyle: 'medium' })}</p>
                                       </div>
                                    </div>
                                    <div className="flex items-center gap-3 justify-between md:justify-end">
-                                      <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${getStatusBadgeColor(app.status)}`}>
+                                      <span className={`px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-wide ${getStatusBadgeColor(app.status)}`}>
                                          {app.status || 'pending'}
                                       </span>
                                       <button 
@@ -4562,7 +4523,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                                 </div>
                                 {isExpanded && (
                                    <div className="mt-4 pt-4 border-t border-gray-50 text-xs text-gray-600 bg-gray-50/50 p-4 rounded-2xl">
-                                      <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest block mb-2">Message Body</span>
+                                      <span className="text-[11px] font-semibold text-gray-400 tracking-wide block mb-2">Message Body</span>
                                       <p className="whitespace-pre-wrap font-medium">{cleanMessage(app.message)}</p>
                                    </div>
                                 )}
@@ -4577,15 +4538,15 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
             {/* SIDEBAR RIGHT */}
             <div className="md:col-span-2 lg:col-span-4 space-y-8 border-t lg:border-t-0 pt-8 lg:pt-0">
                {/* SAVED WATCHLIST */}
-               <section className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+               <section className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
                   <SectionTitle title="Bookmarks & Watchlist" subtitle="Your pinned research interests" />
                   <div className="space-y-4 mt-6">
                      {loading ? (
-                        <p className="text-gray-400 text-xs font-black uppercase tracking-widest text-center">Loading watchlist...</p>
+                        <p className="text-gray-400 text-xs font-bold  tracking-wide text-center">Loading watchlist...</p>
                      ) : bookmarks.length === 0 ? (
                         <div className="text-center py-6 bg-gray-50/50 rounded-2xl border border-dashed border-gray-100">
                            <Bookmark className="mx-auto text-gray-300 mb-2" size={24} />
-                           <p className="text-gray-400 text-[9px] font-black uppercase tracking-widest">Bookmark items to save them.</p>
+                           <p className="text-gray-400 text-[11px] font-semibold tracking-wide">Bookmark items to save them.</p>
                         </div>
                      ) : (
                         bookmarks.map(p => (
@@ -4593,11 +4554,11 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                               <div className="flex items-center gap-3 min-w-0">
                                  <div className="w-10 h-10 rounded-xl bg-ug-navy/5 flex items-center justify-center text-ug-navy shrink-0"><Briefcase size={20} /></div>
                                  <div className="min-w-0">
-                                    <h5 className="font-black text-ug-navy text-xs truncate hover:text-ug-teal transition cursor-pointer" onClick={() => navigate(`/projects/${p.id}`)}>{p.title}</h5>
-                                    <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest truncate">{p.department}</p>
+                                    <h5 className="font-bold text-ug-navy text-xs truncate hover:text-ug-teal transition cursor-pointer" onClick={() => navigate(`/projects/${p.id}`)}>{p.title}</h5>
+                                    <p className="text-[11px] font-bold text-gray-400 tracking-wide truncate">{p.department}</p>
                                  </div>
                               </div>
-                              <button onClick={() => openApplicationDrawer(p)} className="bg-ug-navy text-white px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest hover:bg-ug-teal transition shrink-0">Apply</button>
+                              <button onClick={() => openApplicationDrawer(p)} className="bg-ug-navy text-white px-3 py-1.5 rounded-lg text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition shrink-0">Apply</button>
                            </div>
                         ))
                      )}
@@ -4623,7 +4584,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
 
                   {/* Drawer Content */}
                   <motion.div 
-                     className="fixed right-0 top-0 bottom-0 w-full max-w-lg bg-white shadow-2xl z-50 overflow-y-auto flex flex-col border-l border-gray-100"
+                     className="fixed right-0 top-0 bottom-0 w-full max-w-lg bg-white shadow-xl z-50 overflow-y-auto flex flex-col border-l border-gray-100"
                      initial={{ x: '100%' }}
                      animate={{ x: 0 }}
                      exit={{ x: '100%' }}
@@ -4632,8 +4593,8 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                      {/* Drawer Header */}
                      <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between bg-ug-navy text-white sticky top-0 z-20">
                         <div>
-                           <span className="text-[8px] font-black text-ug-teal uppercase tracking-widest block mb-1">Academic Request Portal</span>
-                           <h3 className="text-lg sm:text-xl font-black">Submit Inquiry & Application</h3>
+                           <span className="text-[11px] font-semibold text-ug-teal tracking-wide block mb-1">Academic Request Portal</span>
+                           <h3 className="text-lg sm:text-xl font-bold">Submit Inquiry & Application</h3>
                         </div>
                         <button 
                            type="button"
@@ -4641,7 +4602,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                            className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer flex items-center gap-1 border border-white/10 px-3 py-1.5"
                         >
                            <X size={16} />
-                           <span className="text-[9px] font-black uppercase tracking-wider">Close</span>
+                           <span className="text-[11px] font-semibold tracking-wider">Close</span>
                         </button>
                      </div>
 
@@ -4649,14 +4610,14 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                      <form onSubmit={handleSubmitApplication} className="p-4 sm:p-6 flex-1 space-y-4 sm:space-y-5">
                         {/* Target Project Info */}
                         <div className="p-3 sm:p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest block">Associated Project</span>
-                           <h4 className="font-black text-ug-navy text-xs sm:text-sm mt-1">{selectedProjectForApp.title}</h4>
-                           <p className="text-[9px] font-bold text-ug-teal uppercase tracking-wider mt-0.5">{selectedProjectForApp.department}</p>
+                           <span className="text-[11px] font-semibold text-gray-400 tracking-wide block">Associated Project</span>
+                           <h4 className="font-bold text-ug-navy text-xs sm:text-sm mt-1">{selectedProjectForApp.title}</h4>
+                           <p className="text-[11px] font-bold text-ug-teal tracking-wider mt-0.5">{selectedProjectForApp.department}</p>
                         </div>
 
                         {/* Request Type Selector */}
                         <div className="space-y-1.5 sm:space-y-2">
-                           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Request Category</label>
+                           <label className="text-[11px] font-semibold text-gray-400 tracking-wide block">Request Category</label>
                            <div className="grid grid-cols-1 gap-2.5 sm:gap-3">
                               {[
                                  { id: 'Research Assistantship', label: 'Research Assistantship', desc: 'Apply for a student assistant role inside this laboratory.' },
@@ -4668,8 +4629,8 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                                     onClick={() => setAppType(t.id as any)}
                                     className={`p-3 sm:p-4 border rounded-2xl cursor-pointer transition text-left select-none ${appType === t.id ? 'border-ug-teal bg-ug-teal/5 text-ug-navy' : 'border-gray-100 hover:border-gray-200 text-gray-600'}`}
                                  >
-                                    <h5 className="font-black text-xs">{t.label}</h5>
-                                    <p className="text-[10px] text-gray-400 mt-1">{t.desc}</p>
+                                    <h5 className="font-bold text-xs">{t.label}</h5>
+                                    <p className="text-[11px] text-gray-400 mt-1">{t.desc}</p>
                                  </div>
                               ))}
                            </div>
@@ -4677,11 +4638,11 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
 
                         {/* Student Profile Info Verification */}
                         <div className="space-y-3 sm:space-y-4 pt-3 sm:pt-4 border-t border-gray-50">
-                           <span className="text-[10px] font-black text-ug-teal uppercase tracking-widest block">Verify Credentials (Saved to Profile)</span>
+                           <span className="text-[11px] font-semibold text-ug-teal tracking-wide block">Verify Credentials (Saved to Profile)</span>
                            
                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                               <div>
-                                 <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Education Level</label>
+                                 <label className="text-[11px] font-bold text-gray-400 tracking-wider block mb-1">Education Level</label>
                                  <input 
                                     type="text" 
                                     className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-1 focus:ring-ug-teal" 
@@ -4692,7 +4653,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                                  />
                               </div>
                               <div>
-                                 <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Program / Course</label>
+                                 <label className="text-[11px] font-bold text-gray-400 tracking-wider block mb-1">Program / Course</label>
                                  <input 
                                     type="text" 
                                     className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-1 focus:ring-ug-teal" 
@@ -4706,7 +4667,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
 
                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                               <div>
-                                 <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Availability</label>
+                                 <label className="text-[11px] font-bold text-gray-400 tracking-wider block mb-1">Availability</label>
                                  <input 
                                     type="text" 
                                     className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-1 focus:ring-ug-teal" 
@@ -4717,7 +4678,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                                  />
                               </div>
                               <div>
-                                 <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Interests / Focus</label>
+                                 <label className="text-[11px] font-bold text-gray-400 tracking-wider block mb-1">Interests / Focus</label>
                                  <input 
                                     type="text" 
                                     className="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-1 focus:ring-ug-teal" 
@@ -4732,7 +4693,7 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
 
                         {/* Custom Cover Message */}
                         <div className="space-y-2 pt-3 sm:pt-4 border-t border-gray-50">
-                           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Custom Cover Message / Personal Statement</label>
+                           <label className="text-[11px] font-semibold text-gray-400 tracking-wide block">Custom Cover Message / Personal Statement</label>
                            <textarea 
                               rows={4}
                               className="w-full p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-2xl text-xs font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-ug-teal"
@@ -4748,14 +4709,14 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
                            <button 
                               type="button"
                               onClick={() => setDrawerOpen(false)}
-                              className="w-full sm:w-1/3 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-500 hover:text-gray-700 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all cursor-pointer text-center"
+                              className="w-full sm:w-1/3 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-500 hover:text-gray-700 py-3.5 rounded-xl text-xs font-bold  tracking-wide transition-all cursor-pointer text-center"
                            >
                               Close
                            </button>
                            <button 
                               type="submit"
                               disabled={submitting}
-                              className="w-full sm:w-2/3 flex items-center justify-center gap-2 bg-ug-navy hover:bg-ug-teal text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 cursor-pointer"
+                              className="w-full sm:w-2/3 flex items-center justify-center gap-2 bg-ug-navy hover:bg-ug-teal text-white py-3.5 rounded-xl text-xs font-bold  tracking-wide transition-all disabled:opacity-50 cursor-pointer"
                            >
                               {submitting ? (
                                 <>
@@ -4815,14 +4776,14 @@ const InvestorDashboard = ({
          {/* Venture Portfolio & Watchlist */}
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 items-start">
             <div className="md:col-span-2 lg:col-span-8 space-y-8">
-               <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm">
+               <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm">
                   <SectionTitle title="Venture Portfolio" subtitle="Curated Technical Assets from University of Ghana" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      {projects.slice(0, 4).map(p => (
-                        <div key={p.id} onClick={() => navigate(`/projects/${p.id}`)} className="bg-gray-50 rounded-3xl p-6 hover:bg-white hover:shadow-xl transition border border-gray-100 cursor-pointer group">
-                           <h4 className="font-black text-lg text-ug-navy mb-2 group-hover:text-ug-teal transition">{p.title}</h4>
+                        <div key={p.id} onClick={() => navigate(`/projects/${p.id}`)} className="bg-gray-50 rounded-2xl p-6 hover:bg-white hover:shadow-xl transition border border-gray-100 cursor-pointer group">
+                           <h4 className="font-bold text-lg text-ug-navy mb-2 group-hover:text-ug-teal transition">{p.title}</h4>
                            <div className="flex justify-between items-center pt-4 border-t border-gray-200/50">
-                              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{p.status}</span>
+                              <span className="text-[11px] font-bold text-gray-400 tracking-wide">{p.status}</span>
                               <ArrowRight size={16} className="text-gray-300 group-hover:text-ug-teal" />
                            </div>
                         </div>
@@ -4855,15 +4816,15 @@ const BookmarkedProjectsList: React.FC<{ userId: string }> = ({ userId }) => {
   useEffect(() => { StorageService.getBookmarks(userId).then(setBookmarks); }, [userId]);
   if (bookmarks.length === 0) return null;
   return (
-    <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-[2rem] border border-gray-100 shadow-sm">
+    <section className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm">
       <SectionTitle title="Watchlist" subtitle="Secured Research Notifications" />
       <div className="space-y-3 mt-4">
         {bookmarks.map(p => (
           <div key={p.id} onClick={() => navigate(`/projects/${p.id}`)} className="flex items-center gap-3 p-3.5 rounded-2xl bg-gray-50/50 border border-gray-100 hover:bg-white hover:border-ug-teal/20 hover:shadow-md transition cursor-pointer group">
             <div className="w-11 h-11 rounded-xl overflow-hidden shadow-sm shrink-0 border border-white"><img src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="" /></div>
             <div className="flex-1 min-w-0">
-               <h4 className="font-black text-ug-navy text-xs truncate group-hover:text-ug-teal transition">{p.title}</h4>
-               <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">{p.research_area}</p>
+               <h4 className="font-bold text-ug-navy text-xs truncate group-hover:text-ug-teal transition">{p.title}</h4>
+               <p className="text-[11px] font-bold text-gray-400 tracking-wide truncate">{p.research_area}</p>
             </div>
             <Bookmark size={16} className="text-ug-teal fill-ug-teal shrink-0" />
           </div>
@@ -5128,10 +5089,10 @@ const ProfileSettings: React.FC<{
   return (
     <div className="animate-fade-in space-y-6 pb-20">
       {/* Identity Card */}
-      <div className="bg-white p-5 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center gap-6 md:gap-10">
+      <div className="bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center gap-6 md:gap-10">
         <div>
           <div 
-            className="w-24 h-24 md:w-32 md:h-32 rounded-3xl overflow-hidden bg-gray-50 border-4 border-white shadow-lg relative cursor-pointer group/avatar"
+            className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden bg-gray-50 border-4 border-white shadow-lg relative cursor-pointer group/avatar"
             onClick={openEditModal}
           >
             {avatarPreview ? (
@@ -5139,7 +5100,7 @@ const ProfileSettings: React.FC<{
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-200 bg-ug-navy/5"><UserIcon size={40} strokeWidth={1} /></div>
             )}
-            <div className="absolute inset-0 bg-ug-navy/60 opacity-0 group-hover/avatar:opacity-100 transition duration-200 flex flex-col items-center justify-center text-white text-[8px] font-black uppercase tracking-wider backdrop-blur-[1px]">
+            <div className="absolute inset-0 bg-ug-navy/60 opacity-0 group-hover/avatar:opacity-100 transition duration-200 flex flex-col items-center justify-center text-white text-[11px] font-semibold tracking-wider backdrop-blur-[1px]">
               <Camera size={14} className="mb-0.5" />
               Change
             </div>
@@ -5148,11 +5109,11 @@ const ProfileSettings: React.FC<{
         
         <div className="text-center sm:text-left space-y-4 flex-1">
           <div className="space-y-0.5">
-            <h3 className="text-2xl font-black text-ug-navy tracking-tight">{name || 'New Member'}</h3>
+            <h3 className="text-2xl font-bold text-ug-navy tracking-tight">{name || 'New Member'}</h3>
             <div className="flex flex-wrap justify-center sm:justify-start gap-2.5 items-center">
-              <span className="text-[9px] font-black text-ug-teal uppercase tracking-[0.2em]">Official Researcher Profile</span>
+              <span className="text-[11px] font-semibold text-ug-teal tracking-[0.2em]">Official Researcher Profile</span>
               <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
-              <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{user?.email}</span>
+              <span className="text-[11px] font-semibold text-gray-400 tracking-wide">{user?.email}</span>
             </div>
           </div>
           <p className="text-xs text-gray-500 font-medium max-w-2xl leading-relaxed">
@@ -5162,7 +5123,7 @@ const ProfileSettings: React.FC<{
             <button 
               type="button" 
               onClick={openEditModal} 
-              className="px-5 py-2.5 bg-ug-navy text-white hover:bg-ug-teal transition rounded-xl text-[9px] font-black uppercase tracking-widest shadow-md flex items-center gap-1.5"
+              className="px-5 py-2.5 bg-ug-navy text-white hover:bg-ug-teal transition rounded-xl text-[11px] font-semibold tracking-wide shadow-md flex items-center gap-1.5"
             >
               <UserIcon size={12} /> Edit Profile
             </button>
@@ -5170,32 +5131,32 @@ const ProfileSettings: React.FC<{
               <button 
                 type="button" 
                 onClick={onRetakeOnboarding} 
-                className="px-5 py-2.5 bg-ug-teal/10 hover:bg-ug-teal hover:text-white text-ug-teal transition rounded-xl text-[9px] font-black uppercase tracking-widest border border-ug-teal/20 flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-ug-teal/10 hover:bg-ug-teal hover:text-white text-ug-teal transition rounded-xl text-[11px] font-semibold tracking-wide border border-ug-teal/20 flex items-center gap-1.5"
               >
                 <Sparkles size={12} /> Refine AI Matching
               </button>
             )}
-            <div className="px-5 py-2.5 bg-white text-gray-400 rounded-xl text-[9px] font-black uppercase tracking-widest border border-gray-100 flex items-center justify-center">Verified Hub</div>
+            <div className="px-5 py-2.5 bg-white text-gray-400 rounded-xl text-[11px] font-semibold tracking-wide border border-gray-100 flex items-center justify-center">Verified Hub</div>
           </div>
         </div>
       </div>
 
       <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
         <div className="lg:col-span-8 space-y-6 md:space-y-8">
-          <div className="bg-white p-5 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6 md:space-y-8">
+          <div className="bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6 md:space-y-8">
             {/* Biography Section */}
             <div className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-ug-teal/10 text-ug-teal rounded-xl flex items-center justify-center shrink-0"><FileText size={18} /></div>
                 <div>
-                  <h4 className="text-lg font-black text-ug-navy tracking-tight uppercase">My Information</h4>
-                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mt-0.5">Professional Narrative</p>
+                  <h4 className="text-lg font-bold text-ug-navy tracking-tight ">My Information</h4>
+                  <p className="text-[11px] font-semibold text-gray-400 tracking-[0.2em] mt-0.5">Professional Narrative</p>
                 </div>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-gray-500 tracking-widest ml-1">Full Name / Display Name</label>
+                  <label className="text-[11px] font-semibold text-gray-500 tracking-wide ml-1">Full Name / Display Name</label>
                   <input 
                     type="text" 
                     value={name} 
@@ -5206,7 +5167,7 @@ const ProfileSettings: React.FC<{
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-gray-500 tracking-widest ml-1">Email Address</label>
+                  <label className="text-[11px] font-semibold text-gray-500 tracking-wide ml-1">Email Address</label>
                   <input 
                     type="email" 
                     value={user?.email || ''} 
@@ -5215,26 +5176,26 @@ const ProfileSettings: React.FC<{
                   />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
-                  <label className="text-[9px] font-black text-gray-500 tracking-widest ml-1">Verified Portal Role</label>
+                  <label className="text-[11px] font-semibold text-gray-500 tracking-wide ml-1">Verified Portal Role</label>
                   <input 
                     type="text" 
                     value={user?.role || 'Researcher'} 
                     disabled 
-                    className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 font-bold text-gray-400 outline-none cursor-not-allowed text-xs shadow-inner uppercase tracking-wider" 
+                    className="w-full bg-gray-100 border border-gray-200 rounded-xl p-4 font-bold text-gray-400 outline-none cursor-not-allowed text-xs shadow-inner  " 
                   />
                 </div>
               </div>
             </div>
 
             {user?.user_type === 'entity' && (
-              <div className="bg-white p-5 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+              <div className="bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-ug-teal/10 text-ug-teal rounded-xl flex items-center justify-center shrink-0">
                     <Target size={18} />
                   </div>
                   <div>
-                    <h4 className="text-lg font-black text-ug-navy tracking-tight uppercase">Active Focus Tracks</h4>
-                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mt-0.5">Manage Sector Tracks & Dynamic Tags</p>
+                    <h4 className="text-lg font-bold text-ug-navy tracking-tight ">Active Focus Tracks</h4>
+                    <p className="text-[11px] font-semibold text-gray-400 tracking-[0.2em] mt-0.5">Manage Sector Tracks & Dynamic Tags</p>
                   </div>
                 </div>
 
@@ -5242,7 +5203,7 @@ const ProfileSettings: React.FC<{
                   {sectorVector.map(tag => (
                     <span 
                       key={tag} 
-                      className="px-3 py-1.5 bg-ug-teal text-white rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-ug-teal text-white rounded-lg text-[11px] font-semibold tracking-wider flex items-center gap-1.5"
                     >
                       {tag}
                       <button 
@@ -5281,7 +5242,7 @@ const ProfileSettings: React.FC<{
                         setNewTag('');
                       }
                     }}
-                    className="px-5 py-2 bg-ug-navy text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-ug-teal transition-colors focus:outline-none"
+                    className="px-5 py-2 bg-ug-navy text-white rounded-xl text-xs font-bold   hover:bg-ug-teal transition-colors focus:outline-none"
                   >
                     Add Tag
                   </button>
@@ -5294,8 +5255,8 @@ const ProfileSettings: React.FC<{
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-ug-navy text-white rounded-xl flex items-center justify-center shadow-md shrink-0"><LinkIcon size={18} /></div>
                 <div>
-                  <h4 className="text-lg font-black text-ug-navy tracking-tight uppercase">Portfolio Slots</h4>
-                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mt-0.5">External Research Links (Up to 4)</p>
+                  <h4 className="text-lg font-bold text-ug-navy tracking-tight ">Portfolio Slots</h4>
+                  <p className="text-[11px] font-semibold text-gray-400 tracking-[0.2em] mt-0.5">External Research Links (Up to 4)</p>
                 </div>
               </div>
               
@@ -5307,7 +5268,7 @@ const ProfileSettings: React.FC<{
                   { label: "Extra Portfolio Slot", val: website4, setter: setWebsite4, placeholder: "Any other relevant link" },
                 ].map((input, idx) => (
                   <div key={idx} className="space-y-2">
-                    <label className="text-[9px] font-black text-gray-500 tracking-widest ml-1">{input.label}</label>
+                    <label className="text-[11px] font-semibold text-gray-500 tracking-wide ml-1">{input.label}</label>
                     <div className="relative group">
                       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-ug-teal transition-colors">
                         <LinkIcon size={14} />
@@ -5329,7 +5290,7 @@ const ProfileSettings: React.FC<{
               <button 
                 type="submit" 
                 disabled={loading} 
-                className="group w-full sm:w-auto bg-ug-navy text-white px-8 py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-md hover:bg-ug-teal transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+                className="group w-full sm:w-auto bg-ug-navy text-white px-8 py-3.5 rounded-xl font-semibold text-[11px] tracking-wide shadow-md hover:bg-ug-teal transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} className="group-hover:scale-125 transition-transform" />}
                 Save My Profile
@@ -5339,13 +5300,13 @@ const ProfileSettings: React.FC<{
         </div>
 
         <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white p-5 rounded-[1.5rem] border border-gray-100 shadow-sm space-y-4">
-            <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-1">Account Management</h4>
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-4">
+            <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide px-1">Account Management</h4>
             <div className="space-y-1">
               {isResettingPassword ? (
                 <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-2.5 animate-fade-in mb-1">
                   <div className="flex justify-between items-center px-1">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-ug-navy">Change Password</span>
+                    <span className="text-[11px] font-semibold tracking-wide text-ug-navy">Change Password</span>
                     <button 
                       type="button" 
                       onClick={() => {
@@ -5353,7 +5314,7 @@ const ProfileSettings: React.FC<{
                         setNewPassword('');
                         setConfirmPassword('');
                       }}
-                      className="text-[8px] font-black uppercase tracking-widest text-gray-400 hover:text-red-500 cursor-pointer"
+                      className="text-[11px] font-semibold tracking-wide text-gray-400 hover:text-red-500 cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -5380,7 +5341,7 @@ const ProfileSettings: React.FC<{
                     type="button"
                     disabled={updatingPassword}
                     onClick={handleResetPassword}
-                    className="w-full bg-ug-navy hover:bg-ug-teal text-white py-2 rounded-lg font-black text-[9px] uppercase tracking-widest transition flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50 cursor-pointer"
+                    className="w-full bg-ug-navy hover:bg-ug-teal text-white py-2 rounded-lg font-semibold text-[11px] tracking-wide transition flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50 cursor-pointer"
                   >
                     {updatingPassword ? 'Updating...' : 'Update Password'}
                   </button>
@@ -5393,7 +5354,7 @@ const ProfileSettings: React.FC<{
                 >
                   <div className="flex items-center gap-3">
                     <Lock size={16} className="text-gray-400 group-hover:text-ug-navy transition" />
-                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Reset Password</span>
+                    <span className="text-[11px] font-semibold text-gray-500 tracking-wide">Reset Password</span>
                   </div>
                   <ChevronRight size={14} className="text-gray-300 group-hover:text-ug-navy group-hover:translate-x-0.5 transition" />
                 </button>
@@ -5406,7 +5367,7 @@ const ProfileSettings: React.FC<{
               >
                 <div className="flex items-center gap-3">
                   <Download size={16} className="text-gray-400 group-hover:text-ug-navy transition" />
-                  <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Download Data</span>
+                  <span className="text-[11px] font-semibold text-gray-500 tracking-wide">Download Data</span>
                 </div>
               </button>
               
@@ -5423,7 +5384,7 @@ const ProfileSettings: React.FC<{
               >
                 <div className="flex items-center gap-3">
                   <Trash2 size={16} className="text-gray-400 group-hover:text-red-500 transition" />
-                  <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest group-hover:text-red-600 transition">Delete Account</span>
+                  <span className="text-[11px] font-semibold text-gray-500 tracking-wide group-hover:text-red-600 transition">Delete Account</span>
                 </div>
               </button>
             </div>
@@ -5433,12 +5394,12 @@ const ProfileSettings: React.FC<{
 
       {/* Privacy Disclaimer */}
       <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-        <p className="text-[10px] md:text-xs text-gray-400 font-medium leading-relaxed max-w-2xl">
+        <p className="text-[11px] md:text-xs text-gray-400 font-medium leading-relaxed max-w-2xl">
           "Your data is used specifically for matchmaking and is never shared with third-party advertisers."
         </p>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-ug-teal/5 rounded-full border border-ug-teal/10 shrink-0">
           <span className="w-1.5 h-1.5 bg-ug-teal rounded-full animate-pulse"></span>
-          <span className="text-[9px] font-black uppercase tracking-widest text-ug-teal">Encrypted & Secure</span>
+          <span className="text-[11px] font-semibold tracking-wide text-ug-teal">Encrypted & Secure</span>
         </div>
       </div>
 
@@ -5446,11 +5407,11 @@ const ProfileSettings: React.FC<{
       {isEditModalOpen && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-ug-navy/60 backdrop-blur-md" onClick={() => setIsEditModalOpen(false)}></div>
-          <div className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl relative w-full max-w-lg overflow-hidden animate-fade-in z-[160] max-h-[90vh] flex flex-col">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-xl relative w-full max-w-lg overflow-hidden animate-fade-in z-[160] max-h-[90vh] flex flex-col">
             <div className="p-8 md:p-10 border-b border-gray-100 flex justify-between items-center shrink-0">
               <div>
-                <h3 className="text-2xl font-black text-ug-navy tracking-tight">Edit Profile Info</h3>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Name & Profile Picture</p>
+                <h3 className="text-2xl font-bold text-ug-navy tracking-tight">Edit Profile Info</h3>
+                <p className="text-[11px] font-semibold text-gray-400 tracking-wide mt-1">Name & Profile Picture</p>
               </div>
               <button 
                 type="button"
@@ -5466,7 +5427,7 @@ const ProfileSettings: React.FC<{
               <div className="flex flex-col items-center gap-4">
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-32 h-32 rounded-[2.5rem] overflow-hidden bg-gray-50 border-4 border-gray-100 shadow-lg cursor-pointer relative group/avatar"
+                  className="w-32 h-32 rounded-2xl overflow-hidden bg-gray-50 border-4 border-gray-100 shadow-lg cursor-pointer relative group/avatar"
                 >
                   {editAvatarPreview ? (
                     <img src={editAvatarPreview} className="w-full h-full object-cover group-hover/avatar:scale-110 transition duration-500" alt="New Avatar" />
@@ -5475,7 +5436,7 @@ const ProfileSettings: React.FC<{
                       <UserIcon size={48} strokeWidth={1} />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-ug-navy/60 opacity-0 group-hover/avatar:opacity-100 transition duration-200 flex flex-col items-center justify-center text-white text-[9px] font-black uppercase tracking-wider backdrop-blur-[2px]">
+                  <div className="absolute inset-0 bg-ug-navy/60 opacity-0 group-hover/avatar:opacity-100 transition duration-200 flex flex-col items-center justify-center text-white text-[11px] font-semibold tracking-wider backdrop-blur-[2px]">
                     <Camera size={18} className="mb-1" />
                     Upload
                   </div>
@@ -5483,7 +5444,7 @@ const ProfileSettings: React.FC<{
                 <button 
                   type="button" 
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-5 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest transition"
+                  className="px-5 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-xl text-[11px] font-semibold tracking-wide transition"
                 >
                   Choose Image
                 </button>
@@ -5504,7 +5465,7 @@ const ProfileSettings: React.FC<{
 
               {/* Name Field */}
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 tracking-widest ml-1">Full Name / Display Name</label>
+                <label className="text-[11px] font-semibold text-gray-500 tracking-wide ml-1">Full Name / Display Name</label>
                 <input 
                   type="text" 
                   value={editName}
@@ -5519,13 +5480,13 @@ const ProfileSettings: React.FC<{
                 <button 
                   type="button" 
                   onClick={() => setIsEditModalOpen(false)}
-                  className="flex-1 px-6 py-4 bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-ug-navy transition rounded-2xl text-[10px] font-black uppercase tracking-widest"
+                  className="flex-1 px-6 py-4 bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-ug-navy transition rounded-2xl text-[11px] font-semibold tracking-wide"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
-                  className="flex-1 px-6 py-4 bg-ug-navy text-white hover:bg-ug-teal transition rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl font-bold"
+                  className="flex-1 px-6 py-4 bg-ug-navy text-white hover:bg-ug-teal transition rounded-2xl text-[11px] font-semibold tracking-wide shadow-xl font-bold"
                 >
                   Confirm
                 </button>
@@ -5538,7 +5499,7 @@ const ProfileSettings: React.FC<{
       {/* Delete Account Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-[10000] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 md:p-6 my-0">
-          <div className="bg-white rounded-[2rem] border border-gray-100 shadow-2xl relative w-full max-w-lg overflow-hidden animate-fade-in my-auto flex flex-col max-h-[85vh] sm:max-h-[90vh]">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-xl relative w-full max-w-lg overflow-hidden animate-fade-in my-auto flex flex-col max-h-[85vh] sm:max-h-[90vh]">
             {/* Modal Header */}
             <div className="p-5 sm:p-6 pb-4 border-b border-gray-100 flex justify-between items-start shrink-0 bg-white z-10">
               <div className="flex items-center gap-3">
@@ -5546,8 +5507,8 @@ const ProfileSettings: React.FC<{
                   <Trash2 size={22} />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-black text-ug-navy">Delete Account</h3>
-                  <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mt-0.5">Permanent Offboarding & Data Erasure</p>
+                  <h3 className="text-lg sm:text-xl font-bold text-ug-navy">Delete Account</h3>
+                  <p className="text-[11px] font-semibold tracking-wider text-gray-400 mt-0.5">Permanent Offboarding & Data Erasure</p>
                 </div>
               </div>
               <button 
@@ -5575,7 +5536,7 @@ const ProfileSettings: React.FC<{
               <form onSubmit={handleConfirmDeleteAccount} className="space-y-5">
                 {/* Reason Category Selection */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block">
+                  <label className="text-[11px] font-semibold tracking-wider text-gray-500 block">
                     Why are you deleting your account? <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -5595,7 +5556,7 @@ const ProfileSettings: React.FC<{
 
                 {/* Additional Details */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block">
+                  <label className="text-[11px] font-semibold tracking-wider text-gray-500 block">
                     Additional Details / Feedback (Optional)
                   </label>
                   <textarea
@@ -5609,7 +5570,7 @@ const ProfileSettings: React.FC<{
 
                 {/* Password Confirmation */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-wider text-gray-500 block">
+                  <label className="text-[11px] font-semibold tracking-wider text-gray-500 block">
                     Confirm Current Password <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -5643,14 +5604,14 @@ const ProfileSettings: React.FC<{
                     type="button"
                     disabled={deletingAccount}
                     onClick={() => setIsDeleteModalOpen(false)}
-                    className="px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-black uppercase tracking-wider rounded-xl transition cursor-pointer"
+                    className="px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold   rounded-xl transition cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={deletingAccount || !deletePassword || !deleteConfirmedCheck}
-                    className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider rounded-xl transition shadow-lg shadow-red-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white text-xs font-bold   rounded-xl transition shadow-lg shadow-red-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {deletingAccount ? (
                       <>

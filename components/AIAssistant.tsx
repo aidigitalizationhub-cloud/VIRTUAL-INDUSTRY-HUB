@@ -9,7 +9,7 @@ const AIAssistant: React.FC = () => {
       {/* Floating Chat Window */}
       {isOpen && (
         <div
-          className="fixed z-[9999] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden
+          className="fixed z-[9999] bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden
                      bottom-4 right-4
                      w-[95vw] max-w-[430px]
                      h-[80vh] max-h-[720px]

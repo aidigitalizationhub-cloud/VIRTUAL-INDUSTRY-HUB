@@ -61,9 +61,9 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 
       {isOpen && (
         <div
-          className={`absolute ${dropdownPosition === 'right' ? 'right-0' : 'left-0'} mt-2 w-44 rounded-2xl bg-white shadow-2xl border border-gray-100 py-2 z-[9999] animate-in fade-in zoom-in-95 duration-150`}
+          className={`absolute ${dropdownPosition === 'right' ? 'right-0' : 'left-0'} mt-2 w-44 rounded-2xl bg-white shadow-xl border border-gray-100 py-2 z-[9999] animate-in fade-in zoom-in-95 duration-150`}
         >
-          <div className="px-3 py-1.5 text-[10px] font-black uppercase text-gray-400 tracking-wider border-b border-gray-100 mb-1">
+          <div className="px-3 py-1.5 text-[11px] font-semibold text-gray-400 tracking-wider border-b border-gray-100 mb-1">
             Language / Lugha / Kasa
           </div>
           {SUPPORTED_LANGUAGES.map((lang) => {

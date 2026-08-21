@@ -263,7 +263,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       await StorageService.submitEOI(
         proj.id,
         user.name,
-        `⚠️ ADVISORY ALERT & REGULATORY REVIEW FEEDBACK:\n\n${adminFeedback.trim()}\n\nRequested Document Slots Created:\n${slots.map(s => `• ${s.name} (Awaiting Upload)`).join('\n') || 'None'}`,
+        `ADVISORY ALERT & REGULATORY REVIEW FEEDBACK:\n\n${adminFeedback.trim()}\n\nRequested Document Slots Created:\n${slots.map(s => `• ${s.name} (Awaiting Upload)`).join('\n') || 'None'}`,
         proj.owner_id
       );
 
@@ -310,7 +310,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       await StorageService.submitEOI(
         proj.id,
         user.name,
-        `🚫 REGULATORY DEFICIENCIES NOTED (SUBMISSION REJECTED):\n\n${adminFeedback.trim()}`,
+        `REGULATORY DEFICIENCIES NOTED (SUBMISSION REJECTED):\n\n${adminFeedback.trim()}`,
         proj.owner_id
       );
 
@@ -373,7 +373,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       await StorageService.submitEOI(
         proj.id,
         user.name,
-        `⚠️ DOCUMENT RE-UPLOAD REQUESTED for slot [${slotName}]:\n\nReason: ${reason.trim()}\n\nPlease go to your portfolio dashboard and upload a revised or correct file in the corresponding slot.`,
+        `DOCUMENT RE-UPLOAD REQUESTED for slot [${slotName}]:\n\nReason: ${reason.trim()}\n\nPlease go to your portfolio dashboard and upload a revised or correct file in the corresponding slot.`,
         proj.owner_id
       );
 
@@ -918,9 +918,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
         <div>
           <div className="flex items-center gap-2 text-ug-teal mb-2">
             <Lock size={14} className="animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Platform Core Governance System</span>
+            <span className="text-[11px] font-bold tracking-wide">Platform Core Governance System</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-ug-navy dark:text-white tracking-tight">ADMINISTRATIVE HUB</h1>
+          <h1 className="text-3xl font-extrabold text-ug-navy dark:text-white tracking-tight">Administrative Hub</h1>
           <p className="text-xs text-gray-400 font-medium tracking-wide mt-1">
             Integrate university registries, examine match metrics, curate institutional announcements, and moderate innovation projects.
           </p>
@@ -930,7 +930,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
           <button 
             onClick={loadAdminData}
             disabled={loading}
-            className="flex items-center gap-2 px-5 py-3 h-12 bg-gray-50 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 font-bold hover:bg-gray-100 dark:hover:bg-gray-700 text-[10px] text-ug-navy dark:text-gray-200 uppercase tracking-widest rounded-xl transition disabled:opacity-50 cursor-pointer"
+            className="flex items-center gap-2 px-5 py-3 h-12 bg-gray-50 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 font-bold hover:bg-gray-100 dark:hover:bg-gray-700 text-[11px] text-ug-navy dark:text-gray-200 tracking-wide rounded-xl transition disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             {loading ? 'Re-Syncing...' : 'Force System Re-Sync'}
@@ -943,7 +943,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 space-y-4">
           <RefreshCw className="animate-spin text-ug-teal" size={48} />
-          <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 animate-pulse">Syncing platform ledgers & secure metrics...</p>
+          <p className="text-[11px] font-bold tracking-wide text-gray-400 animate-pulse">Syncing platform ledgers & secure metrics...</p>
         </div>
       ) : (
         <AnimatePresence mode="wait">
@@ -957,18 +957,18 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               className="space-y-8 text-left"
             >
               {/* Analytics Subheader & CSV Export */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-gray-100 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-xs">
                 <div>
                   <div className="flex items-center gap-2 text-ug-teal mb-1">
                     <TrendingUp size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Ecosystem Intelligence & Analytics</span>
+                    <span className="text-[11px] font-semibold tracking-wide">Ecosystem Intelligence & Analytics</span>
                   </div>
-                  <h2 className="text-xl font-black text-ug-navy">Platform Performance & Engagement Dashboard</h2>
+                  <h2 className="text-xl font-bold text-ug-navy">Platform Performance & Engagement Dashboard</h2>
                 </div>
                 <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
                   <button
                     onClick={() => setIsReportModalOpen(true)}
-                    className="px-5 py-2.5 bg-ug-teal hover:bg-teal-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-ug-teal/10"
+                    className="px-5 py-2.5 bg-ug-teal hover:bg-teal-600 text-white font-bold text-xs   rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-ug-teal/10"
                   >
                     <FileSpreadsheet size={15} />
                     <span>Generate Report</span>
@@ -995,7 +995,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       document.body.removeChild(link);
                       showToast("Analytics summary CSV exported successfully!", "success");
                     }}
-                    className="px-4 py-2.5 bg-[#0a0b2c] hover:bg-[#0a0b2c]/90 text-white font-black text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center gap-2"
+                    className="px-4 py-2.5 bg-[#1a1a4b] hover:bg-[#1a1a4b]/90 text-white font-bold text-xs   rounded-xl transition cursor-pointer flex items-center gap-2"
                   >
                     <Download size={14} />
                     Export CSV
@@ -1016,13 +1016,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     { label: "Engagement Rate", value: `${convRate}%`, sub: "Views converted to EOIs", trend: "High Conversion", color: "text-blue-600" },
                     { label: "Verified Registrants", value: profiles.length, sub: "Researchers, VCs & Partners", trend: "+12% network", color: "text-purple-600" }
                   ].map((stat, idx) => (
-                    <div key={idx} className="bg-white p-5 rounded-3xl border border-gray-100 shadow-xs flex flex-col justify-between h-32 hover:border-ug-teal/30 transition">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</span>
+                    <div key={idx} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between h-32 hover:border-ug-teal/30 transition">
+                      <span className="text-[11px] font-semibold text-gray-400 tracking-wide">{stat.label}</span>
                       <div>
-                        <h3 className={`text-3xl font-black ${stat.color} leading-none tracking-tight`}>{stat.value}</h3>
+                        <h3 className={`text-3xl font-bold ${stat.color} leading-none tracking-tight`}>{stat.value}</h3>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-[10px] text-gray-500 font-bold">{stat.sub}</span>
-                          <span className="text-[8px] font-black uppercase text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md">{stat.trend}</span>
+                          <span className="text-[11px] text-gray-500 font-bold">{stat.sub}</span>
+                          <span className="text-[11px] font-semibold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md">{stat.trend}</span>
                         </div>
                       </div>
                     </div>
@@ -1032,20 +1032,20 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
               {/* Disclosure Views vs EOI Clicks Breakdown Chart */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="col-span-1 lg:col-span-2 bg-white rounded-3xl border border-gray-100 p-6 shadow-xs flex flex-col justify-between">
+                <div className="col-span-1 lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-6 shadow-xs flex flex-col justify-between">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-4 mb-6">
                     <div>
-                      <h3 className="text-base font-black text-ug-navy">Disclosure Views vs Expression of Interest (EOI) Clicks</h3>
-                      <p className="text-[10px] font-black text-ug-teal uppercase tracking-widest mt-0.5">6-Month Engagement Velocity</p>
+                      <h3 className="text-base font-bold text-ug-navy">Disclosure Views vs Expression of Interest (EOI) Clicks</h3>
+                      <p className="text-[11px] font-semibold text-ug-teal tracking-wide mt-0.5">6-Month Engagement Velocity</p>
                     </div>
                     <div className="flex items-center gap-4 text-xs font-bold">
                       <div className="flex items-center gap-1.5">
                         <span className="w-3 h-3 bg-ug-teal rounded-sm"></span>
-                        <span className="text-gray-600 text-[10px] uppercase">Disclosure Views</span>
+                        <span className="text-gray-600 text-[11px]">Disclosure Views</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="w-3 h-3 bg-ug-navy rounded-sm"></span>
-                        <span className="text-gray-600 text-[10px] uppercase">EOI Clicks</span>
+                        <span className="text-gray-600 text-[11px]">EOI Clicks</span>
                       </div>
                     </div>
                   </div>
@@ -1067,8 +1067,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       return (
                         <div key={idx} className="space-y-1.5">
                           <div className="flex justify-between items-center text-xs">
-                            <span className="font-black text-ug-navy w-20">{item.month}</span>
-                            <div className="flex items-center gap-4 text-[11px] font-mono font-black">
+                            <span className="font-bold text-ug-navy w-20">{item.month}</span>
+                            <div className="flex items-center gap-4 text-[11px] font-mono font-bold">
                               <span className="text-ug-teal">{item.views} views</span>
                               <span className="text-ug-navy">{item.eois} EOIs</span>
                             </div>
@@ -1088,13 +1088,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 </div>
 
                 {/* Geographic & Visitor Demographics */}
-                <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs flex flex-col justify-between space-y-6">
+                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs flex flex-col justify-between space-y-6">
                   <div>
                     <div className="flex items-center gap-2 text-ug-navy mb-1">
                       <Globe size={18} className="text-ug-teal animate-spin-slow" />
-                      <h3 className="text-base font-black text-ug-navy">Geographic Visitor Trends</h3>
+                      <h3 className="text-base font-bold text-ug-navy">Geographic Visitor Trends</h3>
                     </div>
-                    <p className="text-[10px] font-black text-ug-teal uppercase tracking-widest">Regional Ecosystem Distribution</p>
+                    <p className="text-[11px] font-semibold text-ug-teal tracking-wide">Regional Ecosystem Distribution</p>
                   </div>
 
                   <div className="space-y-4">
@@ -1108,7 +1108,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <div key={idx} className="space-y-1.5">
                         <div className="flex justify-between items-center text-xs">
                           <span className="font-bold text-ug-navy text-xs">{geo.region}</span>
-                          <span className="font-mono font-black text-ug-teal text-xs">{geo.count}</span>
+                          <span className="font-mono font-bold text-ug-teal text-xs">{geo.count}</span>
                         </div>
                         <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                           <div className={`h-full ${geo.color} rounded-full`} style={{ width: geo.count }}></div>
@@ -1118,8 +1118,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                   </div>
 
                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <p className="text-[10px] font-bold text-gray-500 leading-relaxed">
-                      <span className="text-ug-navy font-black">Strategic Insight:</span> Regional engagement from international industry partners is up 38% this quarter.
+                    <p className="text-[11px] font-bold text-gray-500 leading-relaxed">
+                      <span className="text-ug-navy font-bold">Strategic Insight:</span> Regional engagement from international industry partners is up 38% this quarter.
                     </p>
                   </div>
                 </div>
@@ -1128,13 +1128,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               {/* Keywords, Search Queries & Top Performing Projects */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Popular Search Queries & Alerts */}
-                <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs space-y-5">
+                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-5">
                   <div>
                     <div className="flex items-center gap-2 text-ug-navy mb-1">
                       <Search size={18} className="text-ug-teal" />
-                      <h3 className="text-base font-black text-ug-navy">Top Search Queries & Alert Keywords</h3>
+                      <h3 className="text-base font-bold text-ug-navy">Top Search Queries & Alert Keywords</h3>
                     </div>
-                    <p className="text-[10px] font-black text-ug-teal uppercase tracking-widest">High-Demand Innovation Queries</p>
+                    <p className="text-[11px] font-semibold text-ug-teal tracking-wide">High-Demand Innovation Queries</p>
                   </div>
 
                   <div className="space-y-3">
@@ -1147,12 +1147,12 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     ].map((q, idx) => (
                       <div key={idx} className="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 space-y-2">
                         <div className="flex justify-between items-center">
-                          <h4 className="font-black text-xs text-ug-navy">"{q.keyword}"</h4>
-                          <span className="text-[9px] font-black uppercase text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md">
+                          <h4 className="font-bold text-xs text-ug-navy">"{q.keyword}"</h4>
+                          <span className="text-[11px] font-semibold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md">
                             {q.alerts} Active Alerts
                           </span>
                         </div>
-                        <div className="flex items-center justify-between text-[10px] text-gray-500">
+                        <div className="flex items-center justify-between text-[11px] text-gray-500">
                           <span>{q.searches} user queries</span>
                           <span className="font-mono font-bold text-gray-400">{q.pct}% interest weight</span>
                         </div>
@@ -1165,30 +1165,30 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 </div>
 
                 {/* Top Performing Disclosures & Projects */}
-                <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-xs space-y-5">
+                <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-xs space-y-5">
                   <div>
                     <div className="flex items-center gap-2 text-ug-navy mb-1">
                       <Sparkles size={18} className="text-amber-500" />
-                      <h3 className="text-base font-black text-ug-navy">Most Engaged Research Disclosures</h3>
+                      <h3 className="text-base font-bold text-ug-navy">Most Engaged Research Disclosures</h3>
                     </div>
-                    <p className="text-[10px] font-black text-ug-teal uppercase tracking-widest">Ranked by Views & EOIs</p>
+                    <p className="text-[11px] font-semibold text-ug-teal tracking-wide">Ranked by Views & EOIs</p>
                   </div>
 
                   <div className="space-y-3">
                     {projects.slice(0, 5).map((p, idx) => (
                       <div key={p.id} className="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between gap-3 hover:bg-gray-100/60 transition">
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="w-6 h-6 rounded-lg bg-ug-navy text-white text-[10px] font-black flex items-center justify-center shrink-0">
+                          <span className="w-6 h-6 rounded-lg bg-ug-navy text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
                             #{idx + 1}
                           </span>
                           <div className="min-w-0">
-                            <h4 className="font-black text-xs text-ug-navy truncate">{p.title}</h4>
-                            <span className="text-[9px] font-bold text-gray-400 block truncate">{p.research_area}</span>
+                            <h4 className="font-bold text-xs text-ug-navy truncate">{p.title}</h4>
+                            <span className="text-[11px] font-bold text-gray-400 block truncate">{p.research_area}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 text-[10px] font-mono font-black shrink-0">
-                          <span className="text-gray-500 bg-white px-2 py-1 rounded-lg border border-gray-200">{p.views || (idx + 1) * 32} views</span>
-                          <span className="text-ug-teal bg-ug-teal/10 px-2 py-1 rounded-lg border border-ug-teal/20">{p.expressions_of_interest || (5 - idx) * 3} EOIs</span>
+                        <div className="flex items-center gap-3 text-[11px] font-mono font-semibold shrink-0">
+                          <span className="text-gray-500 bg-white px-2 py-1 rounded-lg border border-gray-200">{p.views ?? 0} views</span>
+                          <span className="text-ug-teal bg-ug-teal/10 px-2 py-1 rounded-lg border border-ug-teal/20">{p.expressions_of_interest ?? 0} EOIs</span>
                         </div>
                       </div>
                     ))}
@@ -1211,25 +1211,25 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
                 <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                   <div className="flex items-center justify-between text-gray-400 mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider">Total Users</span>
+                    <span className="text-[11px] font-semibold tracking-wider">Total Users</span>
                     <Users size={16} className="text-ug-navy" />
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl sm:text-2xl font-black text-ug-navy">{profiles.length}</span>
-                    <span className="text-[9px] font-bold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-full">100%</span>
+                    <span className="text-xl sm:text-2xl font-bold text-ug-navy">{profiles.length}</span>
+                    <span className="text-[11px] font-bold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-full">100%</span>
                   </div>
                 </div>
 
                 <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                   <div className="flex items-center justify-between text-gray-400 mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider">Researchers</span>
+                    <span className="text-[11px] font-semibold tracking-wider">Researchers</span>
                     <Microscope size={16} className="text-ug-teal" />
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl sm:text-2xl font-black text-ug-navy">
+                    <span className="text-xl sm:text-2xl font-bold text-ug-navy">
                       {profiles.filter(p => p.role === UserRole.Researcher).length}
                     </span>
-                    <span className="text-[9px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                       {profiles.length ? Math.round((profiles.filter(p => p.role === UserRole.Researcher).length / profiles.length) * 100) : 0}%
                     </span>
                   </div>
@@ -1237,14 +1237,14 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                 <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                   <div className="flex items-center justify-between text-gray-400 mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider">Students</span>
+                    <span className="text-[11px] font-semibold tracking-wider">Students</span>
                     <GraduationCap size={16} className="text-blue-500" />
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl sm:text-2xl font-black text-ug-navy">
+                    <span className="text-xl sm:text-2xl font-bold text-ug-navy">
                       {profiles.filter(p => p.role === UserRole.Student).length}
                     </span>
-                    <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
                       {profiles.length ? Math.round((profiles.filter(p => p.role === UserRole.Student).length / profiles.length) * 100) : 0}%
                     </span>
                   </div>
@@ -1252,14 +1252,14 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                 <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                   <div className="flex items-center justify-between text-gray-400 mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider">Industry</span>
+                    <span className="text-[11px] font-semibold tracking-wider">Industry</span>
                     <Building2 size={16} className="text-amber-500" />
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl sm:text-2xl font-black text-ug-navy">
+                    <span className="text-xl sm:text-2xl font-bold text-ug-navy">
                       {profiles.filter(p => p.role === UserRole.IndustryPartner).length}
                     </span>
-                    <span className="text-[9px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
                       {profiles.length ? Math.round((profiles.filter(p => p.role === UserRole.IndustryPartner).length / profiles.length) * 100) : 0}%
                     </span>
                   </div>
@@ -1267,14 +1267,14 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                 <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                   <div className="flex items-center justify-between text-gray-400 mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider">Investors</span>
+                    <span className="text-[11px] font-semibold tracking-wider">Investors</span>
                     <TrendingUp size={16} className="text-emerald-500" />
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl sm:text-2xl font-black text-ug-navy">
+                    <span className="text-xl sm:text-2xl font-bold text-ug-navy">
                       {profiles.filter(p => p.role === UserRole.Investor).length}
                     </span>
-                    <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
                       {profiles.length ? Math.round((profiles.filter(p => p.role === UserRole.Investor).length / profiles.length) * 100) : 0}%
                     </span>
                   </div>
@@ -1282,14 +1282,14 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                 <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
                   <div className="flex items-center justify-between text-gray-400 mb-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider">Admins</span>
+                    <span className="text-[11px] font-semibold tracking-wider">Admins</span>
                     <ShieldCheck size={16} className="text-purple-600" />
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xl sm:text-2xl font-black text-ug-navy">
+                    <span className="text-xl sm:text-2xl font-bold text-ug-navy">
                       {profiles.filter(p => p.role === UserRole.Admin).length}
                     </span>
-                    <span className="text-[9px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
                       Governance
                     </span>
                   </div>
@@ -1297,10 +1297,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               </div>
 
               {/* Controls Toolbar: Search, Filter & Utility Export */}
-              <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-4">
+              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-gray-100 pb-4">
                   <div>
-                    <h3 className="text-lg font-black text-ug-navy tracking-tight">Users Directorate Ledger</h3>
+                    <h3 className="text-lg font-bold text-ug-navy tracking-tight">Users Directorate Ledger</h3>
                     <p className="text-xs text-gray-400 font-medium mt-0.5">Manage user access privileges, inspect AI summaries, and audit ecosystem registrants.</p>
                   </div>
                   <div className="flex items-center gap-2.5 w-full lg:w-auto shrink-0">
@@ -1357,15 +1357,15 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <button
                         key={item.role}
                         onClick={() => setRoleFilter(item.role)}
-                        className={`px-3 py-1.5 text-[10px] font-black rounded-xl border transition flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-3 py-1.5 text-[11px] font-semibold rounded-xl border transition flex items-center gap-1.5 cursor-pointer ${
                           roleFilter === item.role
                             ? 'bg-ug-navy text-white border-ug-navy shadow-sm'
                             : 'bg-gray-50 text-gray-500 border-gray-200 hover:text-ug-navy hover:bg-gray-100'
                         }`}
                       >
                         <span>{item.label}</span>
-                        <span className={`px-1.5 py-0.2 rounded-full text-[9px] ${
-                          roleFilter === item.role ? 'bg-ug-teal text-ug-navy font-black' : 'bg-gray-200 text-gray-600'
+                        <span className={`px-1.5 py-0.2 rounded-full text-[11px] ${
+                          roleFilter === item.role ? 'bg-ug-teal text-ug-navy font-bold' : 'bg-gray-200 text-gray-600'
                         }`}>
                           {item.count}
                         </span>
@@ -1380,7 +1380,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-gray-50/80 border-b border-gray-100 text-[10px] font-black tracking-widest text-gray-400 uppercase">
+                      <tr className="bg-gray-50/80 border-b border-gray-100 text-[11px] font-semibold tracking-wide text-gray-400">
                         <th className="p-5">Registrant Details</th>
                         <th className="p-5">Dynamic Role Status</th>
                         <th className="p-5">AI Integration</th>
@@ -1391,7 +1391,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     <tbody className="divide-y divide-gray-100">
                       {filteredProfiles.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="p-12 text-center text-xs font-black uppercase text-gray-400 tracking-widest">
+                          <td colSpan={5} className="p-12 text-center text-xs font-bold  text-gray-400 tracking-wide">
                             No registered user profiles match current filter query.
                           </td>
                         </tr>
@@ -1402,7 +1402,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             <tr key={p.id} className="hover:bg-gray-50/70 transition group">
                               <td className="p-5">
                                 <div className="flex items-center gap-3.5">
-                                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-ug-navy to-slate-800 text-white flex items-center justify-center font-black text-sm border border-gray-100 overflow-hidden shrink-0 shadow-sm">
+                                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-ug-navy to-slate-800 text-white flex items-center justify-center font-bold text-sm border border-gray-100 overflow-hidden shrink-0 shadow-sm">
                                     {p.avatar_url ? (
                                       <img src={p.avatar_url} className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
                                     ) : (
@@ -1415,7 +1415,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     </h4>
                                     <span className="text-[11px] text-gray-400 font-mono mt-0.5 block">{p.email}</span>
                                     {(p.company || p.department) && (
-                                      <span className="text-[10px] text-ug-teal font-extrabold block mt-0.5">
+                                      <span className="text-[11px] text-ug-teal font-extrabold block mt-0.5">
                                         {p.company || p.department}
                                       </span>
                                     )}
@@ -1423,7 +1423,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 </div>
                               </td>
                               <td className="p-5">
-                                <span className={`text-[10px] font-black tracking-wider uppercase px-2.5 py-1 rounded-xl border inline-flex items-center gap-1.5 ${
+                                <span className={`text-[11px] font-semibold tracking-wider px-2.5 py-1 rounded-xl border inline-flex items-center gap-1.5 ${
                                   p.role === UserRole.Admin ? 'text-purple-700 bg-purple-50 border-purple-200' :
                                   p.role === UserRole.Researcher ? 'text-ug-teal bg-ug-teal/10 border-ug-teal/20' :
                                   p.role === UserRole.Student ? 'text-blue-600 bg-blue-50 border-blue-200' :
@@ -1440,16 +1440,16 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               </td>
                               <td className="p-5">
                                 {p.ai_profile ? (
-                                  <div className="flex items-center gap-1.5 text-ug-teal font-black text-[9px] uppercase tracking-widest bg-ug-teal/10 border border-ug-teal/20 py-1 px-2.5 rounded-xl w-fit">
+                                  <div className="flex items-center gap-1.5 text-ug-teal font-semibold text-[11px] tracking-wide bg-ug-teal/10 border border-ug-teal/20 py-1 px-2.5 rounded-xl w-fit">
                                     <Sparkles size={11} className="text-ug-teal" />
                                     AI Compiled
                                   </div>
                                 ) : (
-                                  <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Unconfigured</span>
+                                  <span className="text-[11px] font-bold text-gray-300 tracking-wide">Unconfigured</span>
                                 )}
                               </td>
                               <td className="p-5">
-                                <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-xl border ${
+                                <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-xl border ${
                                   userProjectsCount > 0 
                                     ? 'bg-ug-navy/5 text-ug-navy border-ug-navy/10' 
                                     : 'bg-gray-50 text-gray-400 border-gray-100'
@@ -1461,7 +1461,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 <div className="flex items-center justify-end gap-2">
                                   <button
                                     onClick={() => setInspectingUser(p)}
-                                    className="px-3 py-1.5 bg-gray-50 hover:bg-ug-navy hover:text-white text-ug-navy rounded-xl text-[10px] font-black uppercase tracking-wider transition border border-gray-200 flex items-center gap-1 cursor-pointer"
+                                    className="px-3 py-1.5 bg-gray-50 hover:bg-ug-navy hover:text-white text-ug-navy rounded-xl text-[11px] font-semibold tracking-wider transition border border-gray-200 flex items-center gap-1 cursor-pointer"
                                     title="Inspect User Profile Details"
                                   >
                                     <Eye size={12} />
@@ -1471,10 +1471,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   <select 
                                     value={p.role}
                                     onChange={(e) => handleRoleChange(p.id, e.target.value as UserRole)}
-                                    className="bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-xl px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider text-ug-navy transition outline-none cursor-pointer"
+                                    className="bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-xl px-2.5 py-1.5 text-[11px] font-semibold tracking-wider text-ug-navy transition outline-none cursor-pointer"
                                   >
                                     {Object.values(UserRole).map(role => (
-                                      <option key={role} value={role}>{role.toUpperCase()}</option>
+                                      <option key={role} value={role}>{role}</option>
                                     ))}
                                   </select>
 
@@ -1501,7 +1501,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               {/* User Directory Mobile Card Layout */}
               <div className="grid grid-cols-1 gap-3.5 md:hidden">
                 {filteredProfiles.length === 0 ? (
-                  <div className="bg-white p-8 rounded-2xl text-center text-xs font-black uppercase text-gray-400 tracking-widest border border-gray-100">
+                  <div className="bg-white p-8 rounded-2xl text-center text-xs font-bold  text-gray-400 tracking-wide border border-gray-100">
                     No registered user profiles match current filter.
                   </div>
                 ) : (
@@ -1511,7 +1511,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <div key={p.id} className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-2xl bg-ug-navy text-white flex items-center justify-center font-black text-xs shrink-0 overflow-hidden">
+                            <div className="w-10 h-10 rounded-2xl bg-ug-navy text-white flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
                               {p.avatar_url ? (
                                 <img src={p.avatar_url} className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
                               ) : (
@@ -1520,11 +1520,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             </div>
                             <div className="min-w-0">
                               <h4 className="font-extrabold text-ug-navy text-sm truncate">{p.name || 'Anonymous User'}</h4>
-                              <p className="text-[10px] text-gray-400 font-mono truncate">{p.email}</p>
+                              <p className="text-[11px] text-gray-400 font-mono truncate">{p.email}</p>
                             </div>
                           </div>
                           
-                          <span className={`text-[8px] font-black tracking-wider uppercase px-2 py-0.5 rounded-lg border shrink-0 ${
+                          <span className={`text-[11px] font-semibold tracking-wider px-2 py-0.5 rounded-lg border shrink-0 ${
                             p.role === UserRole.Admin ? 'text-purple-700 bg-purple-50 border-purple-200' :
                             p.role === UserRole.Researcher ? 'text-ug-teal bg-ug-teal/10 border-ug-teal/20' :
                             p.role === UserRole.Student ? 'text-blue-600 bg-blue-50 border-blue-200' :
@@ -1537,11 +1537,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                         <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
                           <div className="flex items-center gap-2">
                             {p.ai_profile && (
-                              <span className="text-[8px] font-black uppercase tracking-widest text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md">
+                              <span className="text-[11px] font-semibold tracking-wide text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md">
                                 AI Ready
                               </span>
                             )}
-                            <span className="text-[10px] font-bold text-gray-500">
+                            <span className="text-[11px] font-bold text-gray-500">
                               {userProjectsCount} {userProjectsCount === 1 ? 'Project' : 'Projects'}
                             </span>
                           </div>
@@ -1549,17 +1549,17 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => setInspectingUser(p)}
-                              className="px-3 py-1 bg-ug-navy text-white text-[10px] font-black uppercase rounded-lg cursor-pointer"
+                              className="px-3 py-1 bg-ug-navy text-white text-[11px] font-semibold rounded-lg cursor-pointer"
                             >
                               Inspect
                             </button>
                             <select 
                               value={p.role}
                               onChange={(e) => handleRoleChange(p.id, e.target.value as UserRole)}
-                              className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-[10px] font-black text-ug-navy cursor-pointer"
+                              className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-[11px] font-semibold text-ug-navy cursor-pointer"
                             >
                               {Object.values(UserRole).map(role => (
-                                <option key={role} value={role}>{role.toUpperCase()}</option>
+                                <option key={role} value={role}>{role}</option>
                               ))}
                             </select>
                           </div>
@@ -1573,11 +1573,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               {/* User Inspection Modal */}
               {inspectingUser && (
                 <div className="fixed inset-0 z-[10000] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl relative w-full max-w-2xl overflow-hidden animate-fade-in my-auto flex flex-col max-h-[90vh]">
+                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl relative w-full max-w-2xl overflow-hidden animate-fade-in my-auto flex flex-col max-h-[90vh]">
                     {/* Header */}
                     <div className="p-6 bg-gradient-to-r from-ug-navy via-slate-900 to-ug-navy text-white flex items-start justify-between shrink-0">
                       <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-xl text-ug-teal overflow-hidden shrink-0">
+                        <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-bold text-xl text-ug-teal overflow-hidden shrink-0">
                           {inspectingUser.avatar_url ? (
                             <img src={inspectingUser.avatar_url} className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
                           ) : (
@@ -1585,9 +1585,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           )}
                         </div>
                         <div>
-                          <h3 className="text-xl font-black text-white">{inspectingUser.name || 'Anonymous User'}</h3>
+                          <h3 className="text-xl font-bold text-white">{inspectingUser.name || 'Anonymous User'}</h3>
                           <p className="text-xs text-ug-teal font-mono mt-0.5">{inspectingUser.email}</p>
-                          <span className="text-[9px] font-black uppercase tracking-widest text-white/50 block mt-1">
+                          <span className="text-[11px] font-semibold tracking-wide text-white/50 block mt-1">
                             User ID: {inspectingUser.id}
                           </span>
                         </div>
@@ -1606,11 +1606,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       {/* Role Management Bar */}
                       <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200 flex items-center justify-between gap-4">
                         <div>
-                          <label className="text-[10px] font-black uppercase tracking-wider text-gray-400 block">System Access Level</label>
-                          <span className="text-xs font-black text-ug-navy uppercase">{inspectingUser.role}</span>
+                          <label className="text-[11px] font-semibold tracking-wider text-gray-400 block">System Access Level</label>
+                          <span className="text-xs font-bold text-ug-navy ">{inspectingUser.role}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-gray-500 uppercase">Change Role:</span>
+                          <span className="text-[11px] font-bold text-gray-500">Change Role:</span>
                           <select 
                             value={inspectingUser.role}
                             onChange={(e) => {
@@ -1618,10 +1618,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               handleRoleChange(inspectingUser.id, newRole);
                               setInspectingUser(prev => prev ? { ...prev, role: newRole } : null);
                             }}
-                            className="bg-white border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-black uppercase text-ug-navy outline-none cursor-pointer"
+                            className="bg-white border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-bold  text-ug-navy outline-none cursor-pointer"
                           >
                             {Object.values(UserRole).map(role => (
-                              <option key={role} value={role}>{role.toUpperCase()}</option>
+                              <option key={role} value={role}>{role}</option>
                             ))}
                           </select>
                         </div>
@@ -1630,12 +1630,12 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       {/* Info Cards Grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                          <span className="text-[10px] font-black uppercase tracking-wider text-gray-400">Department / Organization</span>
+                          <span className="text-[11px] font-semibold tracking-wider text-gray-400">Department / Organization</span>
                           <p className="text-xs font-bold text-ug-navy">{inspectingUser.department || inspectingUser.company || 'Not Specified'}</p>
                         </div>
 
                         <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-1">
-                          <span className="text-[10px] font-black uppercase tracking-wider text-gray-400">Ecosystem AI Integration</span>
+                          <span className="text-[11px] font-semibold tracking-wider text-gray-400">Ecosystem AI Integration</span>
                           <p className="text-xs font-bold text-ug-navy flex items-center gap-1.5">
                             {inspectingUser.ai_profile ? (
                               <span className="text-ug-teal font-extrabold flex items-center gap-1">
@@ -1651,7 +1651,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       {/* AI Profile Bio / Insights */}
                       {inspectingUser.ai_profile && (
                         <div className="p-4 bg-ug-teal/5 border border-ug-teal/20 rounded-2xl space-y-2">
-                          <h4 className="text-xs font-black text-ug-navy uppercase tracking-wider flex items-center gap-1.5">
+                          <h4 className="text-xs font-bold text-ug-navy   flex items-center gap-1.5">
                             <Sparkles size={14} className="text-ug-teal" /> AI Profile Dossier
                           </h4>
                           <p className="text-xs text-gray-700 leading-relaxed font-medium">
@@ -1664,15 +1664,15 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                       {/* Associated Projects */}
                       <div className="space-y-3">
-                        <h4 className="text-xs font-black text-ug-navy uppercase tracking-wider flex items-center justify-between">
+                        <h4 className="text-xs font-bold text-ug-navy   flex items-center justify-between">
                           <span>Linked Research Projects</span>
-                          <span className="text-[10px] font-bold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-full">
+                          <span className="text-[11px] font-bold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-full">
                             {projects.filter(proj => proj.owner_id === inspectingUser.id).length} Projects
                           </span>
                         </h4>
 
                         {projects.filter(proj => proj.owner_id === inspectingUser.id).length === 0 ? (
-                          <div className="p-4 text-center text-xs text-gray-400 font-bold uppercase tracking-wider bg-gray-50 rounded-xl">
+                          <div className="p-4 text-center text-xs text-gray-400 font-bold   bg-gray-50 rounded-xl">
                             No projects currently submitted under this user account.
                           </div>
                         ) : (
@@ -1681,9 +1681,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               <div key={proj.id} className="p-3 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between">
                                 <div>
                                   <h5 className="text-xs font-bold text-ug-navy">{proj.title}</h5>
-                                  <span className="text-[10px] text-gray-400 font-semibold">{proj.department} • {proj.research_area}</span>
+                                  <span className="text-[11px] text-gray-400 font-semibold">{proj.department} • {proj.research_area}</span>
                                 </div>
-                                <span className="text-[9px] font-black uppercase text-ug-teal bg-ug-teal/10 px-2 py-1 rounded-lg">
+                                <span className="text-[11px] font-semibold text-ug-teal bg-ug-teal/10 px-2 py-1 rounded-lg">
                                   {proj.status}
                                 </span>
                               </div>
@@ -1699,7 +1699,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                         {inspectingUser.email && (
                           <a
                             href={`mailto:${inspectingUser.email}`}
-                            className="px-4 py-2 bg-ug-teal text-white text-xs font-black rounded-xl hover:bg-teal-600 transition flex items-center gap-1.5"
+                            className="px-4 py-2 bg-ug-teal text-white text-xs font-bold rounded-xl hover:bg-teal-600 transition flex items-center gap-1.5"
                           >
                             <Mail size={14} /> Send Direct Email
                           </a>
@@ -1708,7 +1708,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <button
                         type="button"
                         onClick={() => setInspectingUser(null)}
-                        className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-black uppercase tracking-wider rounded-xl transition cursor-pointer"
+                        className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold   rounded-xl transition cursor-pointer"
                       >
                         Close
                       </button>
@@ -1729,9 +1729,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               className="space-y-6 text-left"
             >
               {/* Header and filters */}
-              <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-black text-ug-navy tracking-tight uppercase">Administrative Disclosures Hub</h3>
+                  <h3 className="text-lg font-bold text-ug-navy tracking-tight ">Administrative Disclosures Hub</h3>
                   <p className="text-xs text-gray-400 mt-1">Review, approve, audit, and regulate academic innovation disclosure submissions.</p>
                 </div>
                 
@@ -1752,8 +1752,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     onChange={e => setDisclosureStatusFilter(e.target.value)}
                     className="px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-ug-navy cursor-pointer focus:ring-2 focus:ring-ug-teal/20 focus:bg-white outline-none"
                   >
-                    <option value="all">ALL WORKFLOW STATUSES</option>
-                    <option value="Submitted">SUBMITTED</option>
+                    <option value="all">All workflow STATUSES</option>
+                    <option value="Submitted">Submitted</option>
                     <option value="Pending Review">PENDING REVIEW</option>
                     <option value="Documents Requested">DOCS REQUESTED</option>
                     <option value="Under Re-Review">UNDER RE-REVIEW</option>
@@ -1784,15 +1784,15 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     return (
                       <>
                         <div className="flex items-center justify-between mb-4 px-2">
-                          <h4 className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">PENDING DISCLOSURES</h4>
-                          <span className="text-[10.5px] font-bold px-2 py-0.5 bg-[#0a0b2c] text-[#3dd1e0] rounded-full">
+                          <h4 className="text-[11px] font-bold tracking-wider text-gray-400">Pending Disclosures</h4>
+                          <span className="text-[10.5px] font-bold px-2 py-0.5 bg-[#1a1a4b] text-[#5eead4] rounded-full">
                             {activePendingCount}
                           </span>
                         </div>
                         
                         <div className="space-y-2.5 flex-1 overflow-y-auto pr-1">
                           {filtered.length === 0 ? (
-                            <div className="py-20 text-center text-gray-400 text-xs font-semibold uppercase tracking-wider">
+                            <div className="py-20 text-center text-gray-400 text-xs font-semibold  ">
                               No matching disclosures
                             </div>
                           ) : (
@@ -1818,13 +1818,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   }}
                                   className={`p-4 rounded-xl border transition-all cursor-pointer text-left relative flex flex-col justify-between h-34 ${
                                     isChosen 
-                                      ? 'bg-white border-[#3dd1e0] shadow-sm' 
+                                      ? 'bg-white border-[#5eead4] shadow-sm' 
                                       : 'bg-gray-50 hover:bg-gray-100/50 border-gray-100'
                                   }`}
                                 >
                                   <div>
                                     <div className="flex justify-between items-start gap-2 mb-1">
-                                      <span className="font-extrabold text-[12.5px] text-[#0a0b2c]/90 truncate">
+                                      <span className="font-extrabold text-[12.5px] text-[#1a1a4b]/90 truncate">
                                         {ownerProfile?.name || 'Academic Faculty'}
                                       </span>
                                       <span className={`text-[8.5px] font-bold flex items-center gap-1 shrink-0 ${
@@ -1833,7 +1833,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                       }`}>
                                         <span className={`h-1.5 w-1.5 rounded-full ${
                                           p.disclosure_status === 'Published' ? 'bg-green-500' :
-                                          isWaiting ? 'bg-amber-500' : 'bg-[#3dd1e0]'
+                                          isWaiting ? 'bg-amber-500' : 'bg-[#5eead4]'
                                         }`}></span>
                                         {statusLabel}
                                       </span>
@@ -1846,7 +1846,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     <span className="text-[9.5px] text-gray-400 font-medium">
                                       Submitted: {new Date(p.created_at || '').toLocaleDateString()}
                                     </span>
-                                    <span className={`text-xs ${isChosen ? 'text-[#3dd1e0]' : 'text-gray-300'}`}>
+                                    <span className={`text-xs ${isChosen ? 'text-[#5eead4]' : 'text-gray-300'}`}>
                                       →
                                     </span>
                                   </div>
@@ -1866,9 +1866,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     const activeProj = projects.find(p => p.id === selectedDisclosureId);
                     if (!activeProj) {
                       return (
-                        <div className="h-[600px] flex flex-col items-center justify-center text-center text-gray-400 space-y-3 py-36 bg-white rounded-xl border border-dashed border-gray-200 w-full">
+                        <div className="h-[600px] flex flex-col items-center justify-center text-center text-gray-400 space-y-3 py-20 bg-white rounded-xl border border-dashed border-gray-200 w-full">
                           <ShieldCheck size={40} className="text-gray-300 stroke-[1.5]" />
-                          <p className="text-[10.5px] font-bold tracking-wider uppercase max-w-sm">
+                          <p className="text-[10.5px] font-bold   max-w-sm">
                             Select a disclosure from the pending ledger list to begin administrative review
                           </p>
                         </div>
@@ -1877,45 +1877,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                     const ownerPr = profiles.find(pr => pr.id === activeProj.owner_id);
                     
-                    // Helper to dynamically calculate advisory feedback based on project guidelines
-                    const getAIDisclosureAdvisory = (project: Project) => {
-                      const text = (project.title + " " + project.description).toLowerCase();
-                      let riskLevel = "LOW";
-                      let riskColor = "text-green-600 bg-green-50 border-green-200";
-                      let riskIcon = "🟢";
-                      let riskBullet = "Low Risk Profile. Standard academic disclosure. Complies with institutional publications protocols.";
-                      
-                      if (text.includes("clinical") || text.includes("drug") || text.includes("human") || text.includes("patient") || text.includes("pharma") || text.includes("vaccine")) {
-                        riskLevel = "MEDIUM";
-                        riskColor = "text-amber-600 bg-amber-50 border-amber-200";
-                        riskIcon = "🟡";
-                        riskBullet = "Minor Compliance Query. Involves biomedical or biochemical subjects. Requires institutional bioethics board approval protocols.";
-                      } else if (text.includes("patent") || text.includes("nuclear") || text.includes("intellectual") || text.includes("industrial") || text.includes("commercial") || text.includes("quantum")) {
-                        riskLevel = "HIGH";
-                        riskColor = "text-red-500 bg-red-50 border-red-200";
-                        riskIcon = "🔴";
-                        riskBullet = "High IP Protection Alert. Discloses proprietary structural mechanics. Early publication may compromise pending patent drafts.";
-                      }
-                      
-                      return {
-                        riskLevel,
-                        riskColor,
-                        riskIcon,
-                        riskBullet,
-                        pubmedCheck: "Automated PubMed check: 0 matching public papers/patents indexed. Distinctive novelty factor: 97%.",
-                        scholarCheck: "Scholar publication check: Structural indexing cleared. Safely quarantined as Private.",
-                        recommendedActions: [
-                          "1. Verify that all referenced diagrams or CSV logs contain no identifiable user/patient data.",
-                          "2. Confirm principal investigator has signed the University of Ghana intellectual sharing guidelines.",
-                          "3. Cross-reference academic brief with sub-department clearance letters prior to final hub-cleared publication."
-                        ]
-                      };
-                    };
-
-                    const aiAdvisory = getAIDisclosureAdvisory(activeProj);
                     const timeline = Array.isArray(activeProj.disclosure_timeline) ? activeProj.disclosure_timeline : [];
                     const reqDocs = Array.isArray(activeProj.requested_documents) ? activeProj.requested_documents : [];
-                    
+
                     // Filter messages (EOIs) that correspond specifically to this disclosure
                     const projectMessages = eois.filter((e: any) => e.project_id === activeProj.id)
                       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
@@ -1927,17 +1891,17 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           {/* Top Detail Header Block containing metrics, title, & actions styled like the second design mockup */}
                           <div className="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             <div className="flex items-center gap-3.5">
-                              <div className="p-3.5 bg-gray-50 border border-gray-100 text-[#0a0b2c] rounded-xl shrink-0">
+                              <div className="p-3.5 bg-gray-50 border border-gray-100 text-[#1a1a4b] rounded-xl shrink-0">
                                 <ShieldCheck size={26} className="stroke-[1.5]" />
                               </div>
                               <div>
-                                <h4 className="text-base md:text-lg font-black text-[#0a0b2c] leading-snug">{activeProj.title}</h4>
+                                <h4 className="text-base md:text-lg font-bold text-[#1a1a4b] leading-snug">{activeProj.title}</h4>
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-gray-400 mt-1">
-                                  <span>Researcher: <span className="text-[#0a0b2c] font-black">{ownerPr?.name || 'Academic Faculty'}</span></span>
+                                  <span>Researcher: <span className="text-[#1a1a4b] font-bold">{ownerPr?.name || 'Academic Faculty'}</span></span>
                                   <span className="hidden md:inline text-gray-300">|</span>
-                                  <span>Division: <span className="text-gray-650 font-black">{activeProj.department}</span></span>
-                                  <span className="hidden md:inline text-[#3dd1e0]">|</span>
-                                  <span>Status: <span className="text-ug-teal font-extrabold uppercase">{activeProj.disclosure_status || 'Submitted'}</span></span>
+                                  <span>Division: <span className="text-gray-650 font-bold">{activeProj.department}</span></span>
+                                  <span className="hidden md:inline text-[#5eead4]">|</span>
+                                  <span>Status: <span className="text-ug-teal font-extrabold ">{activeProj.disclosure_status || 'Submitted'}</span></span>
                                 </div>
                               </div>
                             </div>
@@ -1947,7 +1911,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               <button
                                 disabled={isProcessingAction}
                                 onClick={() => handleApproveDisclosure(activeProj)}
-                                className="px-5 py-3 bg-ug-teal text-white rounded-lg text-xs font-black uppercase tracking-wider hover:bg-[#0a0b2c] transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                className="px-5 py-3 bg-ug-teal text-white rounded-lg text-xs font-bold   hover:bg-[#1a1a4b] transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
                                 <CheckCircle2 size={13} />
                                 APPROVE
@@ -1956,7 +1920,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               <button
                                 disabled={isProcessingAction}
                                 onClick={() => handleRequestEdits(activeProj)}
-                                className="px-5 py-3 bg-[#0a0b2c] text-white rounded-lg text-xs font-black uppercase tracking-wider hover:bg-ug-teal transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                className="px-5 py-3 bg-[#1a1a4b] text-white rounded-lg text-xs font-bold   hover:bg-ug-teal transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
                                 <AlertTriangle size={13} />
                                 NEED EDITS
@@ -1966,7 +1930,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                           {/* ATTACHED DISCLOSURE FILES & RECOVERY */}
                           <div className="bg-white p-5 rounded-xl border border-gray-100 space-y-3">
-                            <h5 className="text-[11px] md:text-xs font-black tracking-widest text-[#0a0b2c] uppercase">ATTACHED DISCLOSURE FILES</h5>
+                            <h5 className="text-[11px] md:text-xs font-bold tracking-wide text-[#1a1a4b]">ATTACHED Disclosure Files</h5>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               {/* Primary Technical Brief file */}
@@ -1977,7 +1941,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   </div>
                                   <div className="truncate">
                                     <p className="text-xs md:text-sm font-bold text-gray-750 truncate">Research_Brief_Draft.pdf</p>
-                                    <p className="text-[10px] md:text-xs text-gray-400 font-semibold">Technical Brief</p>
+                                    <p className="text-[11px] md:text-xs text-gray-400 font-semibold">Technical Brief</p>
                                   </div>
                                 </div>
                                 {activeProj.technical_details_url ? (
@@ -1991,7 +1955,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     <Eye size={14} />
                                   </a>
                                 ) : (
-                                  <span className="text-[9px] font-bold text-amber-500">NO BRIEF</span>
+                                  <span className="text-[11px] font-bold text-amber-500">No Brief</span>
                                 )}
                               </div>
 
@@ -2003,7 +1967,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   </div>
                                   <div className="truncate">
                                     <p className="text-xs md:text-sm font-bold text-gray-750 truncate">Academic_CV_Record.pdf</p>
-                                    <p className="text-[10px] md:text-xs text-gray-400 font-semibold">Creds Verification</p>
+                                    <p className="text-[11px] md:text-xs text-gray-400 font-semibold">Creds Verification</p>
                                   </div>
                                 </div>
                                 <span className="p-1.5 bg-gray-105 text-gray-300 rounded-lg">
@@ -2020,8 +1984,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             <div className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col justify-between gap-4 font-serif max-w-full">
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[11px] md:text-xs font-black text-[#0a0b2c] tracking-widest uppercase">FROM: ADMINISTRATOR</span>
-                                  <span className="text-[10px] text-gray-400 font-bold font-mono">MARKDOWN OK</span>
+                                  <span className="text-[11px] md:text-xs font-bold text-[#1a1a4b] tracking-wide">FROM: ADMINISTRATOR</span>
+                                  <span className="text-[11px] text-gray-400 font-bold font-mono">MARKDOWN Verified</span>
                                 </div>
                                 
                                 <textarea
@@ -2029,11 +1993,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   value={adminFeedback}
                                   onChange={e => setAdminFeedback(e.target.value)}
                                   placeholder="Provide instructions or feedback to the researcher..."
-                                  className="w-full bg-gray-50 border border-gray-100 rounded-lg p-3 text-xs md:text-sm font-medium text-[#0a0b2c] outline-none focus:bg-white focus:ring-1 focus:ring-ug-teal/30 focus:border-ug-teal/40 leading-normal resize-none"
+                                  className="w-full bg-gray-50 border border-gray-100 rounded-lg p-3 text-xs md:text-sm font-medium text-[#1a1a4b] outline-none focus:bg-white focus:ring-1 focus:ring-ug-teal/30 focus:border-ug-teal/40 leading-normal resize-none"
                                 />
 
                                 <div className="space-y-1">
-                                  <label className="text-[10px] md:text-[11px] font-black tracking-widest text-[#0a0b2c]/65 uppercase">INTERNAL BOARD NOTES</label>
+                                  <label className="text-[11px] md:text-[11px] font-semibold tracking-wide text-[#1a1a4b]/65">Internal Board Notes</label>
                                   <input 
                                     type="text"
                                     value={adminInternalNotes}
@@ -2044,7 +2008,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 </div>
 
                                 <div className="space-y-1">
-                                  <label className="text-[10px] md:text-[11px] font-black tracking-widest text-[#0a0b2c]/65 uppercase">REQUEST DOCUMENT SLOT</label>
+                                  <label className="text-[11px] md:text-[11px] font-semibold tracking-wide text-[#1a1a4b]/65">REQUEST DOCUMENT Slot</label>
                                   <input 
                                     type="text"
                                     value={adminRequestedDocsText}
@@ -2058,7 +2022,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               <button
                                 disabled={isProcessingAction || !adminFeedback.trim()}
                                 onClick={() => handleRequestEdits(activeProj)}
-                                className="w-full py-3 bg-[#0a0b2c] text-[#3dd1e0] rounded-lg text-xs font-black uppercase tracking-wider hover:bg-ug-teal hover:text-white transition disabled:opacity-50 cursor-pointer"
+                                className="w-full py-3 bg-[#1a1a4b] text-[#5eead4] rounded-lg text-xs font-bold   hover:bg-ug-teal hover:text-white transition disabled:opacity-50 cursor-pointer"
                               >
                                 TRANSMIT TO RESEARCHER
                               </button>
@@ -2067,15 +2031,15 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             {/* Column 2: Researcher Reply Channel terminal */}
                             <div className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col justify-between gap-4 font-serif">
                               <div className="space-y-3 flex-1 flex flex-col">
-                                <span className="text-[11px] md:text-xs font-black text-gray-400 tracking-widest uppercase block">REVISION CHANNEL & MESSAGES</span>
+                                <span className="text-[11px] md:text-xs font-bold text-gray-400 tracking-wide block">REVISION CHANNEL & MESSAGES</span>
                                 
                                 {projectMessages.length === 0 ? (
                                   <div className="border border-dashed border-gray-200 bg-gray-50 rounded-xl p-5 text-center flex flex-col items-center justify-center space-y-2 flex-grow min-h-[160px]">
                                     <div className="p-2.5 bg-white text-gray-400 rounded-full border border-gray-100 shadow-sm">
                                       <Layers size={18} className="stroke-[1.5]" />
                                     </div>
-                                    <p className="text-xs text-[#0a0b2c] font-black">Dynamic Revision Feed</p>
-                                    <p className="text-[10px] md:text-xs text-gray-400 font-medium px-4 leading-normal">
+                                    <p className="text-xs text-[#1a1a4b] font-bold">Dynamic Revision Feed</p>
+                                    <p className="text-[11px] md:text-xs text-gray-400 font-medium px-4 leading-normal">
                                       No message history or requested document slots yet. Use the feedback panel to transmit directions.
                                     </p>
                                   </div>
@@ -2087,10 +2051,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                       return (
                                         <div key={msg.id || mIdx} className={`p-2.5 rounded-lg max-w-[90%] text-xs leading-relaxed shadow-sm ${
                                           isAdminMsg 
-                                            ? 'bg-blue-50/80 border border-blue-100 text-[#0a0b2c] ml-auto' 
+                                            ? 'bg-blue-50/80 border border-blue-100 text-[#1a1a4b] ml-auto' 
                                             : 'bg-white border border-gray-100 text-gray-700'
                                         }`}>
-                                          <div className="flex justify-between items-center gap-2 mb-1 border-b border-gray-100/40 pb-0.5 text-[9px] font-bold text-gray-400">
+                                          <div className="flex justify-between items-center gap-2 mb-1 border-b border-gray-100/40 pb-0.5 text-[11px] font-bold text-gray-400">
                                             <span>{msg.user_name}</span>
                                             <span>{new Date(msg.created_at).toLocaleString()}</span>
                                           </div>
@@ -2104,13 +2068,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 {/* Active Uploaded Files status */}
                                 {reqDocs.length > 0 && (
                                   <div className="space-y-1.5 max-h-24 overflow-y-auto pt-1 pr-1 custom-scrollbar w-full">
-                                    <p className="text-[10px] md:text-[11px] font-black text-[#0a0b2c]/65 uppercase tracking-widest mb-1">Uploaded Slots Status</p>
+                                    <p className="text-[11px] md:text-[11px] font-semibold text-[#1a1a4b]/65 tracking-wide mb-1">Uploaded Slots Status</p>
                                     {reqDocs.map((doc: any, dIdx: number) => (
                                       <div key={dIdx} className="flex justify-between items-center bg-gray-50 p-2 border border-gray-100 rounded-lg text-xs font-semibold text-gray-650">
                                         <div className="truncate flex items-center gap-1.5">
                                           <FileText size={11} className="text-gray-400" />
                                           {doc.url ? (
-                                            <a href={doc.url} target="_blank" rel="noreferrer" className="text-ug-teal hover:underline font-black truncate max-w-xs">
+                                            <a href={doc.url} target="_blank" rel="noreferrer" className="text-ug-teal hover:underline font-bold truncate max-w-xs">
                                               {doc.name}
                                             </a>
                                           ) : (
@@ -2119,12 +2083,12 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                         </div>
                                         {doc.url && (
                                           <div className="flex items-center gap-2">
-                                            <a href={doc.url} target="_blank" rel="noreferrer" className="text-ug-teal font-black hover:underline text-xs">
+                                            <a href={doc.url} target="_blank" rel="noreferrer" className="text-ug-teal font-bold hover:underline text-xs">
                                               View
                                             </a>
                                             <button 
                                               onClick={() => handleRejectDocumentSlot(activeProj, doc.id)}
-                                              className="text-red-500 hover:text-red-700 font-black text-xs cursor-pointer border-l pl-2 border-gray-200"
+                                              className="text-red-500 hover:text-red-700 font-bold text-xs cursor-pointer border-l pl-2 border-gray-200"
                                               title="Reject this file and request a re-upload"
                                             >
                                               Reject
@@ -2137,7 +2101,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 )}
                               </div>
 
-                              <div className="w-full py-3.5 bg-gray-100 text-gray-400 rounded-lg text-xs font-black uppercase tracking-wider text-center select-none font-mono">
+                              <div className="w-full py-3.5 bg-gray-100 text-gray-400 rounded-lg text-xs font-bold   text-center select-none font-mono">
                                 {activeProj.disclosure_status === 'Documents Requested' ? 'AWAITING REVISIONS' : 'STATION IDLE'}
                               </div>
                             </div>
@@ -2147,12 +2111,12 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           {/* Historical audit trail log ledger */}
                           {timeline.length > 0 && (
                             <div className="bg-white p-5 rounded-xl border border-gray-100 space-y-2 font-serif">
-                              <p className="text-[11px] md:text-xs font-black text-[#0a0b2c] tracking-widest uppercase">PERMANENT AUDIT TRAIL LIFE CYCLE LOG</p>
+                              <p className="text-[11px] md:text-xs font-bold text-[#1a1a4b] tracking-wide">Permanent Audit Trail</p>
                               <div className="space-y-2 max-h-28 overflow-y-auto pl-1 pr-1 border-l border-gray-150 ml-1">
                                 {timeline.map((item: any, idx: number) => (
                                   <div key={idx} className="text-xs font-semibold text-gray-500 leading-relaxed pl-3 text-left relative">
                                     <span className="absolute left-0 top-1.5 h-1.5 w-1.5 rounded-full bg-ug-teal"></span>
-                                    <span className="text-[#0a0b2c] font-black">[{item.event || item.status}]</span> {item.details} <span className="text-gray-400">by {item.user_name || item.by} ({new Date(item.timestamp).toLocaleDateString()})</span>
+                                    <span className="text-[#1a1a4b] font-bold">[{item.event || item.status}]</span> {item.details} <span className="text-gray-400">by {item.user_name || item.by} ({new Date(item.timestamp).toLocaleDateString()})</span>
                                   </div>
                                 ))}
                               </div>
@@ -2169,7 +2133,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           <button
                             disabled={isProcessingAction}
                             onClick={() => handleRejectDisclosure(activeProj)}
-                            className="px-4 py-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg text-[10px] font-bold uppercase tracking-wider transition cursor-pointer disabled:opacity-50"
+                            className="px-4 py-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg text-[11px] font-bold tracking-wider transition cursor-pointer disabled:opacity-50"
                           >
                             REJECT DISCLOSURE
                           </button>
@@ -2196,7 +2160,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
                   <div>
-                    <h2 className="text-lg font-black text-ug-navy flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-ug-navy flex items-center gap-2">
                       <Layers size={18} className="text-ug-teal" />
                       Project Screener & Moderation
                     </h2>
@@ -2205,7 +2169,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     </p>
                   </div>
                   <div className="flex items-center gap-2 self-start sm:self-auto">
-                    <span className="text-[10px] font-black text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl font-mono">
+                    <span className="text-[11px] font-semibold text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl font-mono">
                       Showing {screenerProjects.length} of {projects.length} Innovations
                     </span>
                     {(projectSearch || projectAreaFilter !== 'all' || projectVisibilityFilter !== 'all' || projectStatusFilter !== 'all' || projectSort !== 'newest') && (
@@ -2217,7 +2181,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           setProjectStatusFilter('all');
                           setProjectSort('newest');
                         }}
-                        className="text-[10px] font-bold text-red-600 hover:text-red-700 hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-[11px] font-bold text-red-600 hover:text-red-700 hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         <X size={12} /> Clear Filters
                       </button>
@@ -2293,38 +2257,38 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 {/* Secondary Sort & Active Filter Pills Row */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] text-gray-500 pt-1 border-t border-gray-50">
                   <div className="flex flex-wrap gap-1.5 items-center">
-                    <span className="font-bold text-gray-400 text-[10px] uppercase tracking-wider">Active Filters:</span>
+                    <span className="font-bold text-gray-400 text-[11px] tracking-wider">Active Filters:</span>
                     {projectSearch && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-ug-teal/10 text-ug-teal font-extrabold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-ug-teal/10 text-ug-teal font-extrabold text-[11px]">
                         "{projectSearch}"
                         <X size={10} className="cursor-pointer hover:text-red-500" onClick={() => setProjectSearch('')} />
                       </span>
                     )}
                     {projectAreaFilter !== 'all' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 font-bold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 font-bold text-[11px]">
                         {projectAreaFilter}
                         <X size={10} className="cursor-pointer hover:text-red-500" onClick={() => setProjectAreaFilter('all')} />
                       </span>
                     )}
                     {projectVisibilityFilter !== 'all' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-bold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-bold text-[11px]">
                         {projectVisibilityFilter}
                         <X size={10} className="cursor-pointer hover:text-red-500" onClick={() => setProjectVisibilityFilter('all')} />
                       </span>
                     )}
                     {projectStatusFilter !== 'all' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold text-[10px]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold text-[11px]">
                         {projectStatusFilter}
                         <X size={10} className="cursor-pointer hover:text-red-500" onClick={() => setProjectStatusFilter('all')} />
                       </span>
                     )}
                     {!projectSearch && projectAreaFilter === 'all' && projectVisibilityFilter === 'all' && projectStatusFilter === 'all' && (
-                      <span className="text-gray-400 italic text-[10px]">None (Showing all records)</span>
+                      <span className="text-gray-400 italic text-[11px]">None (Showing all records)</span>
                     )}
                   </div>
 
                   <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
-                    <span className="font-bold text-gray-400 text-[10px] uppercase tracking-wider">Sort:</span>
+                    <span className="font-bold text-gray-400 text-[11px] tracking-wider">Sort:</span>
                     <select
                       value={projectSort}
                       onChange={(e) => setProjectSort(e.target.value)}
@@ -2344,7 +2308,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 {screenerProjects.length === 0 ? (
                   <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
                     <Layers className="mx-auto text-gray-300 mb-2" size={32} />
-                    <p className="text-xs font-black uppercase tracking-widest text-gray-400">
+                    <p className="text-xs font-bold  tracking-wide text-gray-400">
                       No research projects matched your filter criteria.
                     </p>
                     <button
@@ -2380,17 +2344,17 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                         <div className="min-w-0 flex-1 space-y-1">
                           <div className="flex flex-wrap gap-1.5 items-center">
-                            <span className="px-2 py-0.5 rounded-md bg-ug-teal/10 text-ug-teal font-extrabold text-[9px] uppercase tracking-wider">
+                            <span className="px-2 py-0.5 rounded-md bg-ug-teal/10 text-ug-teal font-extrabold text-[11px] tracking-wider">
                               {p.research_area || 'General Research'}
                             </span>
                             <span className="text-gray-300">•</span>
-                            <span className="text-[10px] font-bold text-gray-500 truncate max-w-[150px]">
+                            <span className="text-[11px] font-bold text-gray-500 truncate max-w-[150px]">
                               {p.department || 'Unspecified Dept'}
                             </span>
                             {p.budget && (
                               <>
                                 <span className="text-gray-300">•</span>
-                                <span className="text-[10px] font-semibold text-gray-400 font-mono">
+                                <span className="text-[11px] font-semibold text-gray-400 font-mono">
                                   {p.budget}
                                 </span>
                               </>
@@ -2411,13 +2375,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-gray-100 justify-end">
                         {/* Visibility Selector */}
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest font-mono">
+                          <span className="text-[11px] font-semibold text-gray-400 tracking-wide font-mono">
                             Visibility
                           </span>
                           <select 
                             value={p.visibility || Visibility.Public}
                             onChange={(e) => handleProjectStatusChange(p.id, 'visibility', e.target.value as Visibility)}
-                            className="bg-gray-50 hover:bg-white border border-gray-200 hover:border-ug-teal rounded-lg px-2.5 py-1 text-[10px] font-black uppercase text-ug-navy transition outline-none cursor-pointer"
+                            className="bg-gray-50 hover:bg-white border border-gray-200 hover:border-ug-teal rounded-lg px-2.5 py-1 text-[11px] font-semibold text-ug-navy transition outline-none cursor-pointer"
                           >
                             {Object.values(Visibility).map(vis => (
                               <option key={vis} value={vis}>{vis}</option>
@@ -2427,13 +2391,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                         {/* Readiness Status Selector */}
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest font-mono">
+                          <span className="text-[11px] font-semibold text-gray-400 tracking-wide font-mono">
                             Readiness Status
                           </span>
                           <select 
                             value={p.status || ProjectStatus.Concept}
                             onChange={(e) => handleProjectStatusChange(p.id, 'status', e.target.value as ProjectStatus)}
-                            className="bg-gray-50 hover:bg-white border border-gray-200 hover:border-ug-teal rounded-lg px-2.5 py-1 text-[10px] font-black uppercase text-ug-navy transition outline-none cursor-pointer"
+                            className="bg-gray-50 hover:bg-white border border-gray-200 hover:border-ug-teal rounded-lg px-2.5 py-1 text-[11px] font-semibold text-ug-navy transition outline-none cursor-pointer"
                           >
                             {Object.values(ProjectStatus).map(st => (
                               <option key={st} value={st}>{st}</option>
@@ -2443,7 +2407,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                         {/* Delete / Withdraw Button */}
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[8px] font-black text-transparent uppercase tracking-widest font-mono">
+                          <span className="text-[11px] font-semibold text-transparent tracking-wide font-mono">
                             Action
                           </span>
                           <button 
@@ -2474,7 +2438,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               {/* Header Action Row */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-left">
                 <div>
-                  <h2 className="text-xl font-black text-ug-navy flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-ug-navy flex items-center gap-2">
                     <Globe size={20} className="text-ug-teal" />
                     News & Broadcast Curator
                   </h2>
@@ -2502,7 +2466,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       handleCreateNewClick();
                       setIsWorkspaceOpen(true);
                     }}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-ug-teal hover:bg-ug-teal/90 text-white text-xs font-black rounded-xl transition shadow-md shadow-ug-teal/10 cursor-pointer h-10"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-ug-teal hover:bg-ug-teal/90 text-white text-xs font-bold rounded-xl transition shadow-md shadow-ug-teal/10 cursor-pointer h-10"
                   >
                     <Plus size={14} />
                     <span>Create New</span>
@@ -2520,10 +2484,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                   
                   <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-black text-ug-navy uppercase tracking-wider">
+                      <h3 className="text-sm font-bold text-ug-navy  ">
                         Broadcast Archives
                       </h3>
-                      <span className="text-[10px] font-black text-gray-500 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
+                      <span className="text-[11px] font-semibold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
                         {sortedArchives.length} Total items
                       </span>
                     </div>
@@ -2577,8 +2541,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     </div>
 
                     {/* Sort Selector Row */}
-                    <div className="flex justify-between items-center text-[10px] text-gray-400 font-bold border-t border-gray-100 pt-3">
-                      <span>SORT ORDER</span>
+                    <div className="flex justify-between items-center text-[11px] text-gray-400 font-bold border-t border-gray-100 pt-3">
+                      <span>Sort Order</span>
                       <div className="flex gap-2">
                         <button
                           onClick={() => setArchiveSort('newest')}
@@ -2632,10 +2596,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               {/* Details */}
                               <div className="flex-1 min-w-0 space-y-1">
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="text-[9px] font-black uppercase text-ug-teal tracking-wider text-left">
+                                  <span className="text-[11px] font-semibold text-ug-teal tracking-wider text-left">
                                     {item.category}
                                   </span>
-                                  <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${
+                                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
                                     item.status === 'Published'
                                       ? 'bg-green-50 text-green-700 border-green-100'
                                       : 'bg-amber-50 text-amber-700 border-amber-100'
@@ -2643,7 +2607,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     {item.status}
                                   </span>
                                   {item.is_ai_generated && (
-                                    <span className="text-[8px] font-black uppercase px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center gap-1">
+                                    <span className="text-[11px] font-semibold px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center gap-1">
                                       <Sparkles size={8} className="animate-pulse" />
                                       AI
                                     </span>
@@ -2658,7 +2622,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   {item.summary}
                                 </p>
 
-                                <div className="flex items-center justify-between text-[9px] text-gray-400 font-bold pt-1">
+                                <div className="flex items-center justify-between text-[11px] text-gray-400 font-bold pt-1">
                                   <div className="flex items-center gap-1">
                                     <Clock size={10} />
                                     <span>{new Date(item.published_at || '').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
@@ -2736,7 +2700,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <div className="bg-gray-50/50 p-5 border-b border-gray-100 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="w-2.5 h-2.5 bg-ug-teal rounded-full animate-pulse" />
-                          <h3 className="text-sm font-extrabold text-ug-navy uppercase tracking-wider">
+                          <h3 className="text-sm font-extrabold text-ug-navy  ">
                             {editingNews ? "Edit Broadcast Composition" : "New Broadcast Composition"}
                           </h3>
                         </div>
@@ -2744,7 +2708,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           <button
                             type="button"
                             onClick={handleClearWorkspace}
-                            className="px-3 py-1.5 text-[10px] font-black uppercase text-gray-500 hover:bg-gray-100 border border-gray-200 rounded-lg transition cursor-pointer"
+                            className="px-3 py-1.5 text-[11px] font-semibold text-gray-500 hover:bg-gray-100 border border-gray-200 rounded-lg transition cursor-pointer"
                           >
                             Clear
                           </button>
@@ -2769,9 +2733,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             key={tab.id}
                             type="button"
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex-1 text-center py-3.5 text-[10px] font-black uppercase tracking-wider border-b-2 transition duration-200 cursor-pointer ${
+                            className={`flex-1 text-center py-3.5 text-[11px] font-semibold tracking-wider border-b-2 transition duration-200 cursor-pointer ${
                               activeTab === tab.id
-                                ? 'border-ug-teal text-ug-teal bg-white font-black'
+                                ? 'border-ug-teal text-ug-teal bg-white font-bold'
                                 : 'border-transparent text-gray-400 hover:text-gray-700 hover:bg-gray-50/30'
                             }`}
                           >
@@ -2795,10 +2759,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2">
-                                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">AI Document Extractor</h3>
-                                    <span className="bg-purple-100 text-purple-700 font-extrabold text-[8px] px-2 py-0.5 rounded-full uppercase tracking-wider">PRO</span>
+                                    <h3 className="text-xs font-bold text-slate-800  ">AI Document Extractor</h3>
+                                    <span className="bg-purple-100 text-purple-700 font-extrabold text-[11px] px-2 py-0.5 rounded-full tracking-wider">PRO</span>
                                   </div>
-                                  <p className="text-[10px] text-gray-500 font-medium leading-relaxed mt-1">
+                                  <p className="text-[11px] text-gray-500 font-medium leading-relaxed mt-1">
                                     Upload a news summary draft or article (<span className="font-bold">.txt, .doc, .docx</span>) and the Gemini system will instantly extract the headline, full briefing, category, tags, and verification details to populate this form.
                                   </p>
                                   
@@ -2807,7 +2771,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                       type="button"
                                       onClick={() => docInputRef.current?.click()}
                                       disabled={isExtractingDoc}
-                                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-black text-[9px] uppercase tracking-wider rounded-xl transition duration-150 flex items-center gap-2 shadow-md shadow-purple-600/15 cursor-pointer"
+                                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-semibold text-[11px] tracking-wider rounded-xl transition duration-150 flex items-center gap-2 shadow-md shadow-purple-600/15 cursor-pointer"
                                     >
                                       {isExtractingDoc ? (
                                         <>
@@ -2823,7 +2787,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     </button>
                                     
                                     {isExtractingDoc && (
-                                      <span className="text-[9px] text-purple-600 font-bold uppercase tracking-widest animate-pulse">
+                                      <span className="text-[11px] text-purple-600 font-bold tracking-wide animate-pulse">
                                         Extracting insights...
                                       </span>
                                     )}
@@ -2842,8 +2806,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                             <div>
                               <div className="flex justify-between items-center mb-1.5">
-                                <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider">Broadcast Title *</label>
-                                <span className="text-[9px] font-bold text-gray-400">{newsTitle.length}/200 chars</span>
+                                <label className="text-[11px] font-semibold text-gray-500 tracking-wider">Broadcast Title *</label>
+                                <span className="text-[11px] font-bold text-gray-400">{newsTitle.length}/200 chars</span>
                               </div>
                               <input
                                 type="text"
@@ -2856,8 +2820,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                             <div>
                               <div className="flex justify-between items-center mb-1.5">
-                                <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider">Short Summary *</label>
-                                <span className="text-[9px] font-bold text-gray-400">{newsSummary.length}/1000 chars</span>
+                                <label className="text-[11px] font-semibold text-gray-500 tracking-wider">Short Summary *</label>
+                                <span className="text-[11px] font-bold text-gray-400">{newsSummary.length}/1000 chars</span>
                               </div>
                               <textarea
                                 placeholder="Enter an authoritative, structured academic brief explaining the core news breaking..."
@@ -2869,7 +2833,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div>
-                                <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Category *</label>
+                                <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Category *</label>
                                 <select
                                   value={newsCategory}
                                   onChange={e => setNewsCategory(e.target.value)}
@@ -2884,7 +2848,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               </div>
 
                               <div>
-                                <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Broadcast Schedule</label>
+                                <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Broadcast Schedule</label>
                                 <input
                                   type="datetime-local"
                                   value={newsPublishedAt}
@@ -2896,7 +2860,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                             {/* Image Upload Block */}
                             <div>
-                              <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Featured Broadcast Graphic *</label>
+                              <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Featured Broadcast Graphic *</label>
                               {newsImageUrl ? (
                                 <div className="relative rounded-xl overflow-hidden border border-gray-200 aspect-video group">
                                   <img 
@@ -2909,14 +2873,14 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     <button
                                       type="button"
                                       onClick={() => fileInputRef.current?.click()}
-                                      className="px-3 py-1.5 bg-white hover:bg-gray-50 text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
+                                      className="px-3 py-1.5 bg-white hover:bg-gray-50 text-slate-900 rounded-lg text-[11px] font-semibold tracking-wider transition cursor-pointer"
                                     >
                                       Replace Image
                                     </button>
                                     <button
                                       type="button"
                                       onClick={() => setNewsImageUrl('')}
-                                      className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-black uppercase tracking-wider transition cursor-pointer"
+                                      className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[11px] font-semibold tracking-wider transition cursor-pointer"
                                     >
                                       Remove
                                     </button>
@@ -2930,13 +2894,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   {isUploadingImage ? (
                                     <>
                                       <Loader2 className="animate-spin text-ug-teal mb-2" size={24} />
-                                      <span className="text-[10px] font-black text-ug-teal uppercase">Uploading image...</span>
+                                      <span className="text-[11px] font-semibold text-ug-teal">Uploading image...</span>
                                     </>
                                   ) : (
                                     <>
                                       <Upload className="text-gray-300 mb-2" size={24} />
                                       <span className="text-xs font-bold text-gray-700">Upload Featured Image</span>
-                                      <span className="text-[9px] text-gray-400 font-semibold mt-1">JPG, PNG, WEBP. Max 5MB.</span>
+                                      <span className="text-[11px] text-gray-400 font-semibold mt-1">JPG, PNG, WEBP. Max 5MB.</span>
                                     </>
                                   )}
                                 </div>
@@ -2951,7 +2915,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             </div>
 
                             <div>
-                              <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Official Source / External Citation Link</label>
+                              <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Official Source / External Citation Link</label>
                               <div className="relative">
                                 <input
                                   type="text"
@@ -2968,7 +2932,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                             {/* Moved Citations & References (Max 4 Links) here */}
                             <div className="pt-4 border-t border-gray-100">
-                              <h4 className="text-[10px] font-black uppercase text-gray-500 tracking-wider mb-2">Citations & References (Max 4 Links)</h4>
+                              <h4 className="text-[11px] font-semibold text-gray-500 tracking-wider mb-2">Citations & References (Max 4 Links)</h4>
                               <div className="grid grid-cols-1 gap-2.5">
                                 {newsReferenceLinks.map((link, idx) => (
                                   <div key={idx} className="relative">
@@ -2983,7 +2947,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                       }}
                                       className="w-full bg-white border border-gray-200 focus:border-ug-teal rounded-xl p-2.5 pr-8 text-xs font-medium text-gray-800 outline-none"
                                     />
-                                    <span className="absolute inset-y-0 right-3 flex items-center text-gray-400 text-[10px] font-bold">
+                                    <span className="absolute inset-y-0 right-3 flex items-center text-gray-400 text-[11px] font-bold">
                                       #{idx + 1}
                                     </span>
                                   </div>
@@ -3001,7 +2965,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 <div className="p-1.5 bg-purple-600 rounded-lg text-white">
                                   <Sparkles size={14} className="animate-pulse" />
                                 </div>
-                                <h4 className="text-xs font-black text-slate-800 uppercase tracking-widest text-left">Gemini Professional Copywriter</h4>
+                                <h4 className="text-xs font-bold text-slate-800  tracking-wide text-left">Gemini Professional Copywriter</h4>
                               </div>
                               <p className="text-[11px] text-gray-500 font-medium leading-relaxed text-left">
                                 Authoritatively draft elite academic public announcements and breakthroughs instantly. Guided by Gemini intelligence to optimize readability.
@@ -3009,7 +2973,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                               <div className="space-y-3.5 pt-2 text-left">
                                 <div>
-                                  <label className="text-[9px] font-black text-gray-500 uppercase tracking-wider block mb-1">Broadcast Title / Main Topic *</label>
+                                  <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1">Broadcast Title / Main Topic *</label>
                                   <input
                                     type="text"
                                     placeholder="e.g., Malaria immunology breakthrough in ORID department"
@@ -3020,7 +2984,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 </div>
 
                                 <div>
-                                  <label className="text-[9px] font-black text-gray-500 uppercase tracking-wider block mb-1">Focus Keywords / Context Indicators</label>
+                                  <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1">Focus Keywords / Context Indicators</label>
                                   <input
                                     type="text"
                                     placeholder="e.g., Prof. G. Awandare, Nature Medicine journal, clinical trial"
@@ -3031,7 +2995,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 </div>
 
                                 <div>
-                                  <label className="text-[9px] font-black text-gray-500 uppercase tracking-wider block mb-1">Tone & Copywriting Style</label>
+                                  <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1">Tone & Copywriting Style</label>
                                   <select
                                     value={aiTone}
                                     onChange={e => setAiTone(e.target.value)}
@@ -3055,7 +3019,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     await handleGenerateAIPressRelease(topicToUse, aiKeywords, aiTone);
                                   }}
                                   disabled={isGeneratingAI}
-                                  className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl py-3 font-black text-[10px] uppercase tracking-widest transition duration-150 flex items-center justify-center gap-2 shadow-lg shadow-purple-600/15 cursor-pointer mt-3 h-11 disabled:opacity-50"
+                                  className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl py-3 font-semibold text-[11px] tracking-wide transition duration-150 flex items-center justify-center gap-2 shadow-lg shadow-purple-600/15 cursor-pointer mt-3 h-11 disabled:opacity-50"
                                 >
                                   {isGeneratingAI ? (
                                     <>
@@ -3089,7 +3053,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               <span>Permanently Delete</span>
                             </button>
                           ) : (
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                            <span className="text-[11px] text-gray-400 font-bold tracking-wider">
                               New Broadcast Composer
                             </span>
                           )}
@@ -3140,11 +3104,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-black text-ug-navy flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-ug-navy flex items-center gap-2">
                     <ShieldCheck className="text-ug-teal" size={22} />
                     Administrative Governance & Security Audit Ledger
                   </h3>
-                  <p className="text-[10px] font-black text-ug-teal uppercase tracking-widest mt-1">
+                  <p className="text-[11px] font-semibold text-ug-teal tracking-wide mt-1">
                     End-to-End Cryptographic Audit & Transmission Integrity Protocol
                   </p>
                 </div>
@@ -3152,7 +3116,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 <div className="flex items-center gap-2 self-start sm:self-center">
                   <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200/60">
                     <ShieldCheck size={12} className="text-emerald-600" />
-                    <span className="text-[9px] font-black uppercase tracking-wider">Access Controlled Server-Side</span>
+                    <span className="text-[11px] font-semibold tracking-wider">Access Controlled Server-Side</span>
                   </div>
                 </div>
               </div>
@@ -3161,15 +3125,15 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 /* UNLOCKED GOVERNANCE AUDIT LEDGER */
                 <div className="space-y-8">
                   {/* Cryptographic Security Status Banner */}
-                  <div className="bg-slate-900 text-white border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+                  <div className="bg-slate-900 text-white border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-2xl bg-ug-teal/10 border border-ug-teal/20 flex items-center justify-center shrink-0 text-ug-teal">
                         <Fingerprint size={24} />
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-black uppercase tracking-wider text-white">Cryptographic Envelope Vault Active</h4>
-                          <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                          <h4 className="text-sm font-bold   text-white">Cryptographic Envelope Vault Active</h4>
+                          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                             AES-256-GCM Verified
                           </span>
                         </div>
@@ -3182,7 +3146,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     <div className="flex items-center gap-2 shrink-0 self-end md:self-auto">
                       <button
                         onClick={handleExportSignedAuditCsv}
-                        className="px-4 py-2.5 bg-ug-teal hover:bg-teal-500 text-ug-navy font-black text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-ug-teal/10"
+                        className="px-4 py-2.5 bg-ug-teal hover:bg-teal-500 text-ug-navy font-bold text-xs   rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-ug-teal/10"
                       >
                         <Download size={14} />
                         Export Signed Audit CSV
@@ -3193,26 +3157,26 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                   {/* Audit Summary Statistics Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                     <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Total Request Volume</p>
-                      <p className="text-2xl font-black text-ug-navy">{eois.length}</p>
-                      <p className="text-[9px] text-gray-400 font-medium">Logged system outreaches</p>
+                      <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Total Request Volume</p>
+                      <p className="text-2xl font-bold text-ug-navy">{eois.length}</p>
+                      <p className="text-[11px] text-gray-400 font-medium">Logged system outreaches</p>
                     </div>
                     <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">AES-256 Encrypted</p>
-                      <p className="text-2xl font-black text-emerald-600">
+                      <p className="text-[11px] font-semibold text-gray-400 tracking-wider">AES-256 Encrypted</p>
+                      <p className="text-2xl font-bold text-emerald-600">
                         {eois.filter(e => isMessageEncrypted(e.raw_message || e.message)).length || eois.length}
                       </p>
-                      <p className="text-[9px] text-gray-400 font-medium">Encrypted message envelopes</p>
+                      <p className="text-[11px] text-gray-400 font-medium">Encrypted message envelopes</p>
                     </div>
                     <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">SHA-256 Integrity</p>
-                      <p className="text-2xl font-black text-ug-teal">100%</p>
-                      <p className="text-[9px] text-gray-400 font-medium">Verified digest checksums</p>
+                      <p className="text-[11px] font-semibold text-gray-400 tracking-wider">SHA-256 Integrity</p>
+                      <p className="text-2xl font-bold text-ug-teal">100%</p>
+                      <p className="text-[11px] text-gray-400 font-medium">Verified digest checksums</p>
                     </div>
                     <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Offboarding Audits</p>
-                      <p className="text-2xl font-black text-red-600">{accountDeletions.length}</p>
-                      <p className="text-[9px] text-gray-400 font-medium">User account deletion logs</p>
+                      <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Offboarding Audits</p>
+                      <p className="text-2xl font-bold text-red-600">{accountDeletions.length}</p>
+                      <p className="text-[11px] text-gray-400 font-medium">User account deletion logs</p>
                     </div>
                   </div>
 
@@ -3220,10 +3184,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                   <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm space-y-4 p-6">
                     <div className="flex items-center justify-between pb-2 border-b border-gray-100">
                       <div>
-                        <h4 className="text-sm font-black text-ug-navy uppercase tracking-wider">Message Transmission Ledger</h4>
-                        <p className="text-[10px] text-gray-400 font-mono">Real-time cryptographic audit trail of user outreaches and transmissions</p>
+                        <h4 className="text-sm font-bold text-ug-navy  ">Message Transmission Ledger</h4>
+                        <p className="text-[11px] text-gray-400 font-mono">Real-time cryptographic audit trail of user outreaches and transmissions</p>
                       </div>
-                      <span className="text-[9px] font-black uppercase tracking-wider text-ug-teal bg-ug-teal/10 px-3 py-1 rounded-full">
+                      <span className="text-[11px] font-semibold tracking-wider text-ug-teal bg-ug-teal/10 px-3 py-1 rounded-full">
                         Zero-Knowledge Privacy Standard
                       </span>
                     </div>
@@ -3231,7 +3195,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="bg-gray-50/80 border-b border-gray-100 text-[9px] font-black tracking-widest text-gray-400 uppercase">
+                          <tr className="bg-gray-50/80 border-b border-gray-100 text-[11px] font-semibold tracking-wide text-gray-400">
                             <th className="p-4 pl-6">Sender</th>
                             <th className="p-4">Associated Project</th>
                             <th className="p-4">Timestamp</th>
@@ -3242,7 +3206,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                         <tbody className="divide-y divide-gray-100">
                           {eois.length === 0 ? (
                             <tr>
-                              <td colSpan={5} className="p-12 text-center text-xs font-black uppercase text-gray-400 tracking-widest">
+                              <td colSpan={5} className="p-12 text-center text-xs font-bold  text-gray-400 tracking-wide">
                                 No outreach transactions recorded in the audit logs.
                               </td>
                             </tr>
@@ -3254,7 +3218,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   <td className="p-4 pl-6">
                                     <div>
                                       <span className="font-extrabold text-xs text-ug-navy block">{e.user_name}</span>
-                                      <span className="text-[9px] font-mono text-gray-400 block mt-0.5">UID: {e.sender_id?.substring(0, 8)}...</span>
+                                      <span className="text-[11px] font-mono text-gray-400 block mt-0.5">UID: {e.sender_id?.substring(0, 8)}...</span>
                                     </div>
                                   </td>
                                   <td className="p-4">
@@ -3263,7 +3227,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     </span>
                                   </td>
                                   <td className="p-4">
-                                    <div className="flex items-center gap-1.5 text-gray-400 font-mono text-[9px]">
+                                    <div className="flex items-center gap-1.5 text-gray-400 font-mono text-[11px]">
                                       <Clock size={11} />
                                       {new Date(e.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                                     </div>
@@ -3274,12 +3238,12 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                         "{e.message}"
                                       </p>
                                       {isEnc ? (
-                                        <span className="inline-flex items-center gap-1 text-[8px] font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                        <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                                           <Lock size={9} />
                                           AES-256-GCM Encrypted Envelope
                                         </span>
                                       ) : (
-                                        <span className="inline-flex items-center gap-1 text-[8px] font-mono text-gray-500 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">
+                                        <span className="inline-flex items-center gap-1 text-[11px] font-mono text-gray-500 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">
                                           Legacy Plaintext
                                         </span>
                                       )}
@@ -3288,7 +3252,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   <td className="p-4 pr-6 text-right">
                                     <button
                                       onClick={() => handleInspectMsg(e)}
-                                      className="px-3 py-1.5 bg-slate-100 hover:bg-ug-navy hover:text-white text-slate-700 font-black text-[9px] uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center gap-1.5 ml-auto"
+                                      className="px-3 py-1.5 bg-slate-100 hover:bg-ug-navy hover:text-white text-slate-700 font-semibold text-[11px] tracking-wider rounded-xl transition cursor-pointer flex items-center gap-1.5 ml-auto"
                                     >
                                       <Eye size={12} />
                                       Inspect Envelope
@@ -3309,9 +3273,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <div>
                         <div className="flex items-center gap-2 text-red-600 mb-1">
                           <Trash2 size={18} />
-                          <h3 className="text-xl font-black text-ug-navy">Account Deletion & Offboarding Registry</h3>
+                          <h3 className="text-xl font-bold text-ug-navy">Account Deletion & Offboarding Registry</h3>
                         </div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        <p className="text-[11px] font-semibold text-gray-400 tracking-wide">
                           User-Initiated Account Erasure Records & Feedback Audit
                         </p>
                       </div>
@@ -3345,7 +3309,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           document.body.removeChild(link);
                           showToast("Account deletion records exported as CSV!", "success");
                         }}
-                        className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center gap-2 shrink-0 self-start sm:self-auto shadow-md shadow-red-500/10"
+                        className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs   rounded-xl transition cursor-pointer flex items-center gap-2 shrink-0 self-start sm:self-auto shadow-md shadow-red-500/10"
                       >
                         <Download size={14} />
                         Export Offboarding CSV
@@ -3355,19 +3319,19 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     {/* Offboarding Stats Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Total Accounts Erased</p>
-                        <p className="text-2xl font-black text-red-600">{accountDeletions.length}</p>
-                        <p className="text-[9px] text-gray-400 font-medium">Logged user offboardings</p>
+                        <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Total Accounts Erased</p>
+                        <p className="text-2xl font-bold text-red-600">{accountDeletions.length}</p>
+                        <p className="text-[11px] text-gray-400 font-medium">Logged user offboardings</p>
                       </div>
                       <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">GDPR Right to Erasure</p>
-                        <p className="text-2xl font-black text-ug-navy">100%</p>
-                        <p className="text-[9px] text-gray-400 font-medium">Automated profile purge compliance</p>
+                        <p className="text-[11px] font-semibold text-gray-400 tracking-wider">GDPR Right to Erasure</p>
+                        <p className="text-2xl font-bold text-ug-navy">100%</p>
+                        <p className="text-[11px] text-gray-400 font-medium">Automated profile purge compliance</p>
                       </div>
                       <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Offboarding Feedback</p>
-                        <p className="text-2xl font-black text-ug-teal">{accountDeletions.filter(a => a.reason_details).length}</p>
-                        <p className="text-[9px] text-gray-400 font-medium">Qualitative notes recorded</p>
+                        <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Offboarding Feedback</p>
+                        <p className="text-2xl font-bold text-ug-teal">{accountDeletions.filter(a => a.reason_details).length}</p>
+                        <p className="text-[11px] text-gray-400 font-medium">Qualitative notes recorded</p>
                       </div>
                     </div>
                   </div>
@@ -3381,7 +3345,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-slate-900 text-white rounded-[2.5rem] border border-slate-800 p-8 max-w-xl w-full shadow-2xl space-y-6 relative overflow-hidden"
+                      className="bg-slate-900 text-white rounded-[2.5rem] border border-slate-800 p-8 max-w-xl w-full shadow-xl space-y-6 relative overflow-hidden"
                     >
                       <button
                         onClick={() => {
@@ -3398,39 +3362,39 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           <Fingerprint size={20} />
                         </div>
                         <div>
-                          <h3 className="text-base font-black uppercase tracking-wider">Cryptographic Envelope Inspector</h3>
-                          <p className="text-[10px] text-slate-400 font-mono">Transmission ID: {inspectingEnvelopeMsg.id}</p>
+                          <h3 className="text-base font-bold  ">Cryptographic Envelope Inspector</h3>
+                          <p className="text-[11px] text-slate-400 font-mono">Transmission ID: {inspectingEnvelopeMsg.id}</p>
                         </div>
                       </div>
 
                       <div className="space-y-4 text-xs">
                         <div className="grid grid-cols-2 gap-3 bg-slate-800/60 p-4 rounded-2xl border border-slate-800">
                           <div>
-                            <span className="text-[9px] font-mono text-slate-400 uppercase block">Sender Identity</span>
+                            <span className="text-[11px] font-mono text-slate-400 block">Sender Identity</span>
                             <span className="font-bold text-white block mt-0.5">{inspectingEnvelopeMsg.user_name}</span>
                           </div>
                           <div>
-                            <span className="text-[9px] font-mono text-slate-400 uppercase block">Encryption Standard</span>
+                            <span className="text-[11px] font-mono text-slate-400 block">Encryption Standard</span>
                             <span className="font-bold text-emerald-400 block mt-0.5">{envelopeAuditData.algorithm}</span>
                           </div>
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-mono text-slate-400 uppercase block">SHA-256 Digest Signature</label>
-                          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 font-mono text-[10px] text-ug-teal break-all select-all">
+                          <label className="text-[11px] font-mono text-slate-400 block">SHA-256 Digest Signature</label>
+                          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 font-mono text-[11px] text-ug-teal break-all select-all">
                             {envelopeAuditData.sha256Hash}
                           </div>
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-mono text-slate-400 uppercase block">Raw Ciphertext Envelope (At-Rest Payload)</label>
-                          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 font-mono text-[10px] text-slate-300 break-all max-h-24 overflow-y-auto">
+                          <label className="text-[11px] font-mono text-slate-400 block">Raw Ciphertext Envelope (At-Rest Payload)</label>
+                          <div className="bg-slate-950 p-3 rounded-xl border border-slate-800/80 font-mono text-[11px] text-slate-300 break-all max-h-24 overflow-y-auto">
                             {inspectingEnvelopeMsg.raw_message || inspectingEnvelopeMsg.message}
                           </div>
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-mono text-slate-400 uppercase block">Decrypted Message Payload (Client-Side Verification)</label>
+                          <label className="text-[11px] font-mono text-slate-400 block">Decrypted Message Payload (Client-Side Verification)</label>
                           <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700/60 text-xs italic text-slate-200">
                             "{envelopeAuditData.decryptedText}"
                           </div>
@@ -3448,7 +3412,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             setInspectingEnvelopeMsg(null);
                             setEnvelopeAuditData(null);
                           }}
-                          className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition cursor-pointer"
+                          className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs   rounded-xl transition cursor-pointer"
                         >
                           Close Inspector
                         </button>
@@ -3473,11 +3437,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-xl font-black text-ug-navy flex items-center gap-2">
+              <h3 className="text-xl font-bold text-ug-navy flex items-center gap-2">
                 <Fingerprint className="text-ug-teal" size={22} />
                 AI Decision Provenance Ledger
               </h3>
-              <p className="text-[10px] font-black text-ug-teal uppercase tracking-widest mt-1">
+              <p className="text-[11px] font-semibold text-ug-teal tracking-wide mt-1">
                 Append-only Audit Trail of Platform AI Decisions & Integrity Digests
               </p>
             </div>
@@ -3485,51 +3449,51 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
             <div className="flex items-center gap-2 self-start sm:self-center">
               <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200/60">
                 <ShieldCheck size={12} className="text-emerald-600" />
-                <span className="text-[9px] font-black uppercase tracking-wider">Service-Role Verified Writes</span>
+                <span className="text-[11px] font-semibold tracking-wider">Service-Role Verified Writes</span>
               </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Total Decisions</p>
-              <p className="text-2xl font-black text-ug-navy">{decisions.length}</p>
-              <p className="text-[9px] text-gray-400 font-medium">Recorded ledger entries</p>
+              <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Total Decisions</p>
+              <p className="text-2xl font-bold text-ug-navy">{decisions.length}</p>
+              <p className="text-[11px] text-gray-400 font-medium">Recorded ledger entries</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Pending Review</p>
-              <p className="text-2xl font-black text-amber-600">
+              <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Pending Review</p>
+              <p className="text-2xl font-bold text-amber-600">
                 {decisions.filter(d => d.review_status === 'pending').length}
               </p>
-              <p className="text-[9px] text-gray-400 font-medium">Awaiting human audit</p>
+              <p className="text-[11px] text-gray-400 font-medium">Awaiting human audit</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Profile Extraction</p>
-              <p className="text-2xl font-black text-ug-teal">
+              <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Profile Extraction</p>
+              <p className="text-2xl font-bold text-ug-teal">
                 {decisions.filter(d => d.decision_type === 'profile_extraction').length}
               </p>
-              <p className="text-[9px] text-gray-400 font-medium">AI profile generation calls</p>
+              <p className="text-[11px] text-gray-400 font-medium">AI profile generation calls</p>
             </div>
             <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Match Rankings</p>
-              <p className="text-2xl font-black text-indigo-600">
+              <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Match Rankings</p>
+              <p className="text-2xl font-bold text-indigo-600">
                 {decisions.filter(d => d.decision_type === 'match_ranking').length}
               </p>
-              <p className="text-[9px] text-gray-400 font-medium">Semantic match scoring runs</p>
+              <p className="text-[11px] text-gray-400 font-medium">Semantic match scoring runs</p>
             </div>
           </div>
 
           <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm space-y-4 p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2 border-b border-gray-100">
               <div>
-                <h4 className="text-sm font-black text-ug-navy uppercase tracking-wider">Decision History</h4>
-                <p className="text-[10px] text-gray-400 font-mono">Immutable provenance records with SHA-256 integrity digests</p>
+                <h4 className="text-sm font-bold text-ug-navy  ">Decision History</h4>
+                <p className="text-[11px] text-gray-400 font-mono">Immutable provenance records with SHA-256 integrity digests</p>
               </div>
               <div className="flex items-center gap-2">
                 <select
                   value={decisionStatusFilter}
                   onChange={(e) => setDecisionStatusFilter(e.target.value)}
-                  className="text-[10px] font-black uppercase tracking-wider bg-white border border-gray-200 rounded-xl px-3 py-2 text-ug-navy outline-none focus:border-ug-teal cursor-pointer"
+                  className="text-[11px] font-semibold tracking-wider bg-white border border-gray-200 rounded-xl px-3 py-2 text-ug-navy outline-none focus:border-ug-teal cursor-pointer"
                 >
                   <option value="all">All Statuses</option>
                   <option value="pending">Pending</option>
@@ -3538,7 +3502,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 </select>
                 <button
                   onClick={() => StorageService.getAiDecisions(decisionStatusFilter).then(setDecisions)}
-                  className="px-4 py-2 bg-ug-navy hover:bg-slate-800 text-white font-black text-[10px] uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center gap-2"
+                  className="px-4 py-2 bg-ug-navy hover:bg-slate-800 text-white font-semibold text-[11px] tracking-wider rounded-xl transition cursor-pointer flex items-center gap-2"
                   title="Refresh ledger"
                 >
                   <Loader2 size={14} className={isLoadingDecisions ? 'animate-spin' : ''} />
@@ -3550,7 +3514,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50/80 border-b border-gray-100 text-[9px] font-black tracking-widest text-gray-400 uppercase">
+                  <tr className="bg-gray-50/80 border-b border-gray-100 text-[11px] font-semibold tracking-wide text-gray-400">
                     <th className="p-4 pl-6">Decision Type</th>
                     <th className="p-4">Provider / Model</th>
                     <th className="p-4">Subject</th>
@@ -3563,14 +3527,14 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 <tbody className="divide-y divide-gray-100">
                   {isLoadingDecisions && decisions.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center text-xs font-black uppercase text-gray-400 tracking-widest flex items-center justify-center gap-2">
+                      <td colSpan={7} className="p-12 text-center text-xs font-bold  text-gray-400 tracking-wide flex items-center justify-center gap-2">
                         <Loader2 size={16} className="animate-spin" />
                         Loading provenance ledger...
                       </td>
                     </tr>
                   ) : decisions.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center text-xs font-black uppercase text-gray-400 tracking-widest">
+                      <td colSpan={7} className="p-12 text-center text-xs font-bold  text-gray-400 tracking-wide">
                         No AI decisions recorded yet. Run an AI workflow to populate the ledger.
                       </td>
                     </tr>
@@ -3579,34 +3543,34 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <tr key={d.id} className="hover:bg-gray-50/50 transition duration-150">
                         <td className="p-4 pl-6">
                           <span className="font-extrabold text-xs text-ug-navy block">{d.decision_type}</span>
-                          <span className="text-[9px] font-mono text-gray-400 block mt-0.5">v{d.prompt_version || 'n/a'}</span>
+                          <span className="text-[11px] font-mono text-gray-400 block mt-0.5">v{d.prompt_version || 'n/a'}</span>
                         </td>
                         <td className="p-4">
                           <span className="font-bold text-xs text-ug-navy block">{d.model || 'n/a'}</span>
-                          <span className="text-[9px] font-mono text-gray-400 block mt-0.5">{d.provider || 'unknown'}</span>
+                          <span className="text-[11px] font-mono text-gray-400 block mt-0.5">{d.provider || 'unknown'}</span>
                         </td>
                         <td className="p-4">
-                          <span className="text-[10px] font-mono text-gray-500">
+                          <span className="text-[11px] font-mono text-gray-500">
                             {d.subject_id ? `${d.subject_id.substring(0, 12)}...` : 'system'}
                           </span>
                         </td>
                         <td className="p-4">
                           <div className="space-y-0.5">
-                            <span className="text-[9px] font-mono text-ug-teal block truncate max-w-[160px]" title={d.input_hash || undefined}>
+                            <span className="text-[11px] font-mono text-ug-teal block truncate max-w-[160px]" title={d.input_hash || undefined}>
                               IN  {d.input_hash ? d.input_hash.substring(0, 20) + '...' : '—'}
                             </span>
-                            <span className="text-[9px] font-mono text-ug-teal/70 block truncate max-w-[160px]" title={d.output_hash || undefined}>
+                            <span className="text-[11px] font-mono text-ug-teal/70 block truncate max-w-[160px]" title={d.output_hash || undefined}>
                               OUT {d.output_hash ? d.output_hash.substring(0, 20) + '...' : '—'}
                             </span>
                           </div>
                         </td>
                         <td className="p-4">
-                          <span className="text-[10px] font-mono text-gray-500 block truncate max-w-[200px]" title={JSON.stringify(d.result)}>
+                          <span className="text-[11px] font-mono text-gray-500 block truncate max-w-[200px]" title={JSON.stringify(d.result)}>
                             {d.result ? JSON.stringify(d.result).substring(0, 60) : '—'}
                           </span>
                         </td>
                         <td className="p-4">
-                          <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${
+                          <span className={`text-[11px] font-semibold tracking-wider px-2.5 py-1 rounded-full ${
                             d.review_status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' :
                             d.review_status === 'rejected' ? 'bg-red-50 text-red-700 border border-red-200/60' :
                             'bg-amber-50 text-amber-700 border border-amber-200/60'
@@ -3615,7 +3579,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           </span>
                         </td>
                         <td className="p-4 pr-6 text-right">
-                          <div className="flex items-center justify-end gap-1.5 text-gray-400 font-mono text-[9px]">
+                          <div className="flex items-center justify-end gap-1.5 text-gray-400 font-mono text-[11px]">
                             <Clock size={11} />
                             {new Date(d.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                           </div>
@@ -3638,7 +3602,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 max-w-6xl w-full shadow-2xl relative my-8 max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 max-w-6xl w-full shadow-xl relative my-8 max-h-[90vh] overflow-y-auto"
             >
               <button
                 onClick={() => setIsReportModalOpen(false)}

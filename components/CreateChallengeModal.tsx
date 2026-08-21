@@ -98,7 +98,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl border border-gray-100 w-full max-w-3xl max-h-[85vh] sm:max-h-[88vh] flex flex-col overflow-hidden relative my-auto"
+            className="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-xl border border-gray-100 w-full max-w-3xl max-h-[85vh] sm:max-h-[88vh] flex flex-col overflow-hidden relative my-auto"
           >
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-5 sm:p-6 text-white flex items-center justify-between shrink-0 relative overflow-hidden">
@@ -107,8 +107,8 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                   <Briefcase size={22} className="text-white" />
                 </div>
                 <div>
-                  <span className="text-[9px] font-black uppercase bg-white/20 px-2.5 py-0.5 rounded-full tracking-widest text-white/90">Commercial Research Pipeline</span>
-                  <h2 className="text-base sm:text-xl font-black uppercase tracking-tight text-white leading-tight mt-0.5">
+                  <span className="text-[11px] font-semibold bg-white/20 px-2.5 py-0.5 rounded-full tracking-wide text-white/90">Commercial Research Pipeline</span>
+                  <h2 className="text-base sm:text-xl font-bold uppercase tracking-tight text-white leading-tight mt-0.5">
                     Post New Industry Challenge
                   </h2>
                 </div>
@@ -126,7 +126,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
             <form onSubmit={handleSubmit} className="p-5 sm:p-6 md:p-8 space-y-5 overflow-y-auto flex-1 text-left">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">
+                  <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">
                     Challenge Title <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -139,7 +139,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">
+                  <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">
                     Industry Domain / Category
                   </label>
                   <select
@@ -159,7 +159,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">
+                <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">
                   Brief One-Line Summary
                 </label>
                 <input
@@ -172,7 +172,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">
+                <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">
                   Detailed Scope & Technical Specifications <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -187,7 +187,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">
+                  <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">
                     Required Technical Skills (Comma-Separated)
                   </label>
                   <input
@@ -199,7 +199,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">
+                  <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">
                     Collaboration Framework
                   </label>
                   <select
@@ -217,7 +217,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest flex items-center gap-1">
+                  <label className="block text-[11px] font-semibold text-ug-navy tracking-wide flex items-center gap-1">
                     <DollarSign size={12} className="text-ug-teal" /> Budget / Grant Range
                   </label>
                   <input
@@ -229,7 +229,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest flex items-center gap-1">
+                  <label className="block text-[11px] font-semibold text-ug-navy tracking-wide flex items-center gap-1">
                     <Calendar size={12} className="text-ug-teal" /> Application Deadline
                   </label>
                   <input
@@ -240,7 +240,7 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest flex items-center gap-1">
+                  <label className="block text-[11px] font-semibold text-ug-navy tracking-wide flex items-center gap-1">
                     <MapPin size={12} className="text-ug-teal" /> Location / Market Focus
                   </label>
                   <input
@@ -258,14 +258,14 @@ export const CreateChallengeModal: React.FC<CreateChallengeModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-full sm:w-auto px-6 py-3 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-black uppercase tracking-widest text-gray-700 transition cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-bold uppercase tracking-wide text-gray-700 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto px-8 py-3 bg-ug-navy hover:bg-ug-teal text-white rounded-xl text-xs font-black uppercase tracking-widest transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer"
+                  className="w-full sm:w-auto px-8 py-3 bg-ug-navy hover:bg-ug-teal text-white rounded-xl text-xs font-bold uppercase tracking-wide transition flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? (
                     <>

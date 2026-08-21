@@ -45,7 +45,7 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
     {toasts.map((toast) => (
       <div 
         key={toast.id} 
-        className={`pointer-events-auto flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border animate-fade-in-right max-w-sm ${
+        className={`pointer-events-auto flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl border animate-fade-in-right max-w-sm ${
           toast.type === 'success' ? 'bg-ug-navy border-ug-teal text-white' : 
           toast.type === 'error' ? 'bg-red-50 border-red-100 text-red-600' : 
           toast.type === 'warning' ? 'bg-amber-50 border-amber-200 text-amber-700' :
@@ -59,7 +59,7 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
         ) : (
           <AlertCircle size={20} className="shrink-0" />
         )}
-        <span className="text-xs font-black uppercase tracking-widest">{toast.message}</span>
+        <span className="text-sm font-medium">{toast.message}</span>
         <button onClick={() => removeToast(toast.id)} className="ml-2 p-1 hover:bg-white/10 rounded-full transition">
           <X size={14} />
         </button>
@@ -240,7 +240,7 @@ const AppContent: React.FC = () => {
         {showLoginPrompt && !isAuthenticated && (
           <div className="bg-ug-warning/90 backdrop-blur-sm text-ug-navy py-3 px-4 flex items-center justify-center gap-3 animate-fade-in shadow-xl relative z-40 border-b border-ug-warning">
             <BellRing size={20} className="shrink-0 animate-bounce" />
-            <span className="text-xs sm:text-sm font-black uppercase tracking-widest">
+            <span className="text-xs sm:text-sm font-bold uppercase tracking-wide">
               Identity Required: Please sign in to access secure researcher tools.
             </span>
             <button 
@@ -326,7 +326,7 @@ const AppContent: React.FC = () => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ type: "spring", duration: 0.4 }}
-                className="bg-white rounded-3xl border border-gray-100 shadow-2xl max-w-sm w-full overflow-hidden text-center relative z-10 p-6 sm:p-8"
+                className="bg-white rounded-2xl border border-gray-100 shadow-xl max-w-sm w-full overflow-hidden text-center relative z-10 p-6 sm:p-8"
               >
                 {/* Warning Icon */}
                 <div className="mx-auto w-14 h-14 rounded-2xl bg-red-50 text-[#ef4444] flex items-center justify-center mb-5 shadow-inner">
@@ -348,14 +348,14 @@ const AppContent: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowLogoutConfirm(false)}
-                    className="flex-1 py-3 px-4 text-[10px] font-black uppercase tracking-wider text-gray-500 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition cursor-pointer text-center"
+                    className="flex-1 py-3 px-4 text-[11px] font-semibold tracking-wider text-gray-500 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition cursor-pointer text-center"
                   >
                     Keep Session
                   </button>
                   <button
                     type="button"
                     onClick={executeLogout}
-                    className="flex-1 py-3 px-4 text-[10px] font-black uppercase tracking-wider text-white bg-[#ef4444] hover:bg-red-600 rounded-xl transition cursor-pointer text-center flex items-center justify-center gap-1.5 shadow-lg shadow-red-500/15"
+                    className="flex-1 py-3 px-4 text-[11px] font-semibold tracking-wider text-white bg-[#ef4444] hover:bg-red-600 rounded-xl transition cursor-pointer text-center flex items-center justify-center gap-1.5 shadow-lg shadow-red-500/15"
                   >
                     <span>Secure Sign Out</span>
                   </button>

@@ -650,15 +650,15 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                 <Radio size={18} className="animate-pulse" />
               </div>
               <div>
-                <h3 className="text-xs font-black tracking-[0.2em] text-white leading-none">VIRTUAL HUB</h3>
-                <p className="text-[9px] font-black tracking-widest text-purple-400 mt-1 uppercase">CORE GOVERNANCE</p>
+                <h3 className="text-xs font-bold tracking-[0.2em] text-white leading-none">VIRTUAL HUB</h3>
+                <p className="text-[11px] font-semibold tracking-wide text-purple-400 mt-1">CORE GOVERNANCE</p>
               </div>
             </div>
           </div>
 
           {/* Sidebar Menu Items */}
           <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-            <div className="text-[10px] font-black tracking-widest text-[#4e5072] uppercase px-3 mb-3">SYSTEM MODULES</div>
+            <div className="text-[11px] font-semibold tracking-wide text-[#4e5072] px-3 mb-3">SYSTEM MODULES</div>
             
             <button 
               type="button"
@@ -708,7 +708,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                 <Radio size={16} className="text-purple-400" />
                 <span className="font-extrabold">News Curator</span>
               </div>
-              <span className="bg-purple-500/20 text-purple-300 text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+              <span className="bg-purple-500/20 text-purple-300 text-[11px] font-semibold px-1.5 py-0.5 rounded-full tracking-wider">Active</span>
             </button>
 
             <button 
@@ -745,13 +745,13 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
               <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full blur-xl" />
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles size={12} className="text-purple-400 animate-pulse" />
-                <h4 className="text-[10px] font-black text-white uppercase tracking-wider">AI Scout Sync</h4>
+                <h4 className="text-[11px] font-semibold text-white tracking-wider">AI Scout Sync</h4>
               </div>
-              <p className="text-[9px] text-[#717393] font-semibold">
+              <p className="text-[11px] text-[#717393] font-semibold">
                 Last sync: {lastSync ? lastSync.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '5 mins ago'}
               </p>
               
-              <div className="flex items-center gap-1.5 mt-3 text-[8px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/5 py-1.5 px-2.5 rounded-lg border border-emerald-500/20">
+              <div className="flex items-center gap-1.5 mt-3 text-[11px] font-semibold text-emerald-400 tracking-wide bg-emerald-500/5 py-1.5 px-2.5 rounded-lg border border-emerald-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                 <span>All Systems Active</span>
               </div>
@@ -764,9 +764,9 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
           {/* Top Header */}
           <header className="h-16 bg-white border-b border-gray-200/80 flex items-center justify-between px-8 shrink-0 z-10 shadow-sm shadow-gray-100/40">
             <div className="flex items-center gap-3">
-              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Platform Admin</span>
+              <span className="text-[11px] font-semibold text-gray-400 tracking-wide">Platform Admin</span>
               <span className="text-gray-300">/</span>
-              <span className="text-xs font-black text-slate-800 tracking-wider">News curation dashboard</span>
+              <span className="text-xs font-bold text-slate-800 tracking-wider">News curation dashboard</span>
             </div>
             
             <div className="flex items-center gap-6">
@@ -783,10 +783,10 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
 
               <div className="flex items-center gap-3 border-l border-gray-100 pl-6">
                 <div className="text-right">
-                  <p className="text-[11px] font-black text-gray-900 leading-tight">Welcome, ABDULYAH 👑</p>
-                  <p className="text-[8px] font-black text-purple-600 uppercase tracking-widest mt-0.5">Primary Governance</p>
+                  <p className="text-[11px] font-bold text-gray-900 leading-tight">Welcome, ABDULYAH 👑</p>
+                  <p className="text-[11px] font-semibold text-purple-600 tracking-wide mt-0.5">Primary Governance</p>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-black shadow-md shadow-purple-500/20">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-purple-500/20">
                   A
                 </div>
               </div>
@@ -801,14 +801,14 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
               {/* Archives Header */}
               <div className="p-6 border-b border-gray-100 flex items-center justify-between shrink-0">
                 <div>
-                  <h2 className="text-lg font-black tracking-tight text-gray-900 leading-none">Broadcast Archives</h2>
-                  <p className="text-[10px] text-gray-400 font-bold tracking-wider mt-1 uppercase">Curated Research & Listings</p>
+                  <h2 className="text-lg font-bold tracking-tight text-gray-900 leading-none">Broadcast Archives</h2>
+                  <p className="text-[11px] text-gray-400 font-bold tracking-wider mt-1">Curated Research & Listings</p>
                 </div>
                 
                 <button 
                   type="button"
                   onClick={handleClearWorkspace}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition duration-150 shadow-md shadow-purple-600/10 hover:scale-[1.02]"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-[11px] font-semibold tracking-wide transition duration-150 shadow-md shadow-purple-600/10 hover:scale-[1.02]"
                 >
                   <Plus size={12} />
                   <span>Create New</span>
@@ -825,7 +825,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         setSelectedCategory(e.target.value);
                         setArchivePage(1);
                       }}
-                      className="w-full bg-white border border-gray-200 focus:border-purple-500 p-2.5 rounded-xl text-[10px] font-black text-gray-700 uppercase tracking-wider outline-none cursor-pointer appearance-none"
+                      className="w-full bg-white border border-gray-200 focus:border-purple-500 p-2.5 rounded-xl text-[11px] font-semibold text-gray-700 tracking-wider outline-none cursor-pointer appearance-none"
                     >
                       <option value="All">All Categories</option>
                       <option value="Announcement">Announcements</option>
@@ -846,7 +846,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         setSelectedStatusFilter(e.target.value);
                         setArchivePage(1);
                       }}
-                      className="w-full bg-white border border-gray-200 focus:border-purple-500 p-2.5 rounded-xl text-[10px] font-black text-gray-700 uppercase tracking-wider outline-none cursor-pointer appearance-none"
+                      className="w-full bg-white border border-gray-200 focus:border-purple-500 p-2.5 rounded-xl text-[11px] font-semibold text-gray-700 tracking-wider outline-none cursor-pointer appearance-none"
                     >
                       <option value="All">All Status</option>
                       <option value="Published">Published</option>
@@ -859,11 +859,11 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                 </div>
 
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
+                  <span className="text-[11px] font-semibold text-gray-400 tracking-wider">
                     Total {filteredArchives.length} archives found
                   </span>
                   
-                  <div className="flex items-center gap-1.5 text-[10px] font-black text-gray-500 uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 tracking-wider">
                     <span>Sort:</span>
                     <select 
                       value={archiveSort} 
@@ -882,8 +882,8 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                 {paginatedArchives.length === 0 ? (
                   <div className="text-center py-20 border border-dashed border-gray-200 rounded-2xl bg-white p-6">
                     <Newspaper className="mx-auto text-gray-300 mb-4" size={32} />
-                    <p className="text-xs font-black text-gray-500 uppercase">No matching archives found</p>
-                    <p className="text-[10px] text-gray-400 mt-1">Refine filters or compose a new announcement.</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase">No matching archives found</p>
+                    <p className="text-[11px] text-gray-400 mt-1">Refine filters or compose a new announcement.</p>
                   </div>
                 ) : (
                   paginatedArchives.map(item => {
@@ -910,11 +910,11 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         <div className="flex-1 min-w-0 flex flex-col justify-between">
                           <div>
                             <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                              <span className="text-[8px] font-black uppercase text-purple-600 tracking-wider">
+                              <span className="text-[11px] font-semibold text-purple-600 tracking-wider">
                                 {item.category}
                               </span>
-                              <span className="text-gray-300 text-[8px]">•</span>
-                              <span className="text-gray-400 text-[8px] font-bold">
+                              <span className="text-gray-300 text-[11px]">•</span>
+                              <span className="text-gray-400 text-[11px] font-bold">
                                 {new Date(item.published_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                               </span>
                               {item.status === 'Draft' ? (
@@ -929,12 +929,12 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                               )}
                             </div>
 
-                            <h4 className="text-xs font-black text-gray-900 leading-snug group-hover:text-purple-600 transition-colors line-clamp-2">
+                            <h4 className="text-xs font-bold text-gray-900 leading-snug group-hover:text-purple-600 transition-colors line-clamp-2">
                               {item.title}
                             </h4>
                           </div>
 
-                          <p className="text-[10px] text-gray-400 font-medium line-clamp-1 mt-1 leading-relaxed">
+                          <p className="text-[11px] text-gray-400 font-medium line-clamp-1 mt-1 leading-relaxed">
                             {item.summary}
                           </p>
                         </div>
@@ -947,7 +947,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                           >
                             <Eye size={12} />
                           </button>
-                          <span className="text-[9px] font-mono text-gray-300 font-bold">
+                          <span className="text-[11px] font-mono text-gray-300 font-bold">
                             {item.relevance_score || 0}%
                           </span>
                         </div>
@@ -977,7 +977,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         key={pageNum}
                         type="button"
                         onClick={() => setArchivePage(pageNum)}
-                        className={`w-7 h-7 rounded-xl text-xs font-black flex items-center justify-center transition duration-150 ${
+                        className={`w-7 h-7 rounded-xl text-xs font-bold flex items-center justify-center transition duration-150 ${
                           isPageActive 
                             ? 'bg-[#1e145c] text-white shadow-sm' 
                             : 'border border-gray-100 text-gray-500 hover:border-purple-200 hover:text-purple-600'
@@ -1005,14 +1005,14 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
               {/* Workspace Header */}
               <div className="p-6 border-b border-gray-100 flex items-center justify-between shrink-0">
                 <div>
-                  <h2 className="text-lg font-black tracking-tight text-gray-900 leading-none">Curator Workspace</h2>
-                  <p className="text-[10px] text-gray-400 font-bold tracking-wider mt-1 uppercase">Compose, Edit, and Audit listings</p>
+                  <h2 className="text-lg font-bold tracking-tight text-gray-900 leading-none">Curator Workspace</h2>
+                  <p className="text-[11px] text-gray-400 font-bold tracking-wider mt-1">Compose, Edit, and Audit listings</p>
                 </div>
                 
                 <button 
                   type="button"
                   onClick={() => setCuratorMode(false)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600 rounded-xl text-[10px] font-black uppercase tracking-widest transition duration-150 cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-600 rounded-xl text-[11px] font-semibold tracking-wide transition duration-150 cursor-pointer"
                 >
                   <X size={12} />
                   <span>Close Workspace</span>
@@ -1028,13 +1028,13 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
-                      className={`py-4 px-4 border-b-2 font-black text-[10px] uppercase tracking-wider flex items-center gap-2.5 transition duration-150 relative cursor-pointer ${
+                      className={`py-4 px-4 border-b-2 font-semibold text-[11px] tracking-wider flex items-center gap-2.5 transition duration-150 relative cursor-pointer ${
                         isActive 
                           ? 'border-purple-600 text-purple-600' 
                           : 'border-transparent text-gray-400 hover:text-slate-700'
                       }`}
                     >
-                      <span className={`w-4 h-4 rounded-full text-[8px] flex items-center justify-center font-black ${
+                      <span className={`w-4 h-4 rounded-full text-[11px] flex items-center justify-center font-semibold ${
                         isActive ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-400'
                       }`}>
                         {tab.id}
@@ -1064,10 +1064,10 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">AI Document Extractor</h3>
-                                <span className="bg-purple-100 text-purple-700 font-extrabold text-[8px] px-2 py-0.5 rounded-full uppercase tracking-wider">PRO</span>
+                                <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">AI Document Extractor</h3>
+                                <span className="bg-purple-100 text-purple-700 font-extrabold text-[11px] px-2 py-0.5 rounded-full tracking-wider">PRO</span>
                               </div>
-                              <p className="text-[10px] text-gray-500 font-medium leading-relaxed mt-1">
+                              <p className="text-[11px] text-gray-500 font-medium leading-relaxed mt-1">
                                 Upload a news summary draft or article (<span className="font-bold">.txt, .doc, .docx</span>) and the Gemini system will instantly extract the headline, full briefing, category, tags, and verification details to populate this form.
                               </p>
                               
@@ -1076,7 +1076,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                                   type="button"
                                   onClick={() => docInputRef.current?.click()}
                                   disabled={isExtractingDoc}
-                                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-black text-[9px] uppercase tracking-wider rounded-xl transition duration-150 flex items-center gap-2 shadow-md shadow-purple-600/15 cursor-pointer"
+                                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-300 text-white font-semibold text-[11px] tracking-wider rounded-xl transition duration-150 flex items-center gap-2 shadow-md shadow-purple-600/15 cursor-pointer"
                                 >
                                   {isExtractingDoc ? (
                                     <>
@@ -1092,7 +1092,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                                 </button>
                                 
                                 {isExtractingDoc && (
-                                  <span className="text-[9px] text-purple-600 font-bold uppercase tracking-widest animate-pulse">
+                                  <span className="text-[11px] text-purple-600 font-bold tracking-wide animate-pulse">
                                     Extracting insights...
                                   </span>
                                 )}
@@ -1112,8 +1112,8 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         {/* Title */}
                         <div>
                           <div className="flex justify-between items-center mb-1.5">
-                            <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider">Title *</label>
-                            <span className="text-[9px] font-bold text-gray-400">{newsTitle.length}/200 characters</span>
+                            <label className="text-[11px] font-semibold text-gray-500 tracking-wider">Title *</label>
+                            <span className="text-[11px] font-bold text-gray-400">{newsTitle.length}/200 characters</span>
                           </div>
                           <input 
                             type="text" 
@@ -1127,8 +1127,8 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         {/* Short Summary */}
                         <div>
                           <div className="flex justify-between items-center mb-1.5">
-                            <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider">Short Summary *</label>
-                            <span className="text-[9px] font-bold text-gray-400">{newsSummary.length}/1000 characters</span>
+                            <label className="text-[11px] font-semibold text-gray-500 tracking-wider">Short Summary *</label>
+                            <span className="text-[11px] font-bold text-gray-400">{newsSummary.length}/1000 characters</span>
                           </div>
                           <textarea 
                             placeholder="Write an authoritative, detailed briefing of around 120-150 words..."
@@ -1141,7 +1141,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         {/* Category and Status Group */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Category *</label>
+                            <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Category *</label>
                             <select 
                               value={newsCategory}
                               onChange={e => setNewsCategory(e.target.value)}
@@ -1156,7 +1156,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                           </div>
 
                           <div>
-                            <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Published At</label>
+                            <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Published At</label>
                             <input 
                               type="datetime-local" 
                               value={newsPublishedAt}
@@ -1172,7 +1172,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         
                         {/* FEATURED IMAGE UPLOAD AREA */}
                         <div>
-                          <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Featured / Visual Asset *</label>
+                          <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Featured / Visual Asset *</label>
                           {newsImageUrl ? (
                             <div className="relative rounded-xl overflow-hidden border border-gray-200 aspect-video group">
                               <img 
@@ -1184,14 +1184,14 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                                 <button 
                                   type="button"
                                   onClick={() => fileInputRef.current?.click()}
-                                  className="px-3.5 py-2 bg-white/90 hover:bg-white text-slate-900 rounded-lg text-[10px] font-black uppercase tracking-wider transition"
+                                  className="px-3.5 py-2 bg-white/90 hover:bg-white text-slate-900 rounded-lg text-[11px] font-semibold tracking-wider transition"
                                 >
                                   Replace Image
                                 </button>
                                 <button 
                                   type="button"
                                   onClick={() => setNewsImageUrl('')}
-                                  className="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] font-black uppercase tracking-wider transition"
+                                  className="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[11px] font-semibold tracking-wider transition"
                                 >
                                   Remove
                                 </button>
@@ -1205,30 +1205,30 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                               {isUploadingImage ? (
                                 <>
                                   <Loader2 className="animate-spin text-purple-600 mb-2" size={24} />
-                                  <span className="text-[10px] font-black text-purple-600 uppercase">Uploading visual asset...</span>
+                                  <span className="text-[11px] font-semibold text-purple-600">Uploading visual asset...</span>
                                 </>
                               ) : (
                                 <>
                                   <Upload className="text-gray-300 mb-2.5 animate-none" size={28} />
                                   <span className="text-xs font-extrabold text-slate-700 leading-none">Upload Featured Image</span>
-                                  <span className="text-[9px] text-gray-400 font-semibold mt-1.5">JPG, PNG, or WEBP. Max 5MB.</span>
+                                  <span className="text-[11px] text-gray-400 font-semibold mt-1.5">JPG, PNG, or WEBP. Max 5MB.</span>
                                 </>
                               )}
                             </div>
                           )}
-                          <p className="text-[9px] text-gray-400 font-bold mt-2 uppercase tracking-wide">
+                          <p className="text-[11px] text-gray-400 font-bold mt-2 tracking-wide">
                             Note: Image upload is manual. AI image generators are strictly bypassed.
                           </p>
                         </div>
 
                         {/* INTERACTIVE TAGS WITH ENTER TO APPEND */}
                         <div>
-                          <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Announcement Tags</label>
+                          <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Announcement Tags</label>
                           <div className="border border-gray-200 rounded-xl p-3 bg-white flex flex-wrap gap-1.5 focus-within:border-purple-500 transition duration-150">
                             {tagList.map(tag => (
                               <span 
                                 key={tag} 
-                                className="bg-purple-50 text-purple-700 font-bold text-[10px] pl-2.5 pr-1.5 py-1 rounded-lg border border-purple-100 flex items-center gap-1 shrink-0"
+                                className="bg-purple-50 text-purple-700 font-bold text-[11px] pl-2.5 pr-1.5 py-1 rounded-lg border border-purple-100 flex items-center gap-1 shrink-0"
                               >
                                 <span>{tag}</span>
                                 <button 
@@ -1258,7 +1258,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
 
                         {/* Source / External URL */}
                         <div>
-                          <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Source / External Link</label>
+                          <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Source / External Link</label>
                           <div className="relative">
                             <input 
                               type="text" 
@@ -1288,7 +1288,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                       <div className="space-y-5">
                         {/* Scout Relevance Score */}
                         <div>
-                          <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Scout Relevance Score ({newsRelevanceScore}%)</label>
+                          <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Scout Relevance Score ({newsRelevanceScore}%)</label>
                           <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-gray-200">
                             <input 
                               type="range" 
@@ -1304,14 +1304,14 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                               max="100" 
                               value={newsRelevanceScore}
                               onChange={e => setNewsRelevanceScore(Math.min(100, Math.max(0, Number(e.target.value))))}
-                              className="w-16 bg-gray-50 border border-gray-200 rounded-lg p-2 text-center text-xs font-black text-gray-800 outline-none focus:border-purple-500"
+                              className="w-16 bg-gray-50 border border-gray-200 rounded-lg p-2 text-center text-xs font-bold text-gray-800 outline-none focus:border-purple-500"
                             />
                           </div>
                         </div>
 
                         {/* Source Verification notes */}
                         <div>
-                          <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block mb-1.5">Source Verification Notes</label>
+                          <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1.5">Source Verification Notes</label>
                           <textarea 
                             placeholder="Add administrative peer review records, source credibility audits, or credibility score logs..."
                             value={newsSourceVerificationNotes}
@@ -1330,7 +1330,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                             <div className="p-1.5 bg-purple-600 rounded-lg text-white">
                               <Sparkles size={14} className="animate-pulse" />
                             </div>
-                            <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest">Gemini AI Assistant</h3>
+                            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Gemini AI Assistant</h3>
                           </div>
                           <p className="text-[11px] text-gray-500 font-medium leading-relaxed mb-5">
                             Auto-draft professional, highly engaging headlines and press summaries instantly. Uses Google's modern Gemini models to craft authorized content outlines.
@@ -1338,7 +1338,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
 
                           <div className="space-y-4">
                             <div>
-                              <label className="text-[9px] font-black text-gray-500 uppercase tracking-wider block mb-1">Core Topic / Headline Concept</label>
+                              <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1">Core Topic / Headline Concept</label>
                               <input 
                                 type="text" 
                                 placeholder="e.g. Malaria Vaccine Trial Success at UG"
@@ -1349,7 +1349,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                             </div>
 
                             <div>
-                              <label className="text-[9px] font-black text-gray-500 uppercase tracking-wider block mb-1">Context Keywords (Optional)</label>
+                              <label className="text-[11px] font-semibold text-gray-500 tracking-wider block mb-1">Context Keywords (Optional)</label>
                               <input 
                                 type="text" 
                                 placeholder="e.g. WHO, phase 3, 75% efficacy"
@@ -1372,7 +1372,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                             await handleGenerateAIPressRelease(topicToUse, aiKeywords);
                           }}
                           disabled={isGeneratingAI}
-                          className="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white rounded-xl py-3 font-black text-[10px] uppercase tracking-widest transition duration-150 flex items-center justify-center gap-2 shadow-lg shadow-purple-600/15"
+                          className="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white rounded-xl py-3 font-semibold text-[11px] tracking-wide transition duration-150 flex items-center justify-center gap-2 shadow-lg shadow-purple-600/15"
                         >
                           {isGeneratingAI ? (
                             <>
@@ -1396,8 +1396,8 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                 {activeTab === 3 && (
                   <div className="space-y-5 max-w-2xl">
                     <div>
-                      <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider mb-1.5">Academic & Media Citations</h3>
-                      <p className="text-[10px] text-gray-400 font-bold mb-4 uppercase tracking-wider leading-relaxed">
+                      <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-1.5">Academic & Media Citations</h3>
+                      <p className="text-[11px] text-gray-400 font-bold mb-4 tracking-wider leading-relaxed">
                         Add up to 4 citation links. These display as interactive reference lists in the published news brief.
                       </p>
                     </div>
@@ -1405,7 +1405,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                     <div className="space-y-4">
                       {newsReferenceLinks.map((link, idx) => (
                         <div key={idx} className="flex items-center gap-3">
-                          <span className="w-6 text-[10px] font-black text-purple-600 font-mono">#{idx + 1}</span>
+                          <span className="w-6 text-[11px] font-semibold text-purple-600 font-mono">#{idx + 1}</span>
                           <div className="relative flex-1">
                             <input 
                               type="text" 
@@ -1437,13 +1437,13 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                     <button 
                       type="button" 
                       onClick={() => handleDeleteNews(undefined, editingNews.id)}
-                      className="flex items-center gap-1.5 px-4.5 py-3 bg-red-50 hover:bg-red-100 border border-red-100 hover:border-red-200 text-red-600 rounded-xl transition-all font-black text-[10px] uppercase tracking-widest cursor-pointer"
+                      className="flex items-center gap-1.5 px-4.5 py-3 bg-red-50 hover:bg-red-100 border border-red-100 hover:border-red-200 text-red-600 rounded-xl transition-all font-semibold text-[11px] tracking-wide cursor-pointer"
                     >
                       <Trash size={12} />
                       <span>Delete / Archive</span>
                     </button>
                   ) : (
-                    <div className="text-[9px] text-gray-400 font-extrabold uppercase tracking-widest pl-2">
+                    <div className="text-[11px] text-gray-400 font-extrabold tracking-wide pl-2">
                       New Announcement Composition Mode
                     </div>
                   )}
@@ -1454,7 +1454,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                     type="button" 
                     onClick={() => handleActionSave('Draft')}
                     disabled={isSavingNews}
-                    className="flex items-center gap-1.5 px-5 py-3 border border-purple-200 hover:border-purple-400 text-purple-700 bg-purple-50/20 hover:bg-purple-50/50 rounded-xl transition duration-150 font-black text-[10px] uppercase tracking-widest cursor-pointer"
+                    className="flex items-center gap-1.5 px-5 py-3 border border-purple-200 hover:border-purple-400 text-purple-700 bg-purple-50/20 hover:bg-purple-50/50 rounded-xl transition duration-150 font-semibold text-[11px] tracking-wide cursor-pointer"
                   >
                     <FileText size={12} />
                     <span>Save Draft</span>
@@ -1464,7 +1464,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                     type="button" 
                     onClick={() => handleActionSave('Published')}
                     disabled={isSavingNews}
-                    className="flex items-center gap-1.5 px-6 py-3 bg-[#1e145c] hover:bg-[#281b7a] text-white rounded-xl transition duration-150 font-black text-[10px] uppercase tracking-widest shadow-md shadow-purple-950/15 cursor-pointer"
+                    className="flex items-center gap-1.5 px-6 py-3 bg-[#1e145c] hover:bg-[#281b7a] text-white rounded-xl transition duration-150 font-semibold text-[11px] tracking-wide shadow-md shadow-purple-950/15 cursor-pointer"
                   >
                     {isSavingNews ? (
                       <Loader2 className="animate-spin" size={12} />
@@ -1503,7 +1503,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
           {/* Article Container */}
           <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden p-5 sm:p-8 mb-8 w-full">
             <div className="flex flex-wrap items-center gap-2.5 mb-4">
-              <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${selectedDetailedNews.is_ai_generated ? 'bg-ug-teal text-white' : 'bg-ug-navy text-white'}`}>
+              <span className={`flex items-center gap-1.5 text-[11px] font-bold tracking-wider px-3 py-1 rounded-full ${selectedDetailedNews.is_ai_generated ? 'bg-ug-teal text-white' : 'bg-ug-navy text-white'}`}>
                 {selectedDetailedNews.is_ai_generated ? <Zap size={11} className="fill-white" /> : <Tag size={11} />} 
                 <Tr text={selectedDetailedNews.category} />
               </span>
@@ -1609,7 +1609,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                 <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-ug-navy tracking-tight">
                   <Tr text="Discovery & Industry News" />
                 </h1>
-                <p className="text-ug-teal font-extrabold text-[9px] sm:text-[10px] uppercase tracking-[0.2em]">
+                <p className="text-ug-teal font-extrabold text-[11px] sm:text-[11px] tracking-[0.2em]">
                   <Tr text="University of Ghana • Virtual Industry Hub" />
                 </p>
               </div>
@@ -1619,7 +1619,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
             </p>
           </div>
           {lastSync && (
-            <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100 self-start md:self-auto shrink-0">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100 self-start md:self-auto shrink-0">
               <Clock size={11} className="text-ug-teal" />
               <span><Tr text="Synced:" /> {lastSync.toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
             </div>
@@ -1704,7 +1704,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
         {loading && filteredNews.length === 0 && (
            <div className="flex flex-col items-center justify-center py-24">
               <Loader2 className="animate-spin text-ug-teal mb-4" size={40} />
-              <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest"><Tr text="Loading Intelligence..." /></p>
+              <p className="text-gray-400 font-bold text-[11px] tracking-wide"><Tr text="Loading Intelligence..." /></p>
            </div>
         )}
 
@@ -1740,7 +1740,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
                 />
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                  <span className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs ${item.is_ai_generated ? 'bg-ug-teal text-white' : 'bg-ug-navy text-white'}`}>
+                  <span className={`text-[11px] font-bold tracking-wider px-2.5 py-1 rounded-md shadow-xs ${item.is_ai_generated ? 'bg-ug-teal text-white' : 'bg-ug-navy text-white'}`}>
                     <Tr text={item.category} />
                   </span>
                 </div>
@@ -1749,7 +1749,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
               {/* Card Body */}
               <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-[10px] font-semibold text-gray-400 mb-2">
+                  <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-400 mb-2">
                     <span className="flex items-center gap-1">
                       <Calendar size={11} />
                       <span>{formatNewsDate(item.published_at)}</span>
@@ -1780,7 +1780,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                     <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </span>
                   {item.external_url && (
-                    <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                    <span className="text-[11px] text-gray-400 flex items-center gap-1">
                       <ExternalLink size={10} />
                       <span><Tr text="Source" /></span>
                     </span>

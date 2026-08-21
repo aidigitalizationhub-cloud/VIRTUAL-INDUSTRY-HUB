@@ -133,7 +133,7 @@ const Products: React.FC = () => {
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
             <ShoppingBag className="text-ug-teal" size={32} />
-            <h1 className="text-4xl font-black text-ug-navy"><Tr text="Innovation Catalog" /></h1>
+            <h1 className="text-4xl font-bold text-ug-navy"><Tr text="Innovation Catalog" /></h1>
           </div>
           <p className="text-gray-600 max-w-2xl text-lg font-medium">
             <Tr text="Discover commercially validated technologies and products developed by University of Ghana researchers, ready for licensing and deployment." />
@@ -141,7 +141,7 @@ const Products: React.FC = () => {
         </div>
 
         {/* Search & Filters */}
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-12">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-12">
           <div className="flex flex-col xl:flex-row gap-6 items-center justify-between">
             <div className="flex items-center gap-2 w-full xl:w-auto">
               <div className="relative w-full xl:w-96">
@@ -160,7 +160,7 @@ const Products: React.FC = () => {
             <div className="flex flex-wrap gap-4 w-full xl:w-auto">
               <div className="relative flex-1 md:flex-none">
                  <select 
-                    className="appearance-none w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-6 pr-12 rounded-2xl font-black text-sm leading-tight focus:outline-none focus:ring-2 focus:ring-ug-teal transition-all cursor-pointer"
+                    className="appearance-none w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-6 pr-12 rounded-2xl font-bold text-sm leading-tight focus:outline-none focus:ring-2 focus:ring-ug-teal transition-all cursor-pointer"
                     value={selectedArea}
                     onChange={(e) => setSelectedArea(e.target.value)}
                  >
@@ -176,7 +176,7 @@ const Products: React.FC = () => {
 
               <div className="relative flex-1 md:flex-none">
                  <select 
-                    className="appearance-none w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-6 pr-12 rounded-2xl font-black text-sm leading-tight focus:outline-none focus:ring-2 focus:ring-ug-teal transition-all cursor-pointer"
+                    className="appearance-none w-full bg-gray-50 border border-gray-200 text-gray-700 py-3 px-6 pr-12 rounded-2xl font-bold text-sm leading-tight focus:outline-none focus:ring-2 focus:ring-ug-teal transition-all cursor-pointer"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                  >
@@ -196,14 +196,14 @@ const Products: React.FC = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-40">
              <Loader2 className="animate-spin text-ug-teal mb-4" size={48} />
-             <p className="text-gray-400 text-xs font-black uppercase tracking-widest">Loading catalog...</p>
+             <p className="text-gray-400 text-xs font-bold uppercase tracking-wide">Loading catalog...</p>
           </div>
         ) : (
           <>
             {/* Catalog Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
               {currentProducts.map(product => (
-                <div key={product.id} className="bg-white rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 group flex flex-col">
+                <div key={product.id} className="bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 group flex flex-col">
                   <div className="h-64 relative overflow-hidden">
                     <img src={getThumbnail(product.image_url)} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
                     {currentUser && (
@@ -222,24 +222,24 @@ const Products: React.FC = () => {
                         <Bookmark size={18} className={bookmarkedIds.includes(product.id) ? 'fill-current' : ''} />
                       </button>
                     )}
-                    <div className="absolute top-4 right-4 bg-green-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg uppercase tracking-widest">
+                    <div className="absolute top-4 right-4 bg-green-500 text-white text-[11px] font-semibold px-4 py-1.5 rounded-full shadow-lg tracking-wide">
                       <Tr text="Market Ready" />
                     </div>
                   </div>
                   <div className="p-8 flex-1 flex flex-col">
-                    <span className="text-ug-teal font-black text-[10px] uppercase tracking-[0.2em] mb-3"><Tr text={product.research_area} /></span>
-                    <h3 className="text-2xl font-black text-gray-900 mb-4 leading-tight group-hover:text-ug-teal transition-colors"><Tr text={product.title} /></h3>
+                    <span className="text-ug-teal font-semibold text-[11px] tracking-[0.2em] mb-3"><Tr text={product.research_area} /></span>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-ug-teal transition-colors"><Tr text={product.title} /></h3>
                     <p className="text-gray-500 text-sm leading-relaxed mb-8 font-medium flex-1 line-clamp-4">
                       <Tr text={product.description} />
                     </p>
                     <div className="flex items-center justify-between pt-6 border-t border-gray-100 mt-auto">
                       <div className="flex items-center gap-2 text-green-600">
                         <CheckCircle size={16} />
-                        <span className="text-xs font-black uppercase tracking-wider"><Tr text="License Validated" /></span>
+                        <span className="text-xs font-bold uppercase tracking-wider"><Tr text="License Validated" /></span>
                       </div>
                       <button 
                         onClick={() => navigate(`/projects/${product.id}`)}
-                        className="flex items-center gap-2 text-ug-navy font-black text-xs uppercase hover:text-ug-teal transition cursor-pointer"
+                        className="flex items-center gap-2 text-ug-navy font-bold text-xs uppercase hover:text-ug-teal transition cursor-pointer"
                       >
                         <Tr text="View Specs" /> <ExternalLink size={14} />
                       </button>
@@ -255,17 +255,17 @@ const Products: React.FC = () => {
                 <button 
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  className="px-6 py-3.5 bg-white hover:bg-gray-100 rounded-xl border border-gray-200 text-gray-700 hover:text-ug-teal font-black text-xs uppercase tracking-widest disabled:opacity-40 transition shadow-sm"
+                  className="px-6 py-3.5 bg-white hover:bg-gray-100 rounded-xl border border-gray-200 text-gray-700 hover:text-ug-teal font-bold text-xs uppercase tracking-wide disabled:opacity-40 transition shadow-sm"
                 >
                   <Tr text="Previous" />
                 </button>
-                <span className="text-xs font-black text-ug-navy uppercase tracking-widest">
+                <span className="text-xs font-bold text-ug-navy uppercase tracking-wide">
                   <Tr text="Page" /> {currentPage} <Tr text="of" /> {totalPages}
                 </span>
                 <button 
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  className="px-6 py-3.5 bg-white hover:bg-gray-100 rounded-xl border border-gray-200 text-gray-700 hover:text-ug-teal font-black text-xs uppercase tracking-widest disabled:opacity-40 transition shadow-sm"
+                  className="px-6 py-3.5 bg-white hover:bg-gray-100 rounded-xl border border-gray-200 text-gray-700 hover:text-ug-teal font-bold text-xs uppercase tracking-wide disabled:opacity-40 transition shadow-sm"
                 >
                   <Tr text="Next" />
                 </button>
@@ -276,7 +276,7 @@ const Products: React.FC = () => {
             {sortedProducts.length === 0 && (
               <div className="bg-white p-20 rounded-[3rem] text-center border border-gray-200 shadow-sm">
                 <ShoppingBag size={64} className="mx-auto text-gray-200 mb-6" />
-                <h3 className="text-2xl font-black text-ug-navy"><Tr text="No products matched criteria." /></h3>
+                <h3 className="text-2xl font-bold text-ug-navy"><Tr text="No products matched criteria." /></h3>
                 <p className="text-gray-500 mt-2 font-medium"><Tr text="Try checking other tracks or clearing search terms." /></p>
               </div>
             )}

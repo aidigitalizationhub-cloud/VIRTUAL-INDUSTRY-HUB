@@ -145,7 +145,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
 
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
+      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-fade-in-up">
         <div className="bg-ug-navy py-6 px-6 relative overflow-hidden flex flex-col items-center justify-center text-center border-b border-white/10">
             <div className="absolute inset-0 opacity-15 bg-[url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
             
@@ -170,16 +170,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                 {/* Hub Brand Title */}
                 <div className="flex items-center gap-2">
-                  <h2 className="text-white font-black text-lg sm:text-xl tracking-tight leading-tight">
+                  <h2 className="text-white font-bold text-lg sm:text-xl tracking-tight leading-tight">
                     {t('nav.brand')}
                   </h2>
-                  <span className="text-[9px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded bg-ug-gold/20 text-ug-gold border border-ug-gold/30">
+                  <span className="text-[11px] font-extrabold tracking-wide px-1.5 py-0.5 rounded bg-ug-gold/20 text-ug-gold border border-ug-gold/30">
                     IAST
                   </span>
                 </div>
 
                 {/* Sub-label */}
-                <p className="text-gray-300 text-[10px] font-extrabold uppercase tracking-widest mt-1">
+                <p className="text-gray-300 text-[11px] font-extrabold tracking-wide mt-1">
                   {isLogin ? 'Secure Identity Authentication' : 'Academic & Industry Registration'}
                 </p>
             </div>
@@ -194,7 +194,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </div>
                 {error.type === 'rate-limit' && (
                   <div className="mt-2 pt-2 border-t border-amber-200">
-                    <p className="flex items-center gap-1 text-[10px] uppercase tracking-wider">
+                    <p className="flex items-center gap-1 text-[11px] tracking-wider">
                       <Info size={12} /> Developer Fix:
                     </p>
                     <p className="mt-1 font-medium italic">Go to Supabase Dashboard → Auth → Settings. Disable "Confirm Email" to bypass this limit for testing.</p>
@@ -202,7 +202,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 )}
                 {error.type === 'signup-disabled' && (
                   <div className="mt-2 pt-2 border-t border-amber-200">
-                    <p className="flex items-center gap-1 text-[10px] uppercase tracking-wider">
+                    <p className="flex items-center gap-1 text-[11px] tracking-wider">
                       <Info size={12} /> Developer Fix:
                     </p>
                     <p className="mt-1 font-medium italic">Go to Supabase Dashboard → Auth → Settings → Auth Providers → Email. Enable "Allow new users to sign up".</p>
@@ -213,13 +213,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
             <div className="flex border-b border-gray-100 mb-6">
                 <button 
-                    className={`flex-1 pb-3 text-sm font-black transition-colors ${isLogin ? 'text-ug-teal border-b-2 border-ug-teal' : 'text-gray-400'}`}
+                    className={`flex-1 pb-3 text-sm font-bold transition-colors ${isLogin ? 'text-ug-teal border-b-2 border-ug-teal' : 'text-gray-400'}`}
                     onClick={() => setIsLogin(true)}
                 >
                     {t('auth.login')}
                 </button>
                 <button 
-                    className={`flex-1 pb-3 text-sm font-black transition-colors ${!isLogin ? 'text-ug-teal border-b-2 border-ug-teal' : 'text-gray-400'}`}
+                    className={`flex-1 pb-3 text-sm font-bold transition-colors ${!isLogin ? 'text-ug-teal border-b-2 border-ug-teal' : 'text-gray-400'}`}
                     onClick={() => setIsLogin(false)}
                 >
                     {t('auth.register')}
@@ -232,7 +232,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
                       {/* Title / Name Affiliation */}
                       <div className="sm:col-span-5 relative">
-                        <label className="block text-[9px] font-black uppercase tracking-wider text-gray-500 mb-1">
+                        <label className="block text-[11px] font-semibold tracking-wider text-gray-500 mb-1">
                           Title / Affiliation
                         </label>
                         <div className="relative">
@@ -253,7 +253,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                       {/* Full Name */}
                       <div className="sm:col-span-7 relative">
-                        <label className="block text-[9px] font-black uppercase tracking-wider text-gray-500 mb-1">
+                        <label className="block text-[11px] font-semibold tracking-wider text-gray-500 mb-1">
                           Full Name
                         </label>
                         <div className="relative">
@@ -286,7 +286,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                     {/* Live Display Preview */}
                     {name.trim() && (
-                      <div className="flex items-center gap-1.5 px-1 text-[10px] text-gray-500 font-medium">
+                      <div className="flex items-center gap-1.5 px-1 text-[11px] text-gray-500 font-medium">
                         <span>Platform Display:</span>
                         <span className="font-extrabold text-ug-navy bg-ug-navy/5 px-2 py-0.5 rounded border border-gray-200/60">
                           {getFormattedDisplayName()}
@@ -379,7 +379,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     <button 
                       type="button" 
                       onClick={handleForgotPassword}
-                      className="text-[10px] font-black text-ug-teal uppercase tracking-widest hover:underline"
+                      className="text-[11px] font-semibold text-ug-teal tracking-wide hover:underline"
                     >
                       {t('auth.forgotPassword')}
                     </button>
@@ -389,13 +389,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <button 
                     type="submit" 
                     disabled={loading}
-                    className="w-full bg-ug-navy text-white py-3 rounded-lg font-black uppercase tracking-widest hover:bg-opacity-90 transition flex items-center justify-center gap-2 mt-2 disabled:opacity-50 shadow-lg cursor-pointer"
+                    className="w-full bg-ug-navy text-white py-3 rounded-lg font-bold uppercase tracking-wide hover:bg-opacity-90 transition flex items-center justify-center gap-2 mt-2 disabled:opacity-50 shadow-lg cursor-pointer"
                 >
                     {loading ? t('common.loading') : (isLogin ? t('auth.login') : t('auth.signUp'))} <ArrowRight size={18} />
                 </button>
             </form>
 
-            <p className="text-center text-[10px] text-gray-400 mt-6 leading-relaxed font-bold uppercase tracking-widest">
+            <p className="text-center text-[11px] text-gray-400 mt-6 leading-relaxed font-bold tracking-wide">
                 Protected by UG Research Governance & Ghana Data Protection Act (Act 843).
             </p>
         </div>

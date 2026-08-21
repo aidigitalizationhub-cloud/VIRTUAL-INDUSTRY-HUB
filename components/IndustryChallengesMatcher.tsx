@@ -42,7 +42,7 @@ const CircularProgress = ({ score }: { score: number }) => {
           fill="transparent"
         />
       </svg>
-      <span className="absolute text-[11px] font-black text-ug-navy">
+      <span className="absolute text-[11px] font-bold text-ug-navy">
         {score}%
       </span>
     </div>
@@ -63,7 +63,7 @@ const ScoreBreakdown = ({ match }: { match: ChallengeMatch }) => {
   ];
 
   return (
-    <div className="p-4 bg-gray-50/70 rounded-2xl border border-gray-100/80 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-[10px] text-gray-500 font-semibold">
+    <div className="p-4 bg-gray-50/70 rounded-2xl border border-gray-100/80 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-[11px] text-gray-500 font-semibold">
       {items.map((item, idx) => (
         <div key={idx} className="flex justify-between items-center border-b border-gray-100/50 pb-1">
           <span className="text-gray-400">{item.label}</span>
@@ -201,7 +201,7 @@ export const IndustryChallengesMatcher: React.FC<MatcherProps> = ({
     const partnerOrg = match.challenge?.partner_company || 'Ecosystem Partner';
     const recRole = match.recommendedRole || 'Technical Contributor';
 
-    setProposalSubject(`💡 Solution Proposal: "${challengeTitle}" [Ref: ${recRole}]`);
+    setProposalSubject(`Solution Proposal: "${challengeTitle}" [Ref: ${recRole}]`);
     setProposalText(`Dear Engineering & Innovation Team at ${partnerOrg},
 
 My name is ${user?.name || 'Researcher'}. I am excited to submit my expression of interest and solution proposal for your Industry Challenge: "${challengeTitle}".
@@ -326,7 +326,7 @@ ${proposalText}`;
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3">
         <Loader2 className="animate-spin text-ug-teal" size={32} />
-        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse">Running Neural Challenge Matchers...</p>
+        <p className="text-[11px] font-semibold text-gray-400 tracking-wide animate-pulse">Finding challenges for you...</p>
       </div>
     );
   }
@@ -340,15 +340,11 @@ ${proposalText}`;
       {isCandidate && (
         <div className="space-y-6">
           {/* Challenge Matcher Explanation Banner */}
-          <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-6 sm:p-8 rounded-[2rem] text-white shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-6 opacity-10">
-              <Sparkles size={110} />
-            </div>
-            <div className="max-w-xl space-y-3 relative z-10">
-              <span className="text-[8px] font-black uppercase bg-white/20 px-3 py-1 rounded-full tracking-widest">Industry Challenges Alignment</span>
-              <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-tight">Recommended Industry Challenges</h2>
+          <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-5 sm:p-6 rounded-2xl text-white shadow-xl">
+            <div className="max-w-xl space-y-2">
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight leading-tight">Recommended Challenges</h2>
               <p className="text-xs text-white/80 font-medium leading-relaxed">
-                Connect directly with commercial partners through real-world medical, pharmaceutical, and diagnostics challenges. Aligning on Domain (25%), Skills (25%), and Timeline (5%).
+                Real-world challenges from industry partners, matched to your profile and skills.
               </p>
             </div>
           </div>
@@ -356,13 +352,13 @@ ${proposalText}`;
           {/* List of matched challenges */}
           <div className="space-y-4">
             {challengeMatches.length === 0 ? (
-              <div className="py-16 text-center bg-gray-55/40 bg-gray-50/50 rounded-[2.5rem] border-2 border-dashed border-gray-100 p-8">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm text-gray-300">
-                  <Rocket size={32} />
+              <div className="py-10 text-center bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100 p-8">
+                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm text-gray-300">
+                  <Rocket size={28} />
                 </div>
-                <h4 className="text-sm font-black text-ug-navy mb-2">No Active Industry Challenges Matches Yet</h4>
-                <p className="text-[10px] font-medium text-gray-400 max-w-sm mx-auto leading-relaxed mb-4">
-                  Ecosystem partners are currently formulating new diagnostics and vaccine challenges. Ensure your AI Profile is fully completed to receive high-fidelity match suggestions.
+                <h4 className="text-sm font-bold text-ug-navy mb-2">No challenge matches yet</h4>
+                <p className="text-[11px] font-medium text-gray-400 max-w-sm mx-auto leading-relaxed mb-4">
+                  Partners are posting new challenges. Complete your profile to get better matches.
                 </p>
               </div>
             ) : (
@@ -375,7 +371,7 @@ ${proposalText}`;
                   return (
                     <div 
                       key={match.id}
-                      className={`p-5 md:p-6 border rounded-[2rem] bg-white transition-all duration-300 shadow-sm ${
+                      className={`p-5 md:p-6 border rounded-2xl bg-white transition-all duration-300 shadow-sm ${
                         match.status === 'invited' 
                           ? 'border-amber-300 bg-amber-50/10 shadow-amber-100/50' 
                           : 'border-gray-100 hover:border-ug-teal/20 hover:shadow-xl'
@@ -388,30 +384,25 @@ ${proposalText}`;
                           <CircularProgress score={match.totalScore} />
                           <div className="min-w-0 flex-1 space-y-1">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[8px] font-black text-ug-teal bg-ug-teal/5 px-2.5 py-1 rounded-full uppercase tracking-widest">
+                              <span className="text-[11px] font-semibold text-ug-teal bg-ug-teal/5 px-2.5 py-1 rounded-full tracking-wide">
                                 {match.recommendedRole || 'Technical Contributor'}
                               </span>
-                              <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest px-2.5 py-1 bg-gray-100 rounded-full">
+                              <span className="text-[11px] font-semibold text-gray-400 tracking-wide px-2.5 py-1 bg-gray-100 rounded-full">
                                 {ch.category}
                               </span>
                               {match.status === 'invited' && (
-                                <span className="text-[8px] font-black text-amber-700 bg-amber-100 px-2.5 py-1 rounded-full uppercase tracking-widest animate-pulse">
-                                  Invited by Partner!
+                                <span className="text-[11px] font-semibold text-amber-700 bg-amber-100 px-2.5 py-1 rounded-full tracking-wide">
+                                  Invited by partner
                                 </span>
                               )}
                               {match.status === 'saved' && (
-                                <span className="text-[8px] font-black text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full uppercase tracking-widest">
+                                <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full tracking-wide">
                                   Saved Challenge
                                 </span>
                               )}
-                              {match.status === 'interested' && (
-                                <span className="text-[8px] font-black text-green-700 bg-green-50 border border-green-100 px-2.5 py-1 rounded-full uppercase tracking-widest">
-                                  Proposal Transmitted
-                                </span>
-                              )}
                             </div>
-                            <h4 className="font-black text-ug-navy text-sm md:text-base uppercase tracking-tight">{ch.title}</h4>
-                            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Posted by: {ch.partner_company || 'Industry Partner'}</p>
+                            <h4 className="font-bold text-ug-navy text-sm md:text-base tracking-tight">{ch.title}</h4>
+                            <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Posted by: {ch.partner_company || 'Industry Partner'}</p>
                             <p className="text-xs text-gray-500 font-medium leading-relaxed italic">"{ch.summary}"</p>
                           </div>
                         </div>
@@ -419,8 +410,8 @@ ${proposalText}`;
                         {/* Interactive actions */}
                         <div className="flex items-center lg:items-end justify-between lg:justify-start lg:flex-col gap-3 shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0 border-gray-100">
                           <div className="text-left lg:text-right">
-                            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Collaboration Type</p>
-                            <p className="text-xs font-black text-ug-navy uppercase">{ch.collaboration_type}</p>
+                            <p className="text-[11px] font-semibold text-gray-400 tracking-wide leading-none mb-1">Collaboration Type</p>
+                            <p className="text-xs font-bold text-ug-navy">{ch.collaboration_type}</p>
                           </div>
                           
                           <div className="flex gap-2">
@@ -428,28 +419,28 @@ ${proposalText}`;
                               <>
                                 <button
                                   onClick={() => handleOpenProposal(match)}
-                                  className="bg-ug-navy text-white hover:bg-ug-teal px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition shadow-md active:scale-95 shrink-0"
+                                  className="bg-ug-navy text-white hover:bg-ug-teal px-5 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition shadow-md active:scale-95 shrink-0"
                                 >
                                   Submit Proposal
                                 </button>
                                 {match.status !== 'saved' && (
                                   <button
                                     onClick={() => handleUpdateStatus(match.id, 'saved', 'Challenge saved to your matches.')}
-                                    className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition active:scale-95 shrink-0"
+                                    className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-4 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition active:scale-95 shrink-0"
                                   >
                                     Save
                                   </button>
                                 )}
                                 <button
                                   onClick={() => handleUpdateStatus(match.id, 'dismissed', 'Match dismissed.')}
-                                  className="bg-white border border-transparent text-gray-400 hover:text-red-500 hover:border-red-100 px-3 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition active:scale-95 shrink-0"
+                                  className="bg-white border border-transparent text-gray-400 hover:text-red-500 hover:border-red-100 px-3 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition active:scale-95 shrink-0"
                                   title="Dismiss Match"
                                 >
                                   <X size={12} />
                                 </button>
                               </>
                             ) : (
-                              <div className="flex items-center gap-1.5 px-4 py-2.5 bg-green-50 text-green-700 rounded-xl border border-green-100 text-[9px] font-black uppercase tracking-widest">
+                              <div className="flex items-center gap-1.5 px-4 py-2.5 bg-green-50 text-green-700 rounded-xl border border-green-100 text-[11px] font-semibold tracking-wide">
                                 <Check size={12} className="stroke-[3]" /> Proposal Transmitted
                               </div>
                             )}
@@ -462,20 +453,20 @@ ${proposalText}`;
                       <div className="mt-4 border-t border-gray-100/60 pt-3 flex items-center justify-between">
                         <button
                           onClick={() => setExpandedMatchId(isExpanded ? null : match.id)}
-                          className="flex items-center gap-1.5 text-[9px] font-black text-ug-teal hover:text-ug-navy uppercase tracking-widest transition"
+                          className="flex items-center gap-1.5 text-[11px] font-semibold text-ug-teal hover:text-ug-navy tracking-wide transition"
                         >
                           {isExpanded ? (
                             <>
-                              <ChevronUp size={12} /> Hide Match Parameters
+                              <ChevronUp size={12} /> Hide details
                             </>
                           ) : (
                             <>
-                              <ChevronDown size={12} /> Inspect Match Parameters
+                              <ChevronDown size={12} /> View details
                             </>
                           )}
                         </button>
                         
-                        <div className="flex flex-wrap gap-4 text-[9px] text-gray-400 font-bold uppercase tracking-wider">
+                        <div className="flex flex-wrap gap-4 text-[11px] text-gray-400 font-bold tracking-wider">
                           <div className="flex items-center gap-1">
                             <DollarSign size={11} className="text-ug-teal" /> Budget: <span className="text-ug-navy">{ch.budget_range || 'N/A'}</span>
                           </div>
@@ -483,7 +474,7 @@ ${proposalText}`;
                             <Calendar size={11} className="text-ug-teal" /> Deadline: <span className="text-ug-navy">{ch.deadline || 'N/A'}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <MapPin size={11} className="text-ug-teal" /> Reg-Market: <span className="text-ug-navy">{ch.location || 'Ecowas'}</span>
+                            <MapPin size={11} className="text-ug-teal" /> Location: <span className="text-ug-navy">{ch.location || 'Ecowas'}</span>
                           </div>
                         </div>
                       </div>
@@ -501,30 +492,30 @@ ${proposalText}`;
                             {/* Skills alignment matrix */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-1.5">
-                                <span className="text-[8px] font-black text-emerald-700 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-full">Matched Capabilities</span>
+                                <span className="text-[11px] font-semibold text-emerald-700 tracking-wide bg-emerald-50 px-2 py-0.5 rounded-full">Matched Capabilities</span>
                                 <div className="flex flex-wrap gap-1.5">
                                   {match.matchedSkills && match.matchedSkills.length > 0 ? (
                                     match.matchedSkills.map((sk, idx) => (
-                                      <span key={idx} className="text-[10px] font-bold text-emerald-800 bg-emerald-50/50 px-2.5 py-1 rounded-xl border border-emerald-100/40 flex items-center gap-1 capitalize">
+                                      <span key={idx} className="text-[11px] font-bold text-emerald-800 bg-emerald-50/50 px-2.5 py-1 rounded-xl border border-emerald-100/40 flex items-center gap-1 capitalize">
                                         <Check size={10} className="text-emerald-600 stroke-[3]" /> {sk}
                                       </span>
                                     ))
                                   ) : (
-                                    <span className="text-[10px] text-gray-400 font-medium">No specialized required skills matched.</span>
+                                    <span className="text-[11px] text-gray-400 font-medium">No specialized required skills matched.</span>
                                   )}
                                 </div>
                               </div>
                               <div className="space-y-1.5">
-                                <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded-full">Outstanding Capabilities</span>
+                                <span className="text-[11px] font-semibold text-gray-500 tracking-wide bg-gray-100 px-2 py-0.5 rounded-full">Outstanding Capabilities</span>
                                 <div className="flex flex-wrap gap-1.5">
                                   {ch.required_skills && ch.required_skills.length > 0 ? (
                                     ch.required_skills.filter(sk => !match.matchedSkills?.includes(sk.toLowerCase())).map((sk, idx) => (
-                                      <span key={idx} className="text-[10px] font-bold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-xl border border-gray-100 flex items-center gap-1 capitalize">
+                                      <span key={idx} className="text-[11px] font-bold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-xl border border-gray-100 flex items-center gap-1 capitalize">
                                         <Info size={10} className="text-gray-400" /> {sk}
                                       </span>
                                     ))
                                   ) : (
-                                    <span className="text-[10px] text-gray-400 font-medium">No outstanding required skills.</span>
+                                    <span className="text-[11px] text-gray-400 font-medium">No outstanding required skills.</span>
                                   )}
                                 </div>
                               </div>
@@ -532,8 +523,8 @@ ${proposalText}`;
 
                             {/* Match reasoning lists */}
                             <div className="p-4 bg-gray-50/50 rounded-2xl border border-gray-100 space-y-2">
-                              <h5 className="text-[9px] font-black text-ug-navy uppercase tracking-widest flex items-center gap-1">
-                                <Sparkles size={11} className="stroke-[2.5]" /> Neural Alignment Reasoning
+                              <h5 className="text-[11px] font-semibold text-ug-navy tracking-wide flex items-center gap-1">
+                                <Sparkles size={11} className="stroke-[2.5]" /> Why you match
                               </h5>
                               <ul className="space-y-1.5 text-xs text-gray-600 font-medium">
                                 {match.matchReasons && match.matchReasons.map((reason, idx) => (
@@ -547,13 +538,13 @@ ${proposalText}`;
 
                             {/* Weighting score breakdown */}
                             <div className="space-y-2">
-                              <h5 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Structured Score Weighting Breakdown</h5>
+                              <h5 className="text-[11px] font-semibold text-gray-400 tracking-wide">Score breakdown</h5>
                               <ScoreBreakdown match={match} />
                             </div>
 
                             {/* Challenge Full Description */}
                             <div className="space-y-1.5 p-4 bg-gray-50/30 rounded-2xl border border-gray-100 text-xs text-gray-600 leading-relaxed font-sans">
-                              <span className="text-[8px] font-black text-ug-navy uppercase tracking-widest block mb-1">Challenge Core Scope</span>
+                              <span className="text-[11px] font-semibold text-ug-navy tracking-wide block mb-1">Full description</span>
                               <p className="whitespace-pre-line">{ch.description}</p>
                             </div>
 
@@ -568,7 +559,7 @@ ${proposalText}`;
                 {challengeMatches.length > 5 && !showAllChallenges && (
                   <button
                     onClick={() => setShowAllChallenges(true)}
-                    className="w-full py-4 border-2 border-dashed border-gray-100 rounded-[2rem] text-[10px] font-black text-gray-400 uppercase tracking-widest hover:border-ug-teal hover:text-ug-teal transition-all"
+                    className="w-full py-3.5 border-2 border-dashed border-gray-100 rounded-2xl text-[11px] font-semibold text-gray-400 tracking-wide hover:border-ug-teal hover:text-ug-teal transition-all"
                   >
                     See {challengeMatches.length - 5} More Challenges
                   </button>
@@ -582,12 +573,11 @@ ${proposalText}`;
       {/* ----------------- PARTNER / INDUSTRY VIEW (CHALLENGE TALENT FINDER) ----------------- */}
       {!isCandidate && (
         <div className="space-y-6">
-          <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-6 sm:p-8 rounded-[2rem] text-white shadow-xl relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="max-w-md space-y-3 relative z-10">
-              <span className="text-[8px] font-black uppercase bg-white/20 px-3 py-1 rounded-full tracking-widest">Ecosystem Pipeline</span>
-              <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-tight">Challenge Talent Finder</h2>
+          <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-5 sm:p-6 rounded-2xl text-white shadow-xl">
+            <div className="max-w-md space-y-2">
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight leading-tight">Challenge Talent Finder</h2>
               <p className="text-xs text-white/80 font-medium leading-relaxed">
-                Identify specialized academic talent matched dynamically with your active research initiatives using custom criteria weightings.
+                Discover academic talent matched to your active challenges.
               </p>
             </div>
           </div>
@@ -600,7 +590,7 @@ ${proposalText}`;
                 initial={{ opacity: 0, y: -15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
-                className="bg-white border border-gray-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 md:p-8 shadow-xl space-y-6"
+                className="bg-white border border-gray-100 rounded-2xl p-5 sm:p-6 shadow-xl space-y-6"
               >
                 <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                   <div className="flex items-center gap-2.5">
@@ -608,8 +598,8 @@ ${proposalText}`;
                       <Briefcase size={20} />
                     </div>
                     <div>
-                      <h3 className="font-black text-ug-navy text-sm sm:text-base uppercase tracking-tight">Formulate Commercial Research Challenge</h3>
-                      <p className="text-[11px] text-gray-500 font-medium">Post your technical parameters to match with University of Ghana researchers & talent</p>
+                      <h3 className="font-bold text-ug-navy text-sm sm:text-base tracking-tight">Post a Challenge</h3>
+                      <p className="text-[11px] text-gray-500 font-medium">Describe your technical needs to match with university researchers</p>
                     </div>
                   </div>
                   <button 
@@ -627,7 +617,7 @@ ${proposalText}`;
                 <form onSubmit={handlePostChallenge} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Challenge Title</label>
+                      <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Challenge Title</label>
                       <input
                         type="text"
                         placeholder="e.g. Rapid Biosensor for Malaria Antigen Detection"
@@ -638,7 +628,7 @@ ${proposalText}`;
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Challenge Category</label>
+                      <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Challenge Category</label>
                       <select
                         value={newChallengeCat}
                         onChange={(e) => setNewChallengeCat(e.target.value)}
@@ -653,7 +643,7 @@ ${proposalText}`;
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Brief Summary</label>
+                    <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Brief Summary</label>
                     <input
                       type="text"
                       placeholder="A short one-sentence overview explaining the key requirement."
@@ -664,7 +654,7 @@ ${proposalText}`;
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Scope & Challenge Description</label>
+                    <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Scope & Challenge Description</label>
                     <textarea
                       rows={4}
                       placeholder="Provide full technical parameters, testing milestones, laboratory constraints, and commercial alignment requirements."
@@ -677,7 +667,7 @@ ${proposalText}`;
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Required Skills (Comma-separated)</label>
+                      <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Required Skills (Comma-separated)</label>
                       <input
                         type="text"
                         placeholder="e.g. Assay design, PCR, diagnostics, microfluidics"
@@ -687,7 +677,7 @@ ${proposalText}`;
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Collaboration Type</label>
+                      <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Collaboration Type</label>
                       <select
                         value={newChallengeCollab}
                         onChange={(e) => setNewChallengeCollab(e.target.value)}
@@ -703,7 +693,7 @@ ${proposalText}`;
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Funding / Budget Range</label>
+                      <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Funding / Budget Range</label>
                       <input
                         type="text"
                         placeholder="e.g. GH₵ 30,000 - 60,000"
@@ -713,7 +703,7 @@ ${proposalText}`;
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Submission Deadline</label>
+                      <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Submission Deadline</label>
                       <input
                         type="date"
                         value={newChallengeDeadline}
@@ -722,7 +712,7 @@ ${proposalText}`;
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Regulatory Market Fit / Location</label>
+                      <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Regulatory Market Fit / Location</label>
                       <input
                         type="text"
                         placeholder="e.g. Accra, Ghana"
@@ -740,17 +730,17 @@ ${proposalText}`;
                         setIsCreateChallengeOpen(false);
                         onCloseCreateChallenge?.();
                       }}
-                      className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-700 transition"
+                      className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl text-[11px] font-semibold tracking-wide text-gray-700 transition"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={isPostingChallenge}
-                      className="w-full sm:w-auto px-6 py-3 sm:py-2.5 bg-ug-navy hover:bg-ug-teal text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition flex items-center justify-center gap-1.5 shadow-md disabled:bg-gray-100 disabled:text-gray-400"
+                      className="w-full sm:w-auto px-6 py-3 sm:py-2.5 bg-ug-navy hover:bg-ug-teal text-white rounded-xl text-[11px] font-semibold tracking-wide transition flex items-center justify-center gap-1.5 shadow-md disabled:bg-gray-100 disabled:text-gray-400"
                     >
                       {isPostingChallenge ? <Loader2 className="animate-spin" size={12} /> : null}
-                      Post Commercial Challenge
+                      Post Challenge
                     </button>
                   </div>
                 </form>
@@ -759,9 +749,9 @@ ${proposalText}`;
           </AnimatePresence>
 
           {/* Challenge Selector */}
-          <div className="p-5 bg-white border border-gray-100 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-5 bg-white border border-gray-100 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1 flex-1">
-              <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Select Challenge to Filter Candidates</label>
+              <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Select Challenge to Filter Candidates</label>
               <select
                 value={selectedChallengeId}
                 onChange={(e) => setSelectedChallengeId(e.target.value)}
@@ -785,23 +775,23 @@ ${proposalText}`;
             <div className="flex gap-2 shrink-0">
               <button
                 onClick={() => setPartnerActiveTab('researchers')}
-                className={`px-5 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
+                className={`px-5 py-2.5 rounded-full text-[11px] font-semibold tracking-wide transition-all ${
                   partnerActiveTab === 'researchers'
                     ? 'bg-ug-navy text-white shadow-md'
                     : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                 }`}
               >
-                Lead Researchers
+                Researchers
               </button>
               <button
                 onClick={() => setPartnerActiveTab('students')}
-                className={`px-5 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${
+                className={`px-5 py-2.5 rounded-full text-[11px] font-semibold tracking-wide transition-all ${
                   partnerActiveTab === 'students'
                     ? 'bg-ug-navy text-white shadow-md'
                     : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                 }`}
               >
-                Auxiliary Students
+                Students
               </button>
             </div>
           </div>
@@ -809,17 +799,17 @@ ${proposalText}`;
           {/* Matches lists */}
           <div className="space-y-4">
             {partnerChallenges.length === 0 ? (
-              <div className="py-16 text-center bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-100 p-8">
-                <Users size={36} className="text-gray-300 mx-auto mb-3" />
-                <h4 className="text-sm font-black text-ug-navy mb-1.5">Formulate an Industry Challenge to Match Talent</h4>
-                <p className="text-[10px] font-medium text-gray-400 max-w-sm mx-auto leading-relaxed mb-4">
-                  Once you register a commercial challenge, our AI engines instantly scan active University of Ghana academic profiles to map researchers and assistants.
+              <div className="py-10 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100 p-8">
+                <Users size={32} className="text-gray-300 mx-auto mb-3" />
+                <h4 className="text-sm font-bold text-ug-navy mb-1.5">Post your first challenge</h4>
+                <p className="text-[11px] font-medium text-gray-400 max-w-sm mx-auto leading-relaxed mb-4">
+                  Once posted, we scan university profiles to map researchers and students to it.
                 </p>
                 <button
                   onClick={() => setIsCreateChallengeOpen(true)}
-                  className="px-5 py-3 bg-ug-navy hover:bg-ug-teal text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition shadow-md"
+                  className="px-5 py-2.5 bg-ug-navy hover:bg-ug-teal text-white rounded-xl text-[11px] font-semibold tracking-wide transition shadow-md"
                 >
-                  Formulate Challenge Now
+                  Post a Challenge
                 </button>
               </div>
             ) : (
@@ -834,10 +824,10 @@ ${proposalText}`;
 
                   if (filteredMatches.length === 0) {
                     return (
-                      <div className="py-16 text-center bg-gray-50/50 rounded-[2.5rem] border border-gray-100 p-6">
+                      <div className="py-10 text-center bg-gray-50/50 rounded-2xl border border-gray-100 p-6">
                         <AlertCircle size={24} className="text-gray-300 mx-auto mb-2" />
-                        <h4 className="text-xs font-black text-ug-navy">No {partnerActiveTab === 'researchers' ? 'Researchers' : 'Students'} mapped for this challenge.</h4>
-                        <p className="text-[9px] font-medium text-gray-400 mt-1">Try broadening the required skills or category parameters.</p>
+                        <h4 className="text-xs font-bold text-ug-navy">No {partnerActiveTab === 'researchers' ? 'Researchers' : 'Students'} mapped for this challenge.</h4>
+                        <p className="text-[11px] font-medium text-gray-400 mt-1">Try broadening the required skills or category parameters.</p>
                       </div>
                     );
                   }
@@ -850,7 +840,7 @@ ${proposalText}`;
                     return (
                       <div 
                         key={match.id}
-                        className="p-5 md:p-6 bg-white border border-gray-100 rounded-[2rem] hover:border-ug-teal/20 hover:shadow-lg transition-all duration-300 space-y-4"
+                        className="p-5 md:p-6 bg-white border border-gray-100 rounded-2xl hover:border-ug-teal/20 hover:shadow-lg transition-all duration-300 space-y-4"
                       >
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                           
@@ -865,15 +855,15 @@ ${proposalText}`;
                             </div>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="text-[8px] font-black text-ug-teal bg-ug-teal/5 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                                <span className="text-[11px] font-semibold text-ug-teal bg-ug-teal/5 px-2 py-0.5 rounded-full tracking-wide">
                                   Score: {match.totalScore}%
                                 </span>
-                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
+                                <span className="text-[11px] font-semibold text-gray-400 tracking-wide">
                                   {match.recommendedRole || 'Technical Assistant'}
                                 </span>
                               </div>
-                              <h4 className="font-black text-ug-navy text-sm uppercase tracking-tight truncate">{cand.name}</h4>
-                              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{cand.department || 'Biomedical Directorate'}</p>
+                              <h4 className="font-bold text-ug-navy text-sm tracking-tight truncate">{cand.name}</h4>
+                              <p className="text-[11px] text-gray-400 font-bold tracking-wider">{cand.department || 'Biomedical Directorate'}</p>
                             </div>
                           </div>
 
@@ -881,26 +871,26 @@ ${proposalText}`;
                           <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
                             
                             {match.status === 'invited' ? (
-                              <div className="flex items-center gap-1 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-100 rounded-xl text-[9px] font-black uppercase tracking-widest">
+                              <div className="flex items-center gap-1 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-100 rounded-xl text-[11px] font-semibold tracking-wide">
                                 <CheckCircle size={11} /> Invite Sent
                               </div>
                             ) : (
                               <button
                                 onClick={() => handleUpdateStatus(match.id, 'invited', 'Candidate invited to apply for challenge.')}
-                                className="bg-ug-navy text-white hover:bg-ug-teal px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition"
+                                className="bg-ug-navy text-white hover:bg-ug-teal px-4 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition"
                               >
                                 Invite To Apply
                               </button>
                             )}
 
                             {match.status === 'shortlisted' ? (
-                              <div className="flex items-center gap-1 px-3 py-2 bg-purple-50 text-purple-700 border border-purple-100 rounded-xl text-[9px] font-black uppercase tracking-widest">
+                              <div className="flex items-center gap-1 px-3 py-2 bg-purple-50 text-purple-700 border border-purple-100 rounded-xl text-[11px] font-semibold tracking-wide">
                                 <Bookmark size={11} /> Shortlisted
                               </div>
                             ) : (
                               <button
                                 onClick={() => handleUpdateStatus(match.id, 'shortlisted', 'Candidate added to shortlist.')}
-                                className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition"
+                                className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition"
                               >
                                 Shortlist
                               </button>
@@ -908,7 +898,7 @@ ${proposalText}`;
 
                             <button
                               onClick={() => handleOpenChat(match)}
-                              className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition flex items-center gap-1"
+                              className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition flex items-center gap-1"
                             >
                               <MessageSquare size={12} /> Chat
                             </button>
@@ -921,14 +911,14 @@ ${proposalText}`;
                         <div className="border-t border-gray-50 pt-3 flex items-center justify-between">
                           <button
                             onClick={() => setExpandedMatchId(isExpanded ? null : match.id)}
-                            className="flex items-center gap-1 text-[9px] font-black text-ug-teal hover:text-ug-navy uppercase tracking-widest transition"
+                            className="flex items-center gap-1 text-[11px] font-semibold text-ug-teal hover:text-ug-navy tracking-wide transition"
                           >
-                            {isExpanded ? <><ChevronUp size={12} /> Hide Breakdown</> : <><ChevronDown size={12} /> Inspect Alignment Breakdown</>}
+                            {isExpanded ? <><ChevronUp size={12} /> Hide breakdown</> : <><ChevronDown size={12} /> View breakdown</>}
                           </button>
                           
                           <div className="flex gap-2">
                             {cand.skills?.slice(0, 3).map((sk, idx) => (
-                              <span key={idx} className="text-[9px] font-bold text-gray-400 px-2 py-0.5 bg-gray-50 rounded-lg capitalize border border-gray-100">
+                              <span key={idx} className="text-[11px] font-bold text-gray-400 px-2 py-0.5 bg-gray-50 rounded-lg capitalize border border-gray-100">
                                 {sk}
                               </span>
                             ))}
@@ -944,18 +934,18 @@ ${proposalText}`;
                               className="overflow-hidden space-y-4 pt-3 border-t border-gray-50"
                             >
                               <div className="p-4 bg-gray-50/40 rounded-2xl border border-gray-100 text-xs text-gray-600 space-y-1 italic">
-                                <span className="text-[8px] font-black text-ug-navy uppercase tracking-widest block mb-1">Academic Profile Highlight</span>
+                                <span className="text-[11px] font-semibold text-ug-navy tracking-wide block mb-1">Academic Profile Highlight</span>
                                 <p>"{cand.bio || 'Dynamic academic profile with matching molecular capabilities.'}"</p>
                               </div>
 
                               <div className="space-y-2">
-                                <h5 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Calculated Weighting Score Breakdown</h5>
+                                <h5 className="text-[11px] font-semibold text-gray-400 tracking-wide">Score breakdown</h5>
                                 <ScoreBreakdown match={match} />
                               </div>
 
                               {/* Reasoning */}
                               <div className="p-4 bg-emerald-50/10 rounded-2xl border border-emerald-100/50 text-xs text-emerald-900 space-y-1.5">
-                                <span className="text-[8px] font-black text-emerald-800 uppercase tracking-widest block mb-1">Synergy Reasons</span>
+                                <span className="text-[11px] font-semibold text-emerald-800 tracking-wide block mb-1">Why they match</span>
                                 <ul className="space-y-1 list-disc list-inside">
                                   {match.matchReasons?.map((r, idx) => (
                                     <li key={idx}>{r}</li>
@@ -984,7 +974,7 @@ ${proposalText}`;
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-2xl bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden flex flex-col p-6 md:p-10 space-y-6"
+              className="relative w-full max-w-2xl bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden flex flex-col p-6 md:p-8 space-y-6"
             >
               <div className="flex items-start justify-between border-b border-gray-100 pb-4">
                 <div className="flex items-center gap-3">
@@ -992,8 +982,8 @@ ${proposalText}`;
                     <SendIcon size={18} />
                   </div>
                   <div>
-                    <h3 className="font-black text-ug-navy text-sm uppercase tracking-tight">Submit Commercial Solution Proposal</h3>
-                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Configure Solution Outline Referral Parameters</p>
+                    <h3 className="font-bold text-ug-navy text-sm tracking-tight">Submit Proposal</h3>
+                    <p className="text-[11px] text-gray-400 font-medium">Review and edit before sending</p>
                   </div>
                 </div>
                 <button onClick={() => setIsProposalModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-400">
@@ -1002,7 +992,7 @@ ${proposalText}`;
               </div>
 
               <div className="text-left space-y-1.5">
-                <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Referral Vector Subject Line</label>
+                <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Subject</label>
                 <input
                   type="text"
                   value={proposalSubject}
@@ -1012,7 +1002,7 @@ ${proposalText}`;
               </div>
 
               <div className="text-left space-y-1.5">
-                <label className="block text-[10px] font-black text-ug-navy uppercase tracking-widest">Enriched Message Body & Proposal Outline</label>
+                <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Message</label>
                 <textarea
                   rows={8}
                   value={proposalText}
@@ -1024,17 +1014,17 @@ ${proposalText}`;
               <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
                 <button
                   onClick={() => setIsProposalModalOpen(false)}
-                  className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-[9px] font-black uppercase tracking-widest"
+                  className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-[11px] font-semibold tracking-wide"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmitProposal}
                   disabled={isSubmittingProposal}
-                  className="px-8 py-3 bg-ug-navy text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-ug-teal transition flex items-center gap-2"
+                  className="px-8 py-3 bg-ug-navy text-white rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition flex items-center gap-2"
                 >
                   {isSubmittingProposal ? <Loader2 className="animate-spin" size={12} /> : null}
-                  Transmit Strategic Proposal
+                  Send Proposal
                 </button>
               </div>
 

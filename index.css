@@ -5,6 +5,7 @@
 @theme {
   --color-ug-navy: #1a1a4b;
   --color-ug-teal: #0891b2;
+  --color-ug-gold: #d97706;
   --color-ug-success: #10b981;
   --color-ug-warning: #f59e0b;
   --color-ug-error: #ef4444;
@@ -193,6 +194,86 @@ html.dark .bg-red-50 {
   color: #fca5a5;
 }
 
+/* Colored Text Contrast in Dark Mode */
+html.dark .text-blue-600,
+html.dark .text-blue-700 {
+  color: #93c5fd;
+}
+
+html.dark .text-purple-600,
+html.dark .text-purple-700 {
+  color: #c4b5fd;
+}
+
+html.dark .text-indigo-600,
+html.dark .text-indigo-700 {
+  color: #a5b4fc;
+}
+
+html.dark .text-emerald-600,
+html.dark .text-emerald-700 {
+  color: #6ee7b7;
+}
+
+html.dark .text-green-600,
+html.dark .text-green-700 {
+  color: #86efac;
+}
+
+html.dark .text-teal-600,
+html.dark .text-teal-700 {
+  color: #5eead4;
+}
+
+html.dark .text-cyan-600,
+html.dark .text-cyan-700 {
+  color: #67e8f9;
+}
+
+html.dark .text-amber-600,
+html.dark .text-amber-700 {
+  color: #fcd34d;
+}
+
+html.dark .text-orange-600,
+html.dark .text-orange-700 {
+  color: #fdba74;
+}
+
+html.dark .text-red-600,
+html.dark .text-red-700 {
+  color: #fca5a5;
+}
+
+/* Chip & Tint Backgrounds in Dark Mode */
+html.dark .bg-blue-100 {
+  background-color: rgba(30, 58, 138, 0.45);
+  color: #bfdbfe;
+}
+
+html.dark .bg-emerald-100,
+html.dark .bg-green-100 {
+  background-color: rgba(6, 78, 59, 0.45);
+  color: #a7f3d0;
+}
+
+html.dark .bg-amber-100,
+html.dark .bg-yellow-100 {
+  background-color: rgba(120, 53, 15, 0.45);
+  color: #fde68a;
+}
+
+html.dark .bg-purple-100,
+html.dark .bg-indigo-100 {
+  background-color: rgba(49, 46, 129, 0.45);
+  color: #ddd6fe;
+}
+
+html.dark .bg-red-100 {
+  background-color: rgba(127, 29, 29, 0.45);
+  color: #fecaca;
+}
+
 /* Mobile Bottom Navigation in Dark Mode */
 html.dark nav.lg\:hidden.fixed.bottom-0 {
   background-color: rgba(18, 24, 39, 0.95);
@@ -225,6 +306,34 @@ html.dark nav.lg\:hidden.fixed.bottom-0 {
 
 .animate-fade-in-right {
   animation: fade-in-right 0.3s ease-out forwards;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 2.5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-fade-in-right,
+  .animate-fade-in-up,
+  .animate-bounce,
+  .animate-pulse {
+    animation: none;
+  }
 }
 
 /* Custom Scrollbar */

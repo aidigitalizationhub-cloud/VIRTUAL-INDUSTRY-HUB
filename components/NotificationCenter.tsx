@@ -89,26 +89,26 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
       >
         <Bell size={18} className={totalUnread > 0 ? "text-ug-teal animate-pulse" : ""} />
         {totalUnread > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 border-2 border-ug-navy text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-md">
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 border-2 border-ug-navy text-white text-[11px] font-semibold rounded-full flex items-center justify-center shadow-md">
             {totalUnread}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 z-[120] overflow-hidden animate-fade-in-up text-left">
+        <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-[120] overflow-hidden animate-fade-in-up text-left">
           {/* Header */}
           <div className="p-5 border-b border-gray-100 bg-gray-50/70">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
                 <Bell size={16} className="text-ug-teal" />
-                <h4 className="font-black text-ug-navy text-xs uppercase tracking-widest">
+                <h4 className="font-bold text-ug-navy text-xs uppercase tracking-wide">
                   <Tr text="Notifications & Alerts" />
                 </h4>
               </div>
               <button 
                 onClick={() => setIsManageSearchesOpen(true)}
-                className="text-[10px] font-black text-ug-teal hover:text-ug-navy bg-ug-teal/10 hover:bg-ug-teal/20 px-2.5 py-1 rounded-xl uppercase tracking-wider transition cursor-pointer flex items-center gap-1"
+                className="text-[11px] font-semibold text-ug-teal hover:text-ug-navy bg-ug-teal/10 hover:bg-ug-teal/20 px-2.5 py-1 rounded-xl tracking-wider transition cursor-pointer flex items-center gap-1"
               >
                 <Search size={10} />
                 <Tr text="Saved Searches" /> ({savedSearches.length})
@@ -119,7 +119,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
             <div className="grid grid-cols-2 gap-1 p-1 bg-gray-200/60 rounded-2xl">
               <button
                 onClick={() => setActiveTab('alerts')}
-                className={`py-1.5 text-[10px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-1.5 text-[11px] font-semibold tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 ${
                   activeTab === 'alerts' 
                     ? 'bg-white text-ug-navy shadow-xs' 
                     : 'text-gray-500 hover:text-ug-navy'
@@ -128,14 +128,14 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
                 <Sparkles size={12} className={unreadAlerts.length > 0 ? "text-ug-teal animate-bounce" : ""} />
                 <Tr text="Search Alerts" />
                 {unreadAlerts.length > 0 && (
-                  <span className="bg-ug-teal text-white text-[8px] font-black px-1.5 py-0.5 rounded-full">
+                  <span className="bg-ug-teal text-white text-[11px] font-semibold px-1.5 py-0.5 rounded-full">
                     {unreadAlerts.length}
                   </span>
                 )}
               </button>
               <button
                 onClick={() => setActiveTab('messages')}
-                className={`py-1.5 text-[10px] font-black uppercase tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-1.5 text-[11px] font-semibold tracking-wider rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 ${
                   activeTab === 'messages' 
                     ? 'bg-white text-ug-navy shadow-xs' 
                     : 'text-gray-500 hover:text-ug-navy'
@@ -144,7 +144,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
                 <UserIcon size={12} />
                 <Tr text="Direct Messages" />
                 {unreadThreads.length > 0 && (
-                  <span className="bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full">
+                  <span className="bg-red-500 text-white text-[11px] font-semibold px-1.5 py-0.5 rounded-full">
                     {unreadThreads.length}
                   </span>
                 )}
@@ -161,7 +161,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
                   <p className="text-xs font-bold text-gray-500">
                     <Tr text="No active search match alerts." />
                   </p>
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-[11px] text-gray-400">
                     <Tr text="Save searches on Projects or News to receive alerts when new matches are posted!" />
                   </p>
                 </div>
@@ -179,14 +179,14 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-[9px] font-black uppercase tracking-wider text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md truncate">
+                        <span className="text-[11px] font-semibold tracking-wider text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md truncate">
                           <Tr text={alert.query_matched || 'Match Alert'} />
                         </span>
-                        <span className="text-[8px] font-bold text-gray-400">
+                        <span className="text-[11px] font-bold text-gray-400">
                           {new Date(alert.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                         </span>
                       </div>
-                      <h5 className="text-xs font-black text-ug-navy line-clamp-1">
+                      <h5 className="text-xs font-bold text-ug-navy line-clamp-1">
                         <Tr text={alert.title} />
                       </h5>
                       <p className="text-xs text-gray-600 line-clamp-2 mt-0.5">
@@ -221,12 +221,12 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
-                          <p className="font-black text-ug-navy text-xs truncate">{lastMsg.user_name}</p>
-                          <span className="text-[8px] font-bold text-gray-400 uppercase">
+                          <p className="font-bold text-ug-navy text-xs truncate">{lastMsg.user_name}</p>
+                          <span className="text-[11px] font-bold text-gray-400">
                             {new Date(lastMsg.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                           </span>
                         </div>
-                        <p className="text-[9px] font-bold text-ug-teal uppercase tracking-wider mb-0.5 truncate">
+                        <p className="text-[11px] font-bold text-ug-teal tracking-wider mb-0.5 truncate">
                           {lastMsg.projects?.title || 'General Inquiry'}
                         </p>
                         <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{lastMsg.message}</p>
@@ -243,14 +243,14 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
             {activeTab === 'alerts' && alerts.length > 0 ? (
               <button 
                 onClick={handleClearAlerts}
-                className="text-[10px] font-bold text-gray-400 hover:text-red-600 transition cursor-pointer"
+                className="text-[11px] font-bold text-gray-400 hover:text-red-600 transition cursor-pointer"
               >
                 <Tr text="Clear Alert History" />
               </button>
             ) : (
               <button 
                 onClick={() => { onSelectMessage('all'); setIsOpen(false); }}
-                className="text-[10px] font-black text-ug-navy uppercase tracking-widest hover:text-ug-teal transition cursor-pointer mx-auto"
+                className="text-[11px] font-semibold text-ug-navy tracking-wide hover:text-ug-teal transition cursor-pointer mx-auto"
               >
                 <Tr text="Open Message Inbox" />
               </button>
@@ -262,7 +262,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
       {/* MANAGE SAVED SEARCHES MODAL */}
       {isManageSearchesOpen && (
         <div className="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 relative text-left">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100 relative text-left">
             <button 
               onClick={() => setIsManageSearchesOpen(false)}
               className="absolute top-5 right-5 p-2 text-gray-400 hover:text-ug-navy rounded-full hover:bg-gray-100 transition cursor-pointer"
@@ -272,11 +272,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
 
             <div className="flex items-center gap-2 text-ug-teal mb-1">
               <Search size={16} />
-              <span className="text-[10px] font-black uppercase tracking-widest">
+              <span className="text-[11px] font-semibold tracking-wide">
                 <Tr text="Keyword Subscriptions" />
               </span>
             </div>
-            <h3 className="text-xl font-black text-ug-navy mb-2">
+            <h3 className="text-xl font-bold text-ug-navy mb-2">
               <Tr text="Your Saved Searches & Alerts" />
             </h3>
             <p className="text-xs text-gray-500 mb-5">
@@ -289,7 +289,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
                   <p className="text-xs font-bold text-gray-400">
                     <Tr text="You have no active saved search alerts." />
                   </p>
-                  <p className="text-[10px] text-gray-400 mt-1">
+                  <p className="text-[11px] text-gray-400 mt-1">
                     <Tr text="Click 'Save Search' on the Projects or News page to create one." />
                   </p>
                 </div>
@@ -297,10 +297,10 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
                 savedSearches.map((s) => (
                   <div key={s.id} className="flex items-center justify-between p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
                     <div>
-                      <h4 className="font-black text-xs text-ug-navy">
+                      <h4 className="font-bold text-xs text-ug-navy">
                         "{s.query}"
                       </h4>
-                      <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider block mt-0.5">
+                      <span className="text-[11px] text-gray-400 font-bold tracking-wider block mt-0.5">
                         <Tr text="Category" />: {s.category || 'All'} • <Tr text="Subscribed" /> {new Date(s.created_at).toLocaleDateString()}
                       </span>
                     </div>
@@ -318,7 +318,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
 
             <button
               onClick={() => setIsManageSearchesOpen(false)}
-              className="w-full py-3 bg-ug-navy hover:bg-ug-navy/90 text-white font-black text-xs uppercase tracking-widest rounded-xl transition cursor-pointer"
+              className="w-full py-3 bg-ug-navy hover:bg-ug-navy/90 text-white font-bold text-xs uppercase tracking-wide rounded-xl transition cursor-pointer"
             >
               <Tr text="Done" />
             </button>
@@ -330,4 +330,3 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
 };
 
 export default NotificationCenter;
-

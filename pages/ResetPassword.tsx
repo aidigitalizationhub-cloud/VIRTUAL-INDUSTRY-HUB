@@ -67,15 +67,15 @@ const ResetPassword: React.FC = () => {
   if (success) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-12 text-center animate-fade-in border border-green-100">
+        <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-xl p-12 text-center animate-fade-in border border-green-100">
            <div className="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl shadow-green-200">
               <Check size={40} />
            </div>
-           <h1 className="text-3xl font-black text-ug-navy mb-4">Security Updated</h1>
+           <h1 className="text-3xl font-bold text-ug-navy mb-4">Security Updated</h1>
            <p className="text-gray-500 font-medium leading-relaxed mb-8">
              Your password has been successfully reset. For your security, we've logged you out of all other sessions.
            </p>
-           <p className="text-[10px] font-black uppercase text-ug-teal tracking-widest animate-pulse">
+           <p className="text-[11px] font-semibold text-ug-teal tracking-wide animate-pulse">
              Redirecting to login portal...
            </p>
         </div>
@@ -85,12 +85,12 @@ const ResetPassword: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-fade-in-up">
         <div className="bg-ug-navy p-8 text-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center"></div>
           <div className="relative z-10">
-            <h1 className="text-white font-black text-2xl tracking-tight">Set New Password</h1>
-            <p className="text-gray-300 text-[10px] font-black uppercase tracking-[0.3em] mt-2">Credential Reset</p>
+            <h1 className="text-white font-bold text-2xl tracking-tight">Set New Password</h1>
+            <p className="text-gray-300 text-[11px] font-semibold tracking-[0.3em] mt-2">Credential Reset</p>
           </div>
         </div>
 
@@ -129,7 +129,7 @@ const ResetPassword: React.FC = () => {
             </div>
 
             <div className="bg-gray-50 p-5 rounded-2xl space-y-2 border border-gray-100">
-               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Requirements</p>
+               <p className="text-[11px] font-semibold tracking-wide text-gray-400 mb-2">Requirements</p>
                <div className="flex items-center gap-2 text-[11px] font-bold text-gray-600">
                   <div className={password.length >= 8 ? "text-ug-teal" : "text-gray-300"}><CheckCircle2 size={14} /></div>
                   Min 8 Characters
@@ -147,7 +147,7 @@ const ResetPassword: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-ug-navy text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-ug-navy/10 flex items-center justify-center gap-2 hover:bg-ug-teal transition-all disabled:opacity-50"
+              className="w-full bg-ug-navy text-white py-4 rounded-2xl font-bold uppercase tracking-wide shadow-xl shadow-ug-navy/10 flex items-center justify-center gap-2 hover:bg-ug-teal transition-all disabled:opacity-50"
             >
               {loading ? <Loader2 className="animate-spin" /> : (
                 <>Finalize Reset <ArrowRight size={18} /></>
