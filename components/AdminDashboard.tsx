@@ -941,7 +941,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
       {/* Sub-tabs removed as they are driven by the modern left sidebar navigation menu */}
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 space-y-4">
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
           <RefreshCw className="animate-spin text-ug-teal" size={48} />
           <p className="text-[11px] font-bold tracking-wide text-gray-400 animate-pulse">Syncing platform ledgers & secure metrics...</p>
         </div>
@@ -1376,7 +1376,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               </div>
 
               {/* User Directory Registry Table (Desktop) */}
-              <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm hidden md:block">
+              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hidden md:block">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
@@ -1391,7 +1391,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     <tbody className="divide-y divide-gray-100">
                       {filteredProfiles.length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="p-12 text-center text-xs font-bold  text-gray-400 tracking-wide">
+                          <td colSpan={5} className="p-8 text-center text-xs font-bold  text-gray-400 tracking-wide">
                             No registered user profiles match current filter query.
                           </td>
                         </tr>
@@ -1573,7 +1573,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               {/* User Inspection Modal */}
               {inspectingUser && (
                 <div className="fixed inset-0 z-[10000] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl relative w-full max-w-2xl overflow-hidden animate-fade-in my-auto flex flex-col max-h-[90vh]">
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-xl relative w-full max-w-2xl overflow-hidden animate-fade-in my-auto flex flex-col max-h-[90vh]">
                     {/* Header */}
                     <div className="p-6 bg-gradient-to-r from-ug-navy via-slate-900 to-ug-navy text-white flex items-start justify-between shrink-0">
                       <div className="flex items-center gap-4">
@@ -1792,7 +1792,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                         
                         <div className="space-y-2.5 flex-1 overflow-y-auto pr-1">
                           {filtered.length === 0 ? (
-                            <div className="py-20 text-center text-gray-400 text-xs font-semibold  ">
+                            <div className="py-10 text-center text-gray-400 text-xs font-semibold  ">
                               No matching disclosures
                             </div>
                           ) : (
@@ -1866,7 +1866,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     const activeProj = projects.find(p => p.id === selectedDisclosureId);
                     if (!activeProj) {
                       return (
-                        <div className="h-[600px] flex flex-col items-center justify-center text-center text-gray-400 space-y-3 py-20 bg-white rounded-xl border border-dashed border-gray-200 w-full">
+                        <div className="h-[600px] flex flex-col items-center justify-center text-center text-gray-400 space-y-3 py-10 bg-white rounded-xl border border-dashed border-gray-200 w-full">
                           <ShieldCheck size={40} className="text-gray-300 stroke-[1.5]" />
                           <p className="text-[11px] font-bold   max-w-sm">
                             Select a disclosure from the pending ledger list to begin administrative review
@@ -2306,7 +2306,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               {/* Projects Compact List */}
               <div className="space-y-3">
                 {screenerProjects.length === 0 ? (
-                  <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+                  <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
                     <Layers className="mx-auto text-gray-300 mb-2" size={32} />
                     <p className="text-xs font-bold  tracking-wide text-gray-400">
                       No research projects matched your filter criteria.
@@ -3181,7 +3181,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                   </div>
 
                   {/* Interaction & Encrypted Message Logs Table */}
-                  <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm space-y-4 p-6">
+                  <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm space-y-4 p-6">
                     <div className="flex items-center justify-between pb-2 border-b border-gray-100">
                       <div>
                         <h4 className="text-sm font-bold text-ug-navy  ">Message Transmission Ledger</h4>
@@ -3206,7 +3206,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                         <tbody className="divide-y divide-gray-100">
                           {eois.length === 0 ? (
                             <tr>
-                              <td colSpan={5} className="p-12 text-center text-xs font-bold  text-gray-400 tracking-wide">
+                              <td colSpan={5} className="p-8 text-center text-xs font-bold  text-gray-400 tracking-wide">
                                 No outreach transactions recorded in the audit logs.
                               </td>
                             </tr>
@@ -3345,7 +3345,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="bg-slate-900 text-white rounded-[2.5rem] border border-slate-800 p-8 max-w-xl w-full shadow-xl space-y-6 relative overflow-hidden"
+                      className="bg-slate-900 text-white rounded-2xl border border-slate-800 p-8 max-w-xl w-full shadow-xl space-y-6 relative overflow-hidden"
                     >
                       <button
                         onClick={() => {
@@ -3483,7 +3483,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
             </div>
           </div>
 
-          <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm space-y-4 p-6">
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm space-y-4 p-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2 border-b border-gray-100">
               <div>
                 <h4 className="text-sm font-bold text-ug-navy  ">Decision History</h4>
@@ -3527,14 +3527,14 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 <tbody className="divide-y divide-gray-100">
                   {isLoadingDecisions && decisions.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center text-xs font-bold  text-gray-400 tracking-wide flex items-center justify-center gap-2">
+                      <td colSpan={7} className="p-8 text-center text-xs font-bold  text-gray-400 tracking-wide flex items-center justify-center gap-2">
                         <Loader2 size={16} className="animate-spin" />
                         Loading provenance ledger...
                       </td>
                     </tr>
                   ) : decisions.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-12 text-center text-xs font-bold  text-gray-400 tracking-wide">
+                      <td colSpan={7} className="p-8 text-center text-xs font-bold  text-gray-400 tracking-wide">
                         No AI decisions recorded yet. Run an AI workflow to populate the ledger.
                       </td>
                     </tr>

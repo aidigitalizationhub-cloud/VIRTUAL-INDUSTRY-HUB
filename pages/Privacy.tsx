@@ -3,14 +3,14 @@ import { Shield, Lock, Eye, Server } from 'lucide-react';
 
 const Privacy: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-20">
+    <div className="min-h-screen bg-gray-50 py-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-[3rem] p-12 shadow-sm border border-gray-100">
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
           <div className="flex items-center gap-4 mb-8">
             <div className="p-3 bg-ug-teal/10 text-ug-teal rounded-2xl">
               <Shield size={32} />
             </div>
-            <h1 className="text-4xl font-bold text-ug-navy">Privacy Policy</h1>
+            <h1 className="text-2xl font-bold text-ug-navy">Privacy Policy</h1>
           </div>
           
           <div className="prose prose-lg text-gray-600 max-w-none space-y-8 font-medium">

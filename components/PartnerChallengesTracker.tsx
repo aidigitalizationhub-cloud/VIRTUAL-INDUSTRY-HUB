@@ -109,7 +109,7 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
   };
 
   return (
-    <section className="bg-white rounded-2xl sm:rounded-[2.5rem] p-3.5 sm:p-8 border border-gray-100 shadow-sm space-y-6">
+    <section className="bg-white rounded-2xl sm:rounded-2xl p-3.5 sm:p-8 border border-gray-100 shadow-sm space-y-6">
       {/* Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-100">
         <div>

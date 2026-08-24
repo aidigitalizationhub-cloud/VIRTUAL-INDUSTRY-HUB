@@ -876,7 +876,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
               {/* INDEPENDENTLY SCROLLING ARCHIVE CARDS LIST */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/20">
                 {paginatedArchives.length === 0 ? (
-                  <div className="text-center py-20 border border-dashed border-gray-200 rounded-2xl bg-white p-6">
+                  <div className="text-center py-10 border border-dashed border-gray-200 rounded-2xl bg-white p-6">
                     <Newspaper className="mx-auto text-gray-300 mb-4" size={32} />
                     <p className="text-xs font-bold text-gray-500 uppercase">No matching archives found</p>
                     <p className="text-[11px] text-gray-400 mt-1">Refine filters or compose a new announcement.</p>
@@ -1707,7 +1707,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
 
         {/* Loading State */}
         {loading && filteredNews.length === 0 && (
-           <div className="flex flex-col items-center justify-center py-24">
+           <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="animate-spin text-ug-teal mb-4" size={40} />
               <p className="text-gray-400 font-bold text-[11px] tracking-wide"><Tr text="Loading Intelligence..." /></p>
            </div>
@@ -1715,7 +1715,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
 
         {/* News Items Display */}
         {filteredNews.length === 0 && !loading && (
-          <div className="text-center py-24 border-2 border-dashed border-gray-200/80 rounded-2xl bg-slate-50/50">
+          <div className="text-center py-12 border-2 border-dashed border-gray-200/80 rounded-2xl bg-slate-50/50">
              <Globe className="text-gray-300 mx-auto mb-4" size={48} />
              <h3 className="text-lg font-bold text-ug-navy"><Tr text="No news items found" /></h3>
              <p className="text-gray-500 font-medium mt-1 text-sm"><Tr text="Try clearing your search words or category filter." /></p>

@@ -56,7 +56,7 @@ const ContactPIModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-ug-navy/80 backdrop-blur-sm">
-      <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-10 shadow-xl animate-fade-in-up relative overflow-hidden">
+      <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl animate-fade-in-up relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-ug-teal"></div>
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-ug-navy">Connect with PI</h2>
@@ -115,7 +115,7 @@ const EditProjectModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-ug-navy/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white rounded-[2.5rem] w-full max-w-2xl p-6 md:p-10 shadow-xl animate-fade-in-up relative my-8 max-h-[90vh] overflow-y-auto custom-scrollbar text-gray-900">
+      <div className="bg-white rounded-2xl w-full max-w-2xl p-6 md:p-6 shadow-xl animate-fade-in-up relative my-8 max-h-[90vh] overflow-y-auto custom-scrollbar text-gray-900">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-2xl font-bold text-ug-navy">Manage Disclosure</h2>
@@ -497,16 +497,16 @@ const ProjectDetail: React.FC = () => {
               <div className="flex flex-wrap gap-3 mb-4">
                 <span className="px-4 py-1 rounded-full text-[11px] font-semibold tracking-wide bg-white/10 text-white backdrop-blur-md border border-white/20"><Tr text={project.status} /></span>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tighter drop-shadow-xl leading-tight"><Tr text={project.title} /></h1>
+              <h1 className="text-3xl sm:text-4xl md:text-3xl lg:text-4xl font-bold text-white tracking-tighter drop-shadow-xl leading-tight"><Tr text={project.title} /></h1>
             </div>
             <div className="flex flex-wrap items-center gap-3 md:gap-4 animate-fade-in-up mt-4 md:mt-0">
-              <button onClick={handleShare} className="relative h-[56px] w-[56px] md:h-[64px] md:w-[64px] rounded-[18px] bg-white/10 border border-white/20 shadow-lg hover:bg-white/20 transition-all flex items-center justify-center text-white group cursor-pointer" title="Share Project">
+              <button onClick={handleShare} className="relative h-11 w-11 md:h-12 md:w-12 rounded-xl bg-white/10 border border-white/20 shadow-lg hover:bg-white/20 transition-all flex items-center justify-center text-white group cursor-pointer" title="Share Project">
                 <Share2 size={24} className="group-hover:scale-110 transition" />
               </button>
               {currentUserProfile && (
                 <button 
                   onClick={handleToggleBookmark} 
-                  className={`relative h-[56px] w-[56px] md:h-[64px] md:w-[64px] rounded-[18px] border shadow-lg transition-all flex items-center justify-center group cursor-pointer ${isBookmarked ? 'bg-ug-teal text-white border-ug-teal hover:bg-ug-teal/90' : 'bg-white/10 text-white border-white/20 hover:bg-white/20'}`} 
+                  className={`relative h-11 w-11 md:h-12 md:w-12 rounded-xl border shadow-lg transition-all flex items-center justify-center group cursor-pointer ${isBookmarked ? 'bg-ug-teal text-white border-ug-teal hover:bg-ug-teal/90' : 'bg-white/10 text-white border-white/20 hover:bg-white/20'}`} 
                   title={isBookmarked ? "Remove Bookmark" : "Bookmark Project"}
                 >
                   <Bookmark size={24} className={`transition group-hover:scale-110 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -520,18 +520,18 @@ const ProjectDetail: React.FC = () => {
                     setIsContactModalOpen(true);
                   }
                 }} 
-                className="px-6 md:px-10 h-[56px] md:h-[64px] bg-[#0092B0] hover:bg-[#007C96] rounded-[22px] shadow-xl flex items-center justify-center gap-3 md:gap-4 transition-all active:scale-95 group relative overflow-hidden border border-white/10 cursor-pointer"
+                className="px-6 md:px-10 h-11 md:h-12 bg-[#0092B0] hover:bg-[#007C96] rounded-2xl shadow-xl flex items-center justify-center gap-3 md:gap-4 transition-all active:scale-95 group relative overflow-hidden border border-white/10 cursor-pointer"
               >
                 <MessageSquare size={20} className="text-white" />
                 <span className="text-white font-bold text-xs md:text-sm uppercase tracking-wide leading-tight text-left"><Tr text="Connect with PI" /></span>
               </button>
               {(currentUserProfile?.id === project.owner_id || currentUserProfile?.role === UserRole.Admin) && (
                 <>
-                  <button onClick={() => setIsEditModalOpen(true)} className="px-6 md:px-8 h-[56px] md:h-[64px] bg-white text-ug-navy hover:bg-gray-100 rounded-[22px] shadow-xl flex items-center justify-center gap-2.5 transition-all active:scale-95 border border-gray-200 cursor-pointer">
+                  <button onClick={() => setIsEditModalOpen(true)} className="px-6 md:px-8 h-11 md:h-12 bg-white text-ug-navy hover:bg-gray-100 rounded-2xl shadow-xl flex items-center justify-center gap-2.5 transition-all active:scale-95 border border-gray-200 cursor-pointer">
                     <Edit size={18} className="text-[#0092B0]" />
                     <span className="font-semibold text-[11px] md:text-[11px] tracking-wider text-ug-navy text-left leading-tight"><Tr text="Manage Disclosure" /></span>
                   </button>
-                  <button onClick={handleDeleteProject} className="px-6 md:px-8 h-[56px] md:h-[64px] bg-red-600 hover:bg-red-700 text-white rounded-[22px] shadow-xl flex items-center justify-center gap-2.5 transition-all active:scale-95 border border-red-500 cursor-pointer">
+                  <button onClick={handleDeleteProject} className="px-6 md:px-8 h-11 md:h-12 bg-red-600 hover:bg-red-700 text-white rounded-2xl shadow-xl flex items-center justify-center gap-2.5 transition-all active:scale-95 border border-red-500 cursor-pointer">
                     <Trash2 size={18} className="text-white" />
                     <span className="font-semibold text-[11px] md:text-[11px] tracking-wider text-left leading-tight text-white"><Tr text="Withdraw Record" /></span>
                   </button>
@@ -542,10 +542,10 @@ const ProjectDetail: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-12">
           {!currentUserProfile && (
-            <div className="p-8 rounded-[2.5rem] bg-indigo-50 border border-indigo-100 flex items-start gap-4 shadow-sm animate-fade-in">
+            <div className="p-8 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-start gap-4 shadow-sm animate-fade-in">
               <span className="p-3 bg-indigo-600 text-white rounded-2xl shrink-0">
                 <Lock size={20} />
               </span>
@@ -560,7 +560,7 @@ const ProjectDetail: React.FC = () => {
           )}
 
           {/* Executive Summary */}
-          <section className="bg-white p-5 md:p-10 lg:p-12 rounded-2xl md:rounded-[2.5rem] lg:rounded-[3rem] border border-gray-100 shadow-sm relative overflow-hidden">
+          <section className="bg-white p-5 md:p-6 lg:p-8 rounded-2xl md:rounded-2xl lg:rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
             <h2 className="text-2xl font-bold text-ug-navy mb-6 flex items-center gap-3"><FileText className="text-ug-teal" /> <Tr text="Executive Summary" /></h2>
             <p className="text-gray-600 leading-relaxed text-lg md:text-xl font-normal text-left sm:text-justify" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
               <Tr text={project.description?.replace(/[\u00ad\u200b\u200c\u200d\ufeff]/g, '') || ''} />
@@ -568,14 +568,14 @@ const ProjectDetail: React.FC = () => {
           </section>
 
           {images[1] && (
-            <section className="bg-white p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] lg:rounded-[3rem] border border-gray-100 shadow-sm">
+            <section className="bg-white p-5 md:p-8 rounded-2xl md:rounded-2xl lg:rounded-2xl border border-gray-100 shadow-sm">
               <h2 className="text-2xl font-bold text-ug-navy mb-6 flex items-center gap-3"><ImageIcon className="text-ug-teal" /> <Tr text="Visual Disclosure" /></h2>
-              <img src={images[1]} alt="Evidence" className="w-full rounded-xl md:rounded-[2rem] shadow-lg" />
+              <img src={images[1]} alt="Evidence" className="w-full rounded-xl md:rounded-2xl shadow-lg" />
             </section>
           )}
 
           {project.achievements && project.achievements.length > 0 && (
-            <section className="bg-white p-5 md:p-10 lg:p-12 rounded-2xl md:rounded-[2.5rem] lg:rounded-[3rem] border border-gray-100 shadow-sm">
+            <section className="bg-white p-5 md:p-6 lg:p-8 rounded-2xl md:rounded-2xl lg:rounded-2xl border border-gray-100 shadow-sm">
               <h2 className="text-xl md:text-2xl font-bold text-ug-navy mb-6 md:mb-8 flex items-center gap-3 md:gap-4">
                 <CheckCircle2 className="text-ug-success" size={24} /> <Tr text="Key Milestones & Achievements" />
               </h2>
@@ -599,7 +599,7 @@ const ProjectDetail: React.FC = () => {
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-8">
           {/* PI CARD */}
-          <section className="bg-white p-5 md:p-8 lg:p-10 rounded-2xl md:rounded-[2.5rem] lg:rounded-[3rem] border border-gray-100 shadow-sm">
+          <section className="bg-white p-5 md:p-8 lg:p-6 rounded-2xl md:rounded-2xl lg:rounded-2xl border border-gray-100 shadow-sm">
             <h3 className="text-base md:text-lg font-bold text-ug-navy mb-4 md:mb-6 flex items-center gap-2"><UserIcon size={18} className="text-ug-teal" /> <Tr text="Lead Investigator" /></h3>
             {ownerProfile ? (
               <div className="space-y-4 md:space-y-6">
@@ -617,7 +617,7 @@ const ProjectDetail: React.FC = () => {
 
           {/* DEDICATED DOWNLOAD BLOCK - If Available */}
           {project.technical_details_url && (
-            <section className="bg-white p-5 md:p-6 lg:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-lg animate-fade-in-up relative overflow-hidden group">
+            <section className="bg-white p-5 md:p-6 lg:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-lg animate-fade-in-up relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-24 h-24 bg-ug-navy/5 rounded-full blur-2xl group-hover:bg-ug-navy/10 transition-colors"></div>
               <div className="relative z-10">
                 <h3 className="text-[11px] md:text-xs font-bold text-gray-400 tracking-wider mb-3 md:mb-4 flex items-center gap-2">
@@ -677,7 +677,7 @@ const ProjectDetail: React.FC = () => {
           )}
 
           {/* COMPACT SUBMISSION OF INTEREST BLOCK */}
-          <section className="bg-ug-navy p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-xl relative overflow-hidden text-white border border-white/10">
+          <section className="bg-ug-navy p-5 md:p-6 rounded-[1.5rem] md:rounded-2xl shadow-xl relative overflow-hidden text-white border border-white/10">
             <div className="absolute top-0 right-0 w-24 h-24 bg-ug-teal/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
             <div className="relative z-10">
               <h2 className="text-xs md:text-sm font-bold mb-0.5 flex items-center gap-1.5">
@@ -720,7 +720,7 @@ const ProjectDetail: React.FC = () => {
           </section>
 
           {/* IMPACT SCORING */}
-          <section className="bg-white p-5 md:p-6 lg:p-8 rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm">
+          <section className="bg-white p-5 md:p-6 lg:p-8 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm">
              <h3 className="text-[11px] md:text-xs font-bold text-gray-400 tracking-wider mb-4 flex items-center gap-2">
                 <TrendingUp size={14} className="text-ug-teal" /> Ecosystem Impact
              </h3>
@@ -780,17 +780,17 @@ const ProjectDetail: React.FC = () => {
                        <span className="text-[11px] md:text-[11px] font-bold text-gray-400 tracking-wider block">Traction Breakdown</span>
                        
                        <div className="grid grid-cols-3 gap-1.5 md:gap-2">
-                         <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-[56px] hover:bg-gray-100/30 transition-colors">
+                         <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-11 hover:bg-gray-100/30 transition-colors">
                            <span className="text-[11px] md:text-[11px] font-bold text-gray-400 tracking-wider truncate">Views</span>
                            <span className="text-xs md:text-sm font-bold text-ug-navy my-0.5">{viewsCount}</span>
                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+1 Pt</span>
                          </div>
-                         <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-[56px] hover:bg-gray-100/30 transition-colors">
+                         <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-11 hover:bg-gray-100/30 transition-colors">
                            <span className="text-[11px] md:text-[11px] font-bold text-gray-400 tracking-wider truncate">EOIs</span>
                            <span className="text-xs md:text-sm font-bold text-ug-navy my-0.5">{eoiCount}</span>
                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+8 Pts</span>
                          </div>
-                         <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-[56px] hover:bg-gray-100/30 transition-colors">
+                         <div className="p-2 bg-gray-50 rounded-xl border border-gray-100/50 text-center flex flex-col justify-between min-h-11 hover:bg-gray-100/30 transition-colors">
                            <span className="text-[11px] md:text-[11px] font-bold text-gray-400 tracking-wider truncate">Requests</span>
                            <span className="text-xs md:text-sm font-bold text-ug-navy my-0.5">{requestsCount}</span>
                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide shrink-0">+15 Pts</span>
@@ -817,7 +817,7 @@ const ProjectDetail: React.FC = () => {
       {/* REVEAL PROMPT MODAL */}
       {isRevealModalOpen && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-ug-navy/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-10 shadow-xl animate-fade-in-up relative overflow-hidden">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl animate-fade-in-up relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-2 bg-pink-600"></div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-ug-navy flex items-center gap-2">

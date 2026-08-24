@@ -87,7 +87,7 @@ export const AdminLogin: React.FC = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="bg-gray-900 border border-white/5 shadow-xl rounded-[2.5rem] p-8 md:p-10 space-y-6"
+          className="bg-gray-900 border border-white/5 shadow-xl rounded-2xl p-8 md:p-6 space-y-6"
         >
           <form onSubmit={handleAdminAuth} className="space-y-4 text-left">
             {/* Email field */}

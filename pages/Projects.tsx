@@ -424,7 +424,7 @@ const Projects: React.FC = () => {
             {/* Results Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {currentProjects.map((project) => (
-                <div key={project.id} className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full border border-gray-100 group animate-fade-in-up">
+                <div key={project.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full border border-gray-100 group animate-fade-in-up">
                   <div className="h-64 relative overflow-hidden">
                      <img 
                         src={getThumbnail(project.image_url)} 
@@ -539,7 +539,7 @@ const Projects: React.FC = () => {
             {/* Empty State */}
             {sortedProjects.length === 0 && (
                <div className="text-center py-32 animate-fade-in">
-                  <div className="inline-block p-8 rounded-[2rem] bg-gray-100 mb-6 shadow-inner">
+                  <div className="inline-block p-8 rounded-2xl bg-gray-100 mb-6 shadow-inner">
                      <Search size={48} className="text-gray-400" />
                   </div>
                   <h3 className="text-2xl font-bold text-ug-navy"><Tr text="No results found" /></h3>

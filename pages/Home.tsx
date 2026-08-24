@@ -74,7 +74,7 @@ const Home: React.FC = () => {
                <span className="h-0.5 w-8 sm:w-12 bg-ug-teal"></span>
                <span className="text-[11px] sm:text-xs font-semibold text-ug-teal tracking-[0.3em] sm:tracking-[0.4em]"><Tr text="LIVE TRACK: Innovation Hub" /></span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-3 sm:mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-3xl font-bold text-white tracking-tight leading-tight mb-3 sm:mb-4">
               <Tr text={heroCaptions[currentImageIndex].title} />
             </h1>
             <p className="text-sm sm:text-lg md:text-xl text-gray-100 mb-6 sm:mb-8 max-w-2xl font-medium leading-relaxed drop-shadow-md">
@@ -204,7 +204,7 @@ const Home: React.FC = () => {
                ))}
              </div>
            ) : !isLoading && (
-             <div className="bg-white p-12 rounded-2xl text-center border border-gray-100">
+             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100">
                <BookOpen size={48} className="mx-auto text-gray-200 mb-4" />
                <h4 className="font-bold text-lg text-ug-navy mb-1"><Tr text="Catalog Update Pending" /></h4>
                <p className="text-gray-400 text-xs font-bold uppercase tracking-wide"><Tr text="Check back soon for new commercializations." /></p>
@@ -250,7 +250,7 @@ const Home: React.FC = () => {
                ))}
              </div>
            ) : !isLoading && (
-             <div className="bg-gray-50 p-12 rounded-2xl text-center border border-gray-100">
+             <div className="bg-gray-50 p-8 rounded-2xl text-center border border-gray-100">
                <BookOpen size={48} className="mx-auto text-gray-200 mb-4" />
                <h4 className="font-bold text-lg text-ug-navy mb-1"><Tr text="Pipeline update in progress" /></h4>
                <p className="text-gray-400 text-xs font-bold uppercase tracking-wide"><Tr text="Academic blueprints are currently undergoing security review." /></p>
@@ -300,7 +300,7 @@ const Home: React.FC = () => {
                ))}
              </div>
            ) : !isLoading && (
-             <div className="bg-white p-12 rounded-2xl text-center border border-gray-100">
+             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100">
                <Newspaper size={48} className="mx-auto text-gray-200 mb-4" />
                <h4 className="font-bold text-lg text-ug-navy mb-1"><Tr text="Autonomous Sync Pending" /></h4>
                <p className="text-gray-400 text-xs font-bold uppercase tracking-wide"><Tr text="Awaiting scheduled background intelligence scouting." /></p>

@@ -420,8 +420,8 @@ const ProjectFormModal: React.FC<{
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-start justify-center p-4 md:p-10 bg-ug-navy/95 backdrop-blur-md overflow-y-auto custom-scrollbar">
-      <div className="bg-white rounded-2xl md:rounded-2xl w-full max-w-5xl p-6 md:p-12 shadow-xl relative my-8">
+    <div className="fixed inset-0 z-[1000] flex items-start justify-center p-4 md:p-6 bg-ug-navy/95 backdrop-blur-md overflow-y-auto custom-scrollbar">
+      <div className="bg-white rounded-2xl md:rounded-2xl w-full max-w-5xl p-6 md:p-8 shadow-xl relative my-8">
         <div className="flex justify-between items-start mb-10">
           <div className="flex items-center gap-4">
              <div className="w-12 h-12 bg-ug-teal text-white rounded-2xl flex items-center justify-center shadow-lg">
@@ -435,7 +435,7 @@ const ProjectFormModal: React.FC<{
           <button onClick={onClose} className="p-3 hover:bg-gray-100 rounded-2xl transition hover:rotate-90 duration-300"><X size={24} /></button>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-11 gap-12">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-11 gap-6">
           {/* Left Column: Core Identity */}
           <div className="lg:col-span-6 space-y-8">
             <div className="space-y-4">
@@ -1030,7 +1030,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
                         className="overflow-hidden bg-gray-50/50"
                       >
                         {filteredThreads.length === 0 ? (
-                          <div className="p-10 text-center text-gray-400 text-[11px] font-bold tracking-wide">
+                          <div className="p-6 text-center text-gray-400 text-[11px] font-bold tracking-wide">
                             No {cat.label.toLowerCase()} yet
                           </div>
                         ) : (
@@ -1568,7 +1568,7 @@ const MessagesSection: React.FC<MessagesSectionProps> = ({ user, initialThreadId
           /* Thread List View */
           <div className="flex-1 overflow-y-auto">
             {filteredThreads.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-400 p-10 md:p-16 text-center">
+              <div className="flex flex-col items-center justify-center h-full text-gray-400 p-6 md:p-16 text-center">
                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                   <MailOpen size={40} className="opacity-20" />
                 </div>
@@ -2107,7 +2107,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
               ) : (
                 <>
                   {!localUser?.ai_profile && (
-                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 shadow-sm">
+                    <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/60 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6 md:gap-6 shadow-sm">
                       <div className="flex gap-4 items-start">
                         <div className="w-12 h-12 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center shrink-0">
                           <AlertCircle size={24} />
@@ -2137,8 +2137,8 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                       />
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-                      <div className="lg:col-span-8 flex flex-col gap-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                      <div className="lg:col-span-8 flex flex-col gap-6">
                         <ProfileInsight profile={localUser?.ai_profile} />
                       </div>
                       <div className="lg:col-span-4 shrink-0 space-y-6">
@@ -3276,7 +3276,7 @@ const ActiveProjectHero = ({ project }: { project: Project }) => (
 
 const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onRefresh?: () => void }) => {
   if (!profile) return (
-    <div className="bg-ug-navy/5 border border-dashed border-ug-navy/20 p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl text-center">
+    <div className="bg-ug-navy/5 border border-dashed border-ug-navy/20 p-6 sm:p-8 md:p-6 rounded-2xl md:rounded-2xl text-center">
       <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-gray-100">
         <Sparkles size={32} className="text-ug-teal/50" />
       </div>
@@ -3288,8 +3288,8 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
   return (
     <div className="space-y-8 animate-fade-in group/insight">
       {/* Narrative Section */}
-      <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-10 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+      <div className="bg-white p-6 sm:p-8 md:p-6 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
           <Target size={180} />
         </div>
         
@@ -3335,7 +3335,7 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Skills Stack */}
-        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+        <div className="bg-white p-6 sm:p-8 md:p-6 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm flex flex-col">
           <div className="flex items-center gap-3 mb-8">
              <div className="w-10 h-10 bg-ug-navy text-white rounded-xl flex items-center justify-center shadow-lg"><FileCode size={20} /></div>
              <div>
@@ -3357,7 +3357,7 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
         </div>
 
         {/* Education Stack */}
-        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm">
+        <div className="bg-white p-6 sm:p-8 md:p-6 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3 mb-8">
              <div className="w-10 h-10 bg-ug-teal text-white rounded-xl flex items-center justify-center shadow-lg"><Award size={20} /></div>
              <div>
@@ -3388,7 +3388,7 @@ const ProfileInsight = ({ profile, onRefresh }: { profile: AIProfile | null, onR
 
       {/* Initiatives Feed */}
       {(profile.projects?.length || 0) > 0 && (
-        <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group/projects">
+        <div className="bg-white p-6 sm:p-8 md:p-6 rounded-2xl md:rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group/projects">
            <div className="flex items-center gap-3 mb-10">
              <div className="w-10 h-10 bg-ug-teal/10 text-ug-teal rounded-xl flex items-center justify-center"><Rocket size={20} /></div>
              <div>
@@ -5041,7 +5041,7 @@ const ProfileSettings: React.FC<{
   return (
     <div className="animate-fade-in space-y-6 pb-20">
       {/* Identity Card */}
-      <div className="bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center gap-6 md:gap-10">
+      <div className="bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center gap-6 md:gap-6">
         <div>
           <div 
             className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden bg-gray-50 border-4 border-white shadow-lg relative cursor-pointer group/avatar"
@@ -5360,7 +5360,7 @@ const ProfileSettings: React.FC<{
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-ug-navy/60 backdrop-blur-md" onClick={() => setIsEditModalOpen(false)}></div>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-xl relative w-full max-w-lg overflow-hidden animate-fade-in z-[160] max-h-[90vh] flex flex-col">
-            <div className="p-8 md:p-10 border-b border-gray-100 flex justify-between items-center shrink-0">
+            <div className="p-8 md:p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
               <div>
                 <h3 className="text-2xl font-bold text-ug-navy tracking-tight">Edit Profile Info</h3>
                 <p className="text-[11px] font-semibold text-gray-400 tracking-wide mt-1">Name & Profile Picture</p>
@@ -5374,7 +5374,7 @@ const ProfileSettings: React.FC<{
               </button>
             </div>
             
-            <form onSubmit={handleSaveEditModal} className="p-8 md:p-10 space-y-8 overflow-y-auto custom-scrollbar flex-1">
+            <form onSubmit={handleSaveEditModal} className="p-8 md:p-6 space-y-8 overflow-y-auto custom-scrollbar flex-1">
               {/* Profile Picture Selector */}
               <div className="flex flex-col items-center gap-4">
                 <div 

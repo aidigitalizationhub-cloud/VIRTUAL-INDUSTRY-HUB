@@ -302,7 +302,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => handleRoleSelect(role.id)}
-            className={`group bg-white p-8 rounded-[2rem] border-2 text-left transition-all shadow-xl ${
+            className={`group bg-white p-8 rounded-2xl border-2 text-left transition-all shadow-xl ${
               selectedRole === role.id ? 'border-ug-teal ring-4 ring-ug-teal/10' : 'border-gray-100 hover:border-ug-teal shadow-gray-100 hover:shadow-ug-teal/10'
             }`}
           >
@@ -323,7 +323,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="mt-12 max-w-2xl mx-auto bg-gray-50 rounded-[2.5rem] p-8 border-2 border-gray-100 relative text-center"
+          className="mt-12 max-w-2xl mx-auto bg-gray-50 rounded-2xl p-8 border-2 border-gray-100 relative text-center"
         >
           <h3 className="text-lg font-bold text-ug-navy uppercase tracking-wider mb-2">Portal Setup Type</h3>
           <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-6">Are you setting up as an individual advisor, or on behalf of an organization?</p>
@@ -481,7 +481,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               setAnswers({...answers, orgOverview: e.target.value});
               clearFieldError("orgOverview");
             }}
-            className={`w-full h-32 bg-gray-50 border-2 rounded-[2rem] p-6 outline-none focus:bg-white focus:border-ug-teal text-xs font-medium leading-relaxed resize-none shadow-sm ${getFieldInputStyle("orgOverview", "border-gray-100")}`}
+            className={`w-full h-32 bg-gray-50 border-2 rounded-2xl p-6 outline-none focus:bg-white focus:border-ug-teal text-xs font-medium leading-relaxed resize-none shadow-sm ${getFieldInputStyle("orgOverview", "border-gray-100")}`}
           />
         </div>
 
@@ -1078,7 +1078,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             }
             processAIProfile();
           }}
-          className="w-full bg-ug-navy text-white py-5 rounded-[2rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+          className="w-full bg-ug-navy text-white py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
         >
           Initialize AI Matching Twin <Sparkles size={18} />
         </button>
@@ -1384,7 +1384,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             />
             <label 
               htmlFor="cv-upload"
-              className={`w-full aspect-video border-4 border-dashed rounded-[3rem] flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${
+              className={`w-full aspect-video border-4 border-dashed rounded-2xl flex flex-col items-center justify-center gap-4 cursor-pointer transition-all ${
                 hasCvError 
                   ? 'bg-red-50/40 border-red-500 ring-4 ring-red-500/15'
                   : cvText 
@@ -1417,7 +1417,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               setCvText(e.target.value);
               clearFieldError("cvText");
             }}
-            className={`w-full h-48 bg-gray-50 border-2 rounded-[2rem] p-8 outline-none focus:bg-white focus:border-ug-teal text-xs font-medium leading-relaxed resize-none shadow-inner ${getFieldInputStyle("cvText", "border-gray-100")}`}
+            className={`w-full h-48 bg-gray-50 border-2 rounded-2xl p-8 outline-none focus:bg-white focus:border-ug-teal text-xs font-medium leading-relaxed resize-none shadow-inner ${getFieldInputStyle("cvText", "border-gray-100")}`}
           />
 
           <button 
@@ -1434,7 +1434,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               }
               processAIProfile();
             }}
-            className="w-full bg-ug-navy text-white py-5 rounded-[2rem] font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full bg-ug-navy text-white py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl shadow-ug-navy/20 hover:scale-[1.02] active:scale-95 transition-all mt-4 flex items-center justify-center gap-3 cursor-pointer"
           >
             Initialize Intelligence <Sparkles size={18} />
           </button>
@@ -1444,7 +1444,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
   };
 
   const renderProcessing = () => (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-12">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-8">
       <div className="relative mb-12">
         <div className="w-32 h-32 border-4 border-ug-teal/10 rounded-full animate-pulse"></div>
         <div className="absolute inset-0 flex items-center justify-center">
@@ -1464,8 +1464,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
   );
 
   const renderSummary = () => (
-    <div className="max-w-4xl mx-auto p-12">
-      <div className="flex flex-col md:flex-row gap-12 items-start">
+    <div className="max-w-4xl mx-auto p-8">
+      <div className="flex flex-col md:flex-row gap-6 items-start">
         <div className="flex-1">
           <div className="mb-10">
             <div className="flex items-center gap-4 mb-4">
@@ -1476,7 +1476,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
                 {extractedProfile?.professional_profile?.experience_level || 'General'}
               </div>
             </div>
-            <h1 className="text-5xl font-bold text-ug-navy tracking-tighter mb-6 leading-none">
+            <h1 className="text-3xl font-bold text-ug-navy tracking-tighter mb-6 leading-none">
                 Intelligence Extraction <span className="text-ug-teal">Complete.</span>
             </h1>
             <p className="text-gray-500 font-medium leading-relaxed italic text-lg">
@@ -1547,7 +1547,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         </div>
 
         <div className="w-full md:w-80 space-y-6">
-          <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50">
+          <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50">
             <h4 className="text-[11px] font-semibold text-ug-navy tracking-wide mb-6 border-b border-gray-50 pb-4">Digital Identity</h4>
             <div className="space-y-6">
                 {[
@@ -1572,7 +1572,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
   if (isEmbedded) {
     return (
-      <div className="w-full bg-white p-6 md:p-10 rounded-2xl border border-gray-100 shadow-sm font-sans text-ug-navy relative overflow-hidden selection:bg-ug-teal/20">
+      <div className="w-full bg-white p-6 md:p-6 rounded-2xl border border-gray-100 shadow-sm font-sans text-ug-navy relative overflow-hidden selection:bg-ug-teal/20">
         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[400px] h-[400px] bg-ug-teal/5 rounded-full blur-[80px] pointer-events-none" />
         
         {/* Simplified Header for Embedded status monitoring */}
@@ -1641,7 +1641,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             </div>
             <span className="font-bold tracking-[0.3em] uppercase text-sm">UG Hub</span>
         </div>
-        <div className="flex items-center gap-3 sm:gap-10">
+        <div className="flex items-center gap-3 sm:gap-6">
             <div className="hidden md:flex gap-2">
                 {stepsList.map((s, i) => (
                     <div key={s} className={`h-1 rounded-full transition-all duration-700 ${

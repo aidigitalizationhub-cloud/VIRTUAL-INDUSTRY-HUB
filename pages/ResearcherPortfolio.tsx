@@ -52,7 +52,7 @@ const ContactPIModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-ug-navy/80 backdrop-blur-sm">
-      <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-10 shadow-xl animate-fade-in-up relative overflow-hidden">
+      <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-xl animate-fade-in-up relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-ug-teal"></div>
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-ug-navy">Contact Investigator</h2>
@@ -118,7 +118,7 @@ const ResearcherPortfolio: React.FC = () => {
         <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1532187875605-1ef638272ee4?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <button onClick={() => navigate(-1)} className="text-white/60 hover:text-white flex items-center gap-2 mb-10 transition-colors text-[11px] font-semibold tracking-[0.3em]"><ArrowLeft size={16} /> Exit Portfolio</button>
-          <div className="flex flex-col md:flex-row gap-10 items-center md:items-end">
+          <div className="flex flex-col md:flex-row gap-6 items-center md:items-end">
              <div className="w-56 h-56 rounded-[4rem] overflow-hidden border-8 border-white shadow-xl bg-white shrink-0 group relative">
                 {profile.avatar_url ? <img src={profile.avatar_url} className="w-full h-full object-cover group-hover:scale-110 transition duration-1000" /> : <div className="w-full h-full flex items-center justify-center text-ug-navy/10"><UserIcon size={80} /></div>}
              </div>
@@ -140,7 +140,7 @@ const ResearcherPortfolio: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 grid grid-cols-1 lg:grid-cols-12 gap-16">
         <div className="lg:col-span-8 space-y-20">
-          <section className="bg-white p-12 rounded-[4rem] border border-gray-100 shadow-sm relative overflow-hidden">
+          <section className="bg-white p-8 rounded-[4rem] border border-gray-100 shadow-sm relative overflow-hidden">
              <h2 className="text-2xl font-bold text-ug-navy mb-8 flex items-center gap-4 uppercase tracking-[0.2em]"><FileText className="text-ug-teal" size={28} /> Narrative Biography</h2>
              <p className="prose prose-2xl text-gray-600 font-normal leading-relaxed" style={{ fontFamily: "'Times New Roman', Times, serif" }}>"{profile.bio || "Academic identity verified."}"</p>
           </section>
@@ -153,7 +153,7 @@ const ResearcherPortfolio: React.FC = () => {
             ].filter(l => l.url !== '');
             if (links.length === 0) return null;
             return (
-              <section className="bg-white p-12 rounded-[4rem] border border-gray-100 shadow-sm relative overflow-hidden">
+              <section className="bg-white p-8 rounded-[4rem] border border-gray-100 shadow-sm relative overflow-hidden">
                 <h2 className="text-2xl font-bold text-ug-navy mb-8 flex items-center gap-4 uppercase tracking-[0.2em]"><Globe className="text-ug-teal" size={28} /> Digital Footprint</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {links.map((link, idx) => (
@@ -175,7 +175,7 @@ const ResearcherPortfolio: React.FC = () => {
             const needsStudents = profile.needs_students || profile.ai_profile?.needs_students || profile.answers?.needs_students;
 
             return (
-              <section className="bg-gradient-to-br from-ug-navy via-slate-900 to-ug-navy text-white p-8 md:p-12 rounded-[3.5rem] shadow-xl relative overflow-hidden">
+              <section className="bg-gradient-to-br from-ug-navy via-slate-900 to-ug-navy text-white p-8 md:p-8 rounded-2xl shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-ug-teal/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-6">
                   <div>
@@ -225,9 +225,9 @@ const ResearcherPortfolio: React.FC = () => {
           
           <section>
             <div className="flex justify-between items-end mb-10"><h2 className="text-4xl font-bold text-ug-navy tracking-tight">Disclosure Portfolio</h2></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              {projects.length === 0 ? <div className="col-span-2 py-20 text-center font-bold text-gray-300">No public disclosures currently listed.</div> : projects.map(p => (
-                <Link key={p.id} to={`/projects/${p.id}`} className="bg-white rounded-[3.5rem] overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-700 group flex flex-col h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {projects.length === 0 ? <div className="col-span-2 py-10 text-center font-bold text-gray-300">No public disclosures currently listed.</div> : projects.map(p => (
+                <Link key={p.id} to={`/projects/${p.id}`} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-700 group flex flex-col h-full">
                   <div className="h-56 overflow-hidden relative">
                     <img 
                       src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} 
@@ -235,7 +235,7 @@ const ResearcherPortfolio: React.FC = () => {
                       alt=""
                     />
                   </div>
-                  <div className="p-10 flex-1"><span className="text-[11px] font-semibold text-ug-teal tracking-[0.3em] mb-4 block">{p.research_area}</span><h3 className="font-semibold text-ug-navy text-xl group-hover:text-ug-teal transition">{p.title}</h3></div>
+                  <div className="p-6 flex-1"><span className="text-[11px] font-semibold text-ug-teal tracking-[0.3em] mb-4 block">{p.research_area}</span><h3 className="font-semibold text-ug-navy text-xl group-hover:text-ug-teal transition">{p.title}</h3></div>
                 </Link>
               ))}
             </div>
@@ -243,19 +243,19 @@ const ResearcherPortfolio: React.FC = () => {
         </div>
 
          <div className="lg:col-span-4 space-y-10">
-           <section className="bg-ug-navy text-white p-10 rounded-[3rem] shadow-xl relative overflow-hidden">
+           <section className="bg-ug-navy text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
               <h3 className="text-xl font-bold mb-10 flex items-center gap-4 uppercase tracking-[0.2em]"><TrendingUp className="text-ug-teal" /> Verified Impact</h3>
               <div className="space-y-6">
-                <div className="flex justify-between items-center p-5 bg-white/5 rounded-[2rem] border border-white/10"><span className="text-[11px] font-semibold text-gray-400 tracking-wide">Published Projects</span><span className="text-2xl font-semibold text-ug-teal">{projects.length}</span></div>
-                <div className="flex justify-between items-center p-5 bg-white/5 rounded-[2rem] border border-white/10"><span className="text-[11px] font-semibold text-gray-400 tracking-wide">Open to Collaboration</span><span className="text-2xl font-semibold text-ug-teal">{projects.filter(p => p.open_to_collaboration).length}</span></div>
+                <div className="flex justify-between items-center p-5 bg-white/5 rounded-2xl border border-white/10"><span className="text-[11px] font-semibold text-gray-400 tracking-wide">Published Projects</span><span className="text-2xl font-semibold text-ug-teal">{projects.length}</span></div>
+                <div className="flex justify-between items-center p-5 bg-white/5 rounded-2xl border border-white/10"><span className="text-[11px] font-semibold text-gray-400 tracking-wide">Open to Collaboration</span><span className="text-2xl font-semibold text-ug-teal">{projects.filter(p => p.open_to_collaboration).length}</span></div>
               </div>
            </section>
 
           <div className="flex items-center gap-5">
-            <button onClick={handleShare} className="h-[76px] w-[76px] rounded-[28px] bg-white border border-gray-100 shadow-xl hover:bg-gray-50 transition-all flex items-center justify-center text-ug-navy group active:scale-95">
+            <button onClick={handleShare} className="h-[76px] w-[76px] rounded-2xl bg-white border border-gray-100 shadow-xl hover:bg-gray-50 transition-all flex items-center justify-center text-ug-navy group active:scale-95">
               <Share2 size={28} className="group-hover:scale-110 transition" />
             </button>
-            <button onClick={() => setIsContactModalOpen(true)} className="flex-1 h-[76px] bg-[#0092B0] hover:bg-[#007C96] rounded-[30px] shadow-xl flex items-center justify-center gap-5 transition-all active:scale-95 group overflow-hidden relative border border-white/10">
+            <button onClick={() => setIsContactModalOpen(true)} className="flex-1 h-[76px] bg-[#0092B0] hover:bg-[#007C96] rounded-2xl shadow-xl flex items-center justify-center gap-5 transition-all active:scale-95 group overflow-hidden relative border border-white/10">
               <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <MessageSquare size={26} className="text-white" />
               <span className="text-white font-bold text-xs uppercase tracking-wide leading-tight">Connect <br /> with PI</span>

@@ -202,9 +202,9 @@ const Products: React.FC = () => {
         ) : (
           <>
             {/* Catalog Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {currentProducts.map(product => (
-                <div key={product.id} className="bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 group flex flex-col">
+                <div key={product.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 group flex flex-col">
                   <div className="h-64 relative overflow-hidden">
                     <img src={getThumbnail(product.image_url)} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
                     {currentUser && (
@@ -275,7 +275,7 @@ const Products: React.FC = () => {
 
             {/* Empty State */}
             {sortedProducts.length === 0 && (
-              <div className="bg-white p-20 rounded-[3rem] text-center border border-gray-200 shadow-sm">
+              <div className="bg-white p-20 rounded-2xl text-center border border-gray-200 shadow-sm">
                 <ShoppingBag size={64} className="mx-auto text-gray-200 mb-6" />
                 <h3 className="text-2xl font-bold text-ug-navy"><Tr text="No products matched criteria." /></h3>
                 <p className="text-gray-500 mt-2 font-medium"><Tr text="Try checking other tracks or clearing search terms." /></p>
