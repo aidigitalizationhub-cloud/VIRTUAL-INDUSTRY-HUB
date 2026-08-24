@@ -17,6 +17,8 @@ import {
 import { computeLocalMatchRankings } from './lib/scoring';
 import { validateUpload } from './lib/uploadGuard';
 import { z } from 'zod';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './lib/auth';
 import {
   translateRequestSchema,
   chatRequestSchema,
@@ -231,6 +233,9 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || '')
   .map(o => o.trim())
   .filter(Boolean);
 
+// Better Auth handler — must be before JSON body parsing for its routes
+app.all("/api/auth/*", toNodeHandler(auth));
+
 // Security and CORS middleware for external frontends and container preview
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -362,35 +367,58 @@ app.get('/api/health', (req, res) => {
 });
 
 // --- Authentication & Throttling Middleware ---
+// Dual-mode: tries Better Auth session cookie first, falls back to Supabase Bearer JWT
+// This allows gradual cutover — new Better Auth users and legacy Supabase users both work.
 const authenticateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Authentication token is missing or invalid' });
-  }
-
-  const token = authHeader.split(' ')[1];
   try {
+    // 1. Try Better Auth session (cookie-based)
+    try {
+      const session = await (auth as any).api.getSession({ headers: req.headers as any });
+      if (session?.user) {
+        (req as any).user = session.user;
+        (req as any).userToken = null; // Better Auth has no Supabase JWT
+        (req as any).authSource = 'better-auth';
+        // Fetch role via service client — try Better Auth id, then email fallback for legacy linked accounts
+        const svc = getServiceClient();
+        if (svc) {
+          let profile: any = null;
+          const { data: byId } = await svc.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+          profile = byId;
+          if (!profile && session.user.email) {
+            const { data: byEmail } = await svc.from('profiles').select('role').eq('email', session.user.email).maybeSingle();
+            profile = byEmail;
+            // If found by email but id differs, record the linkage for future (non-blocking)
+            if (profile && (byEmail as any)?.id) {
+              (req as any).resolvedProfileId = (byEmail as any).id;
+            }
+          }
+          (req as any).userRole = profile?.role || 'Guest';
+        } else {
+          (req as any).userRole = 'Guest';
+        }
+        return next();
+      }
+    } catch (e) {
+      // fall through to Supabase check
+    }
+
+    // 2. Fallback: Supabase Bearer JWT (legacy)
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authentication token is missing or invalid' });
+    }
+    const token = authHeader.split(' ')[1];
     const supabaseServer = getSupabaseClient(token)!;
     const { data: { user }, error } = await supabaseServer.auth.getUser(token);
-
     if (error || !user) {
       return res.status(401).json({ error: 'Unauthorized: Invalid access token' });
     }
-
-    // Attach user to req
     (req as any).user = user;
     (req as any).userToken = token;
-
-    // Fetch user role from profiles table to allow for auth & role-based restrictions
-    const { data: profile } = await supabaseServer
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    (req as any).userRole = profile?.role || 'Guest';
-
-    next();
+    (req as any).authSource = 'supabase';
+    const { data: profile } = await supabaseServer.from('profiles').select('role').eq('id', user.id).maybeSingle();
+    (req as any).userRole = (profile as any)?.role || 'Guest';
+    return next();
   } catch (err: any) {
     console.error('Authentication Error:', err);
     res.status(401).json({ error: 'Unauthorized: Authentication service error' });

@@ -23,6 +23,7 @@ import { AdminLogin } from './pages/AdminLogin';
 import { AlertCircle, X, CheckCircle2, BellRing, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from './lib/supabase';
+import { authClient } from './lib/auth-client';
 import { StorageService } from './services/storageService';
 import { AIScoutService } from './services/aiScoutService';
 import { useSystemTheme } from './hooks/useSystemTheme';
@@ -115,21 +116,43 @@ const AppContent: React.FC = () => {
   };
 
   useEffect(() => {
+    // Check Supabase session (legacy)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setIsAuthenticated(true);
         loadProfile(session.user.id);
       }
     });
+    // Check Better Auth session (new primary)
+    (async () => {
+      try {
+        const sess: any = await (authClient as any).getSession?.();
+        const baUser = sess?.data?.user || sess?.user;
+        if (baUser?.id) {
+          setIsAuthenticated(true);
+          loadProfile(baUser.id);
+        }
+      } catch {}
+    })();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         setIsAuthenticated(true);
         loadProfile(session.user.id);
       } else {
-        setIsAuthenticated(false);
-        setUserProfile(null);
-        setUnreadCount(0);
+        // Only clear if Better Auth also has no session
+        (authClient as any).getSession?.().then((s: any) => {
+          const bu = s?.data?.user || s?.user;
+          if (!bu) {
+            setIsAuthenticated(false);
+            setUserProfile(null);
+            setUnreadCount(0);
+          }
+        }).catch(() => {
+          setIsAuthenticated(false);
+          setUserProfile(null);
+          setUnreadCount(0);
+        });
       }
     });
 
@@ -191,6 +214,7 @@ const AppContent: React.FC = () => {
 
   const executeLogout = async () => {
     setShowLogoutConfirm(false);
+    try { await (authClient as any).signOut?.(); } catch {}
     await supabase.auth.signOut();
     setIsAuthenticated(false);
     setUserProfile(null);
