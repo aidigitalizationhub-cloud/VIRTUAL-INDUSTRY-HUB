@@ -48,6 +48,7 @@ import { useNavigate } from 'react-router-dom';
 import { getGeminiResponse } from '../services/geminiService';
 import { Tr } from '../components/Tr';
 import { useTranslatedText } from '../services/translationService';
+import { formatDateMedium } from '../lib/format';
 
 const News: React.FC = () => {
   const navigate = useNavigate();
@@ -142,15 +143,10 @@ const News: React.FC = () => {
   const [aiTopic, setAiTopic] = useState('');
   const [aiKeywords, setAiKeywords] = useState('');
 
+  // Delegates to the shared formatter so every page renders dates consistently
   const formatNewsDate = (dateStr?: string) => {
     if (!dateStr) return 'Recent';
-    try {
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return dateStr;
-      return d.toLocaleDateString([], { dateStyle: 'medium' });
-    } catch (e) {
-      return dateStr;
-    }
+    return formatDateMedium(dateStr) || dateStr;
   };
 
   // Debounce search term input changes before querying
@@ -783,8 +779,8 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
 
               <div className="flex items-center gap-3 border-l border-gray-100 pl-6">
                 <div className="text-right">
-                  <p className="text-[11px] font-bold text-gray-900 leading-tight">Welcome, ABDULYAH 👑</p>
-                  <p className="text-[11px] font-semibold text-purple-600 tracking-wide mt-0.5">Primary Governance</p>
+                  <p className="text-[11px] font-bold text-gray-900 leading-tight">Welcome, ABDULYAH</p>
+                  <p className="text-[11px] font-semibold text-purple-600 tracking-wide mt-0.5">Administrator</p>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md shadow-purple-500/20">
                   A

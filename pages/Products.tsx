@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ShoppingBag, CheckCircle, ExternalLink, Search, Filter, SlidersHorizontal, Loader2, Bookmark, Bell } from 'lucide-react';
+import { ShoppingBag, CheckCircle, ExternalLink, Search, Filter, SlidersHorizontal, Loader2, Bookmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { StorageService } from '../services/storageService';

@@ -1,4 +1,5 @@
 import { AIProfile } from '../types';
+import { computeLocalMatchRankings } from '../lib/scoring';
 import { postJson } from '../lib/api';
 
 // High-speed in-memory rank cache
@@ -36,7 +37,7 @@ export const MatchingService = {
             (r.index !== undefined && Number(r.index) === i)
           );
 
-          const simScore = typeof c.similarity === 'number' && !isNaN(c.similarity) ? Math.round(c.similarity * 100) : 75;
+          const simScore = typeof c.similarity === 'number' && !isNaN(c.similarity) ? Math.round(c.similarity * 100) : undefined;
           const finalScore = ranking && typeof ranking.score === 'number' ? ranking.score : simScore;
 
           return {
@@ -54,41 +55,14 @@ export const MatchingService = {
       console.warn("Ranking service fallback used:", err);
     }
 
-    // High-precision client-side keyword and similarity scoring fallback
-    result = candidateMatches.map((c: any) => {
-      const titleText = (c.name || c.title || '').toLowerCase();
-      const descText = (c.semantic_summary || c.description || '').toLowerCase();
-      const userSummary = (userProfile.semantic_summary || '').toLowerCase();
-      const userLooking = (userProfile.collaboration_profile?.looking_for || []).join(' ').toLowerCase();
-
-      const keywords = ['diagnostic', 'vaccine', 'malaria', 'pharma', 'student', 'investor', 'research', 'funding', 'partner', 'cancer', 'health'];
-      let overlapCount = 0;
-      keywords.forEach(kw => {
-        const inUser = userSummary.includes(kw) || userLooking.includes(kw);
-        const inCandidate = titleText.includes(kw) || descText.includes(kw);
-        if (inUser && inCandidate) overlapCount++;
-      });
-
-      const similarityBonus = typeof c.similarity === 'number' && !isNaN(c.similarity) ? Math.round(c.similarity * 80) : 65;
-      const score = Math.max(50, Math.min(98, similarityBonus + (overlapCount * 8)));
-
-      let alignment_label = "Compatible Match";
-      if (score >= 85) alignment_label = "Highly Compatible";
-      else if (score >= 70) alignment_label = "Strategic Match";
-
-      const candType = c.role || (c.title ? 'Project' : 'Entity');
-      const overlappingFields = keywords.filter(kw => (titleText.includes(kw) || descText.includes(kw)));
-      const matchesStr = overlappingFields.length > 0 ? overlappingFields.slice(0, 2).join(' & ') : 'academic technologies';
-      const reasoning = `Matches on joint parameters including ${matchesStr}. Strategic alignment indicates key structural synergies with this ${candType}.`;
-
-      return {
-        ...c,
-        ai_score: score,
-        ai_reasoning: reasoning,
-        ai_label: alignment_label
-      };
-    }).sort((a, b) => (b.ai_score || 0) - (a.ai_score || 0));
-
+    // Shared deterministic fallback - single source of truth lives in lib/scoring
+    const localRankings = computeLocalMatchRankings(userProfile as any, candidateMatches);
+    result = localRankings.map((r) => ({
+      ...candidateMatches[r.index],
+      ai_score: r.score,
+      ai_reasoning: r.reasoning,
+      ai_label: r.alignment_label
+    })).sort((a, b) => (b.ai_score || 0) - (a.ai_score || 0));
     rankCache.set(cacheKey, result);
     return result;
   }

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Microscope, Pill, Syringe, CheckCircle, Send, Loader2, Newspaper, Calendar, Sparkles, BookOpen, ChevronRight } from 'lucide-react';
+import { ArrowRight, Microscope, Pill, Syringe, Loader2, Newspaper, Calendar, BookOpen, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { HERO_IMAGES } from '../constants';
@@ -11,7 +11,6 @@ import { Tr } from '../components/Tr';
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [marketReadyProducts, setMarketReadyProducts] = useState<Project[]>([]);
   const [showcaseProjects, setShowcaseProjects] = useState<Project[]>([]);
   const [latestNews, setLatestNews] = useState<NewsItem[]>([]);

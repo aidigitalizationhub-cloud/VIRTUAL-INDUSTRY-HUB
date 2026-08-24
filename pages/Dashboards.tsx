@@ -2142,7 +2142,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                         <ProfileInsight profile={localUser?.ai_profile} />
                       </div>
                       <div className="lg:col-span-4 shrink-0 space-y-6">
-                        <div className="bg-gradient-to-br from-[#12073d] to-[#1a0b59] text-white p-4 rounded-2xl shadow-xl relative overflow-hidden group border border-white/5">
+                        <div className="bg-gradient-to-br from-ug-navy to-[#1a1a4b] text-white p-4 rounded-2xl shadow-xl relative overflow-hidden group border border-white/5">
                           <div className="absolute -top-2 -right-2 p-6 opacity-5 group-hover:opacity-10 transition duration-500">
                             <Target size={80} />
                           </div>
@@ -3567,7 +3567,7 @@ ${senderName}`
     setIsSending(true);
     try {
       const tag = proposalType === 'collab' ? '[COLLABORATION_PROPOSAL]' : '[EXPRESSION_OF_INTEREST]';
-      const fullText = `${tag}Subject: ${subject}\n\n${messageBody}`;
+      const fullText = `${tag}\n\nSubject: ${subject}\n\n${messageBody}`;
       
       const projectId = proposalType === 'interest' 
         ? selectedMatch?.id 

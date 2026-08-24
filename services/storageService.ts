@@ -1466,7 +1466,7 @@ export const StorageService = {
 
       // Fallback 1: If no vector-matched profiles are returned (e.g. similarity is NULL due to zero-vectors or NULL embeddings), fetch other users directly.
       if (finalProfiles.length === 0) {
-        console.log("No vector-matched profiles found. Fetching other active researchers from DB directly for fallback.");
+        console.info("Match fallback: using directory profiles (no vector matches).");
         const { data: fallbackProfiles } = await supabase
           .from('profiles')
           .select('id, name, role, ai_profile, semantic_summary, avatar_url')
@@ -1488,7 +1488,7 @@ export const StorageService = {
 
       // Fallback 2: If no vector-matched projects are returned, fetch the latest projects directly.
       if (finalProjects.length === 0) {
-        console.log("No vector-matched projects found. Fetching active disclosures from DB directly for fallback.");
+        console.info("Match fallback: using active disclosures (no vector matches).");
         const { data: fallbackProjects } = await supabase
           .from('projects')
           .select('id, title, description, image_url, research_area')

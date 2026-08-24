@@ -148,7 +148,7 @@ const AppContent: React.FC = () => {
     const triggerSync = () => {
       AIScoutService.autoSyncNews().then(didUpdate => {
         if (didUpdate) {
-          console.log("Global Sync: News Feed Updated Automatically.");
+          // Sync completed silently; UI reflects new items on next fetch.
         }
       }).catch(err => {
         console.error("Auto Sync Failed:", err);
