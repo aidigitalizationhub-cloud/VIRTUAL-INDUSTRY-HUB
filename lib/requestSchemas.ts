@@ -36,6 +36,17 @@ export const aiScoutSyncRequestSchema = z.object({
   force: z.boolean().optional(),
 });
 
+export const aiDecisionRecordSchema = z.object({
+  decision_type: z.string().min(1).max(100),
+  subject_id: z.string().max(200).optional(),
+  provider: z.string().max(100).optional(),
+  model: z.string().max(200).optional(),
+  prompt_version: z.string().max(50).optional(),
+  input_hash: z.string().max(200).optional(),
+  output_hash: z.string().max(200).optional(),
+  result: z.record(z.string(), z.any()).optional(),
+}).passthrough();
+
 export const aiMatchRequestSchema = z.object({
   userProfile: z.record(z.string(), z.any()).optional(),
   candidateMatches: z.array(z.record(z.string(), z.any())).max(100).optional(),

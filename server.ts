@@ -29,6 +29,7 @@ import {
   updateChallengeRequestSchema,
   generateMatchesRequestSchema,
   updateMatchStatusRequestSchema,
+  aiDecisionRecordSchema,
 } from './lib/requestSchemas';
 
 // Load .env into process.env for server-side runtime (client env is loaded separately by Vite).
@@ -360,53 +361,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
 
-// 1.5. Live Translation Endpoint using Gemini
-app.post('/api/translate', validateBody(translateRequestSchema), async (req: express.Request, res: express.Response) => {
-  const { text, texts, targetLang } = req.body;
-  const lang = (targetLang || 'en').split('-')[0].toLowerCase();
-
-  if (lang === 'en') {
-    return res.json({ translatedText: text, translatedTexts: texts });
-  }
-
-  const langNames: Record<string, string> = {
-    fr: 'French',
-    ak: 'Akan (Twi)',
-    sw: 'Kiswahili'
-  };
-  const langName = langNames[lang] || 'French';
-
-  const ai = getGeminiClient();
-  if (ai) {
-    try {
-      if (texts && Array.isArray(texts)) {
-        const prompt = `Translate the following array of academic, research, and university innovation strings into ${langName}. Retain proper names (e.g. University of Ghana, Legon, Noguchi, WACCBIP, ORID) and standard acronyms (e.g. PCR, TRL, FDA) intact. Return a JSON array of translated strings matching the exact length and order of the input array.
-Input: ${JSON.stringify(texts)}`;
-
-        const response = await generateWithFallback(ai, GEMINI_FALLBACK_MODELS, prompt, { responseMimeType: 'application/json' });
-        if (response && response.text) {
-          const parsed = parseAIJson(stringArraySchema, response.text);
-          return res.json({ translatedTexts: parsed });
-        }
-      } else if (text) {
-        const prompt = `Translate the following text accurately into ${langName}. Maintain a clear, professional, academic, and natural tone. Retain proper nouns like 'University of Ghana', 'Legon', 'Noguchi', 'WACCBIP'.
-Text: "${text}"
-Output ONLY the translated text string with no extra explanations or markdown quotes.`;
-
-        const response = await generateWithFallback(ai, GEMINI_FALLBACK_MODELS, prompt);
-        if (response && response.text) {
-          return res.json({ translatedText: response.text.trim().replace(/^"/, '').replace(/"$/, '') });
-        }
-      }
-    } catch (err: any) {
-      console.warn(`[Translate Endpoint Error]: ${err?.message || err}`);
-    }
-  }
-
-  // Graceful fallback if no key or error
-  return res.json({ translatedText: text, translatedTexts: texts });
-});
-
 // --- Authentication & Throttling Middleware ---
 const authenticateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -469,6 +423,16 @@ interface RateLimitRecord {
 
 const rateLimitStore = new Map<string, RateLimitRecord>();
 
+// Periodically evict expired entries so the in-memory store cannot grow unbounded
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, record] of rateLimitStore) {
+    if (now > record.resetTime) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, 10 * 60 * 1000).unref();
+
 const throttleLimit = (maxRequests: number, windowMs: number) => {
   return (req: express.Request, res: express.Response, next: express.NextFunction) => {
     // If authenticated, rate limit by user ID; otherwise fall back to IP address
@@ -497,6 +461,53 @@ const throttleLimit = (maxRequests: number, windowMs: number) => {
     next();
   };
 };
+
+// 1.5. Live Translation Endpoint using Gemini
+app.post('/api/translate', validateBody(translateRequestSchema), authenticateUser, throttleLimit(30, 60 * 1000), async (req: express.Request, res: express.Response) => {
+  const { text, texts, targetLang } = req.body;
+  const lang = (targetLang || 'en').split('-')[0].toLowerCase();
+
+  if (lang === 'en') {
+    return res.json({ translatedText: text, translatedTexts: texts });
+  }
+
+  const langNames: Record<string, string> = {
+    fr: 'French',
+    ak: 'Akan (Twi)',
+    sw: 'Kiswahili'
+  };
+  const langName = langNames[lang] || 'French';
+
+  const ai = getGeminiClient();
+  if (ai) {
+    try {
+      if (texts && Array.isArray(texts)) {
+        const prompt = `Translate the following array of academic, research, and university innovation strings into ${langName}. Retain proper names (e.g. University of Ghana, Legon, Noguchi, WACCBIP, ORID) and standard acronyms (e.g. PCR, TRL, FDA) intact. Return a JSON array of translated strings matching the exact length and order of the input array.
+Input: ${JSON.stringify(texts)}`;
+
+        const response = await generateWithFallback(ai, GEMINI_FALLBACK_MODELS, prompt, { responseMimeType: 'application/json' });
+        if (response && response.text) {
+          const parsed = parseAIJson(stringArraySchema, response.text);
+          return res.json({ translatedTexts: parsed });
+        }
+      } else if (text) {
+        const prompt = `Translate the following text accurately into ${langName}. Maintain a clear, professional, academic, and natural tone. Retain proper nouns like 'University of Ghana', 'Legon', 'Noguchi', 'WACCBIP'.
+Text: "${text}"
+Output ONLY the translated text string with no extra explanations or markdown quotes.`;
+
+        const response = await generateWithFallback(ai, GEMINI_FALLBACK_MODELS, prompt);
+        if (response && response.text) {
+          return res.json({ translatedText: response.text.trim().replace(/^"/, '').replace(/"$/, '') });
+        }
+      }
+    } catch (err: any) {
+      console.warn(`[Translate Endpoint Error]: ${err?.message || err}`);
+    }
+  }
+
+  // Graceful fallback if no key or error
+  return res.json({ translatedText: text, translatedTexts: texts });
+});
 
 // 2. secure Gemini chat proxy
 app.post('/api/gemini/chat', validateBody(chatRequestSchema), authenticateUser, throttleLimit(30, 60 * 1000), async (req, res) => {
@@ -586,7 +597,8 @@ Be professional, academic yet accessible, and helpful. Keep answers concise (und
     res.json({ text: resultText || '' });
   } catch (error: any) {
     console.error('Server Gemini error:', error);
-    res.status(500).json({ error: error.message || 'Gemini processing failed.' });
+    console.error('Gemini processing failed:', error.message);
+      res.status(500).json({ error: 'AI processing failed. Please try again later.' });
   }
 });
 
@@ -633,7 +645,8 @@ app.post('/api/gemini/embed', validateBody(embedRequestSchema), authenticateUser
     res.json({ embedding: values });
   } catch (error: any) {
     console.error('Server Embedding error:', error);
-    res.status(502).json({ embedding: null, error: error.message || 'Embedding generation failed.' });
+    console.error('Embedding generation failed:', error.message);
+      res.status(502).json({ embedding: null, error: 'Embedding generation failed. Please try again later.' });
   }
 });
 
@@ -763,7 +776,8 @@ ${text.slice(0, 12000)}
 
   } catch (err: any) {
     console.error('Admin Document Extraction Error:', err);
-    return res.status(500).json({ error: err.message || 'Failed to extract text from document.' });
+    console.error('Document text extraction failed:', err.message);
+        return res.status(500).json({ error: 'Failed to process the document. Please try again later.' });
   }
 });
 
@@ -997,7 +1011,7 @@ Provide semantic_summary (2-3 sentences) summarizing the profile, and embedding_
 });
 
 // 5. Server-side Scout Trend synchronization
-app.post('/api/ai-scout/sync', validateBody(aiScoutSyncRequestSchema), throttleLimit(5, 60 * 1000), async (req, res) => {
+app.post('/api/ai-scout/sync', validateBody(aiScoutSyncRequestSchema), authenticateUser, throttleLimit(5, 60 * 1000), async (req, res) => {
   const { force } = req.body;
 
   // Determine userRole optionally if token is present
@@ -1194,7 +1208,8 @@ Output: JSON array of objects with the precise structure outlined.`;
     res.json({ didUpdate: false, message: 'No items synchronized.' });
   } catch (error: any) {
     console.error('Server news sync failed:', error);
-    res.json({ didUpdate: false, error: error.message || 'Gracefully handled sync issue.' });
+    console.warn('AI Scout sync issue:', error.message);
+      res.json({ didUpdate: false, error: 'Sync encountered an issue and will retry automatically.' });
   }
 });
 
@@ -1387,7 +1402,8 @@ app.post('/api/industry-challenges', validateBody(createChallengeRequestSchema),
     res.json({ success: true, challenge });
   } catch (error: any) {
     console.error('Failed to create industry challenge:', error);
-    res.status(500).json({ error: error.message });
+    console.error('API route error:', error.message);
+      res.status(500).json({ error: 'An internal error occurred. Please try again later.' });
   }
 });
 
@@ -1432,7 +1448,8 @@ app.put('/api/industry-challenges/:id', validateBody(updateChallengeRequestSchem
     res.json({ success: true, challenge: updated });
   } catch (error: any) {
     console.error('Failed to update industry challenge:', error);
-    res.status(500).json({ error: error.message });
+    console.error('API route error:', error.message);
+      res.status(500).json({ error: 'An internal error occurred. Please try again later.' });
   }
 });
 
@@ -1462,7 +1479,8 @@ app.delete('/api/industry-challenges/:id', authenticateUser, async (req, res) =>
     res.json({ success: true });
   } catch (error: any) {
     console.error('Failed to delete industry challenge:', error);
-    res.status(500).json({ error: error.message });
+    console.error('API route error:', error.message);
+      res.status(500).json({ error: 'An internal error occurred. Please try again later.' });
   }
 });
 
@@ -1615,7 +1633,7 @@ const getInterests = (user: any) => {
 };
 
 // POST /api/challenge-matches/generate - Calculate match scores
-app.post('/api/challenge-matches/generate', validateBody(generateMatchesRequestSchema), authenticateUser, async (req, res) => {
+app.post('/api/challenge-matches/generate', validateBody(generateMatchesRequestSchema), authenticateUser, throttleLimit(4, 60 * 1000), async (req, res) => {
   try {
     const userId = (req as any).user?.id;
     const { challengeId } = req.body;
@@ -1786,7 +1804,8 @@ app.post('/api/challenge-matches/generate', validateBody(generateMatchesRequestS
     res.json({ success: true, count: insertCount });
   } catch (error: any) {
     console.error('Failed to generate challenge matches:', error);
-    res.status(500).json({ error: error.message });
+    console.error('API route error:', error.message);
+      res.status(500).json({ error: 'An internal error occurred. Please try again later.' });
   }
 });
 
@@ -1827,7 +1846,8 @@ app.put('/api/challenge-matches/:id', validateBody(updateMatchStatusRequestSchem
     res.json({ success: true, match: updated });
   } catch (error: any) {
     console.error('Failed to update match status:', error);
-    res.status(500).json({ error: error.message });
+    console.error('API route error:', error.message);
+      res.status(500).json({ error: 'An internal error occurred. Please try again later.' });
   }
 });
 
@@ -1861,12 +1881,9 @@ app.get('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), async (
   }
 });
 
-app.post('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), async (req, res) => {
+app.post('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), validateBody(aiDecisionRecordSchema), async (req, res) => {
   try {
     const { decision_type, subject_id, provider, model, prompt_version, input_hash, output_hash, result } = req.body;
-    if (!decision_type) {
-      return res.status(400).json({ error: 'decision_type is required.' });
-    }
     await recordAiDecision({
       decision_type,
       subject_id: subject_id || (req as any).user?.id || null,
@@ -1879,8 +1896,8 @@ app.post('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), async 
     });
     res.json({ success: true });
   } catch (error: any) {
-    console.error('Failed to record AI decision:', error);
-    res.status(500).json({ error: error.message || 'Failed to record AI decision.' });
+    console.error('Failed to record AI decision:', error.message);
+    res.status(500).json({ error: 'Failed to record AI decision.' });
   }
 });
 

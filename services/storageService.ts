@@ -1049,10 +1049,14 @@ export const StorageService = {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return [];
 
+    // Strip PostgREST-reserved syntax characters so the term cannot alter the filter shape
+    const sanitized = query.replace(/[%(),*"']/g, '').trim().slice(0, 60);
+    if (sanitized.length < 2) return [];
+
     const { data, error } = await supabase
       .from('profiles')
       .select('id, name, email, role, avatar_url, company, department')
-      .or(`name.ilike.%${query}%,email.ilike.%${query}%`)
+      .or(`name.ilike.%${sanitized}%,email.ilike.%${sanitized}%`)
       .limit(5);
     
     if (error) {

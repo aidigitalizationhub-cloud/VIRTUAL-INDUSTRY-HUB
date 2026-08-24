@@ -52,9 +52,9 @@ const ResetPassword: React.FC = () => {
       if (updateError) throw updateError;
 
       setSuccess(true);
-      // Invalidate the session by signing out after a brief delay
+      // Invalidate ALL sessions (this device + others) after a brief delay
       setTimeout(async () => {
-        await supabase.auth.signOut();
+        await supabase.auth.signOut({ scope: 'global' });
         navigate('/');
       }, 3000);
     } catch (err: any) {
