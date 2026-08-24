@@ -19,8 +19,7 @@ export enum ProjectStatus {
 export enum Visibility {
   Draft = 'Draft',
   Internal = 'Internal',
-  Public = 'Public',
-  Private = 'Internal'
+  Public = 'Public'
 }
 
 export enum DisclosureStatus {
@@ -298,7 +297,7 @@ export interface ChallengeMatch {
   candidate?: {
     id: string;
     name: string;
-    email: string;
+    email?: string;
     role: string;
     avatar_url?: string;
     bio?: string;

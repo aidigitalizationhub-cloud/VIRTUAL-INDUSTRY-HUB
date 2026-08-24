@@ -396,7 +396,7 @@ const ProjectFormModal: React.FC<{
 
       // Determine disclosure status and visibility
       const finalStatus = statusOverride || formData.disclosure_status || (project ? undefined : DisclosureStatus.Submitted);
-      const finalVisibility = statusOverride === DisclosureStatus.Draft ? Visibility.Private : (project ? formData.visibility : Visibility.Private);
+      const finalVisibility = statusOverride === DisclosureStatus.Draft ? Visibility.Internal : (project ? formData.visibility : Visibility.Internal);
 
       const updatedPayload = {
         ...formData,
@@ -1843,14 +1843,14 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
     setLocalUser(user);
     const userId = user?.id;
     if (userId) {
-       StorageService.getUnreadCount(userId).then(setInternalUnread);
+       StorageService.getUnreadCount(userId).then(setInternalUnread).catch(() => {});
     }
   }, [user]);
 
   useEffect(() => {
     const userId = localUser?.id || user?.id;
     if (userId) {
-       StorageService.getUnreadCount(userId).then(setInternalUnread);
+       StorageService.getUnreadCount(userId).then(setInternalUnread).catch(() => {});
     }
   }, [activeTab, localUser?.id, user?.id]);
 
@@ -1858,7 +1858,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
     const userId = localUser?.id || user?.id;
     if (!userId) return;
     const interval = setInterval(() => {
-       StorageService.getUnreadCount(userId).then(setInternalUnread);
+       StorageService.getUnreadCount(userId).then(setInternalUnread).catch(() => {});
     }, 30000);
     return () => clearInterval(interval);
   }, [localUser?.id, user?.id]);
@@ -3466,7 +3466,7 @@ const MatchesView = ({
         if (data && data.length > 0) {
           setSelectedProject(data[0]);
         }
-      });
+      }).catch(err => console.warn("Failed to load own projects for proposals:", err));
     }
   }, [user?.id]);
 

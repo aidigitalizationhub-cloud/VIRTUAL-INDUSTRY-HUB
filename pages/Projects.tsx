@@ -60,6 +60,7 @@ const Projects: React.FC = () => {
     }
   };
 
+  // Data loads once on mount; URL params are applied via the separate effect below
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
@@ -77,24 +78,28 @@ const Projects: React.FC = () => {
             type: 'project'
           });
         });
-
-        // Check for track or researcher parameter in URL
-        const trackParam = searchParams.get('track');
-        if (trackParam && Object.values(ResearchArea).includes(trackParam as ResearchArea)) {
-          setSelectedArea(trackParam);
-        }
-        
-        const researcherParam = searchParams.get('researcher') || searchParams.get('author');
-        if (researcherParam) {
-          setSelectedResearcher(researcherParam);
-        }
       } catch (err) {
         console.error("Projects Load Error:", err);
+        showToast("Could not load projects. Please refresh to try again.", "error");
       } finally {
         setLoading(false);
       }
     };
     fetchProjects();
+  }, []);
+
+  // Apply deep-link filters whenever the URL params change (no refetch needed -
+  // filtering happens client-side over already-loaded projects)
+  useEffect(() => {
+    const trackParam = searchParams.get('track');
+    if (trackParam && Object.values(ResearchArea).includes(trackParam as ResearchArea)) {
+      setSelectedArea(trackParam);
+    }
+
+    const researcherParam = searchParams.get('researcher') || searchParams.get('author');
+    if (researcherParam) {
+      setSelectedResearcher(researcherParam);
+    }
   }, [searchParams]);
 
   // Extract unique researchers from loaded projects

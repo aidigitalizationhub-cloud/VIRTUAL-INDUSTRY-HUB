@@ -97,8 +97,7 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
     switch (status) {
       case 'Open':
         return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-      case 'In-Review':
-      case 'In Review':
+      case 'Draft':
         return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'Completed':
         return 'bg-blue-50 text-blue-700 border-blue-200';
@@ -152,7 +151,7 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
 
         {/* Status Filter Tabs */}
         <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-2xl overflow-x-auto no-scrollbar">
-          {['All', 'Open', 'In-Review', 'Completed', 'Closed'].map((tab) => (
+          {['All', 'Open', 'Draft', 'Completed', 'Closed'].map((tab) => (
             <button
               key={tab}
               onClick={() => setStatusFilter(tab)}
@@ -230,7 +229,7 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
                     className={`text-[11px] font-semibold px-3 py-1.5 rounded-xl border focus:outline-none cursor-pointer transition ${getStatusColor(challenge.status || 'Open')}`}
                   >
                     <option value="Open">Open</option>
-                    <option value="In-Review">In-Review</option>
+                    <option value="Draft">Draft</option>
                     <option value="Completed">Completed</option>
                     <option value="Closed">Closed</option>
                   </select>

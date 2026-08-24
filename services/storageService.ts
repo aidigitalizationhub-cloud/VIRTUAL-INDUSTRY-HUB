@@ -556,7 +556,10 @@ export const StorageService = {
 
       return projects.map(p => {
         const inquiryCount = eois?.filter(e => e.project_id === p.id).length || 0;
-        return { ...p, trendScore: inquiryCount * 10 + Math.floor(Math.random() * 50) };
+        // Deterministic secondary signal (recency) so ordering is stable across loads
+        const ageDays = p.created_at ? Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000) : 0;
+        const recencyBoost = Math.max(0, 30 - ageDays);
+        return { ...p, trendScore: inquiryCount * 10 + recencyBoost };
       }).sort((a: any, b: any) => b.trendScore - a.trendScore).slice(0, 5);
     } catch (e) {
       return [];
@@ -1053,10 +1056,11 @@ export const StorageService = {
     const sanitized = query.replace(/[%(),*"']/g, '').trim().slice(0, 60);
     if (sanitized.length < 2) return [];
 
+    // Directory discovery uses the sanitized view (no email / no CV data)
     const { data, error } = await supabase
-      .from('profiles')
-      .select('id, name, email, role, avatar_url, company, department')
-      .or(`name.ilike.%${sanitized}%,email.ilike.%${sanitized}%`)
+      .from('public_directory')
+      .select('id, name, role, avatar_url, company, department')
+      .or(`name.ilike.%${sanitized}%`)
       .limit(5);
     
     if (error) {

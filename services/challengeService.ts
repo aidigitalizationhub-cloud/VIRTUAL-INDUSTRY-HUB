@@ -41,7 +41,6 @@ const mapMatchRow = (m: any): ChallengeMatch => ({
   candidate: m.profiles ? {
     id: m.profiles.id,
     name: m.profiles.name || 'University Researcher',
-    email: m.profiles.email || '',
     role: m.profiles.role || 'Researcher',
     avatar_url: m.profiles.avatar_url,
     bio: m.profiles.bio,

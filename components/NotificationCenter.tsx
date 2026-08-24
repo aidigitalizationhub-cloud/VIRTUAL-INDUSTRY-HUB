@@ -34,7 +34,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ user, onSelectM
   };
 
   useEffect(() => {
-    loadData();
+    loadData().catch(err => console.warn("Notification data load failed:", err));
   }, [user?.id, isOpen]);
 
   useEffect(() => {

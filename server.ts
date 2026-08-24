@@ -1554,7 +1554,6 @@ app.get('/api/challenge-matches', authenticateUser, async (req, res) => {
         candidateDetails = {
           id: cand.id,
           name: cand.name,
-          email: cand.email,
           role: cand.role,
           avatar_url: cand.avatar_url,
           bio: cand.bio,

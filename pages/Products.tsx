@@ -84,6 +84,7 @@ const Products: React.FC = () => {
         setProducts(marketReady);
       } catch (err) {
         console.error("Products Load Error:", err);
+        showToast("Could not load products. Please refresh to try again.", "error");
       } finally {
         setLoading(false);
       }
