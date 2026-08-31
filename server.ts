@@ -224,7 +224,7 @@ const UNSPLASH_FALLBACK_IMAGES = [
 
 let globalSkipImageGeneration = false;
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT || 3000);
 const app = express();
 
 // --- Dev request logger (non-production only) ---
@@ -2206,26 +2206,20 @@ const startServer = async () => {
     });
     app.use(vite.middlewares);
   } else {
-    if (!process.env.VERCEL) {
-      const distPath = path.join(process.cwd(), 'dist');
-      app.use(express.static(distPath));
-      app.get('*', (req, res) => {
-        res.sendFile(path.join(distPath, 'index.html'));
-      });
-    }
-  }
-
-  if (!process.env.VERCEL) {
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server launched on http://localhost:${PORT}`);
+    const distPath = path.join(process.cwd(), 'dist');
+    app.use(express.static(distPath));
+    app.get('/{*splat}', (req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
     });
   }
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server launched on port ${PORT}`);
+  });
 };
 
-if (!process.env.VERCEL) {
-  startServer().catch(err => {
-    console.error('Failed to launch server:', err);
-  });
-}
+startServer().catch(err => {
+  console.error('Failed to launch server:', err);
+});
 
 export default app;
