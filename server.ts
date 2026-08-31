@@ -2213,9 +2213,11 @@ const startServer = async () => {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server launched on port ${PORT}`);
-  });
+  if (!process.env.VERCEL_FUNCTION) {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server launched on port ${PORT}`);
+    });
+  }
 };
 
 startServer().catch(err => {
