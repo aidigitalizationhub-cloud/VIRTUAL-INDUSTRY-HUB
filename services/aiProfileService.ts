@@ -9,8 +9,10 @@ export const AIProfileService = {
     const email = questionnaire?.email || 'innovator@ug.edu.gh';
 
     try {
+      // Match server prompt limits (server slices to 15k anyway) — avoids oversized-payload 400s
+      const clampedCv = cvText.length > 15000 ? cvText.slice(0, 15000) : cvText;
       const data = await postJson<{ profile?: AIProfile }>('/api/ai-profile', {
-        cvText,
+        cvText: clampedCv,
         questionnaire,
         userType: currentRole
       });

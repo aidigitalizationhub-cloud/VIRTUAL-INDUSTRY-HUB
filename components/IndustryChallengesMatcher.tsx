@@ -14,25 +14,25 @@ import { ChallengeService } from '../services/challengeService';
 
 // Breathtaking circular progress gauge
 const CircularProgress = ({ score }: { score: number }) => {
-  const radius = 22;
-  const strokeWidth = 4.5;
+  const radius = 18;
+  const strokeWidth = 3.5;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
 
   return (
-    <div className="relative flex items-center justify-center w-14 h-14 shrink-0 bg-white rounded-full shadow-inner border border-gray-100">
+    <div className="relative flex items-center justify-center w-12 h-12 shrink-0 bg-white rounded-full shadow-inner border border-gray-100">
       <svg className="w-full h-full transform -rotate-90">
         <circle
-          cx="28"
-          cy="28"
+          cx="24"
+          cy="24"
           r={radius}
           className="text-gray-100 stroke-current"
           strokeWidth={strokeWidth}
           fill="transparent"
         />
         <circle
-          cx="28"
-          cy="28"
+          cx="24"
+          cy="24"
           r={radius}
           className="text-ug-teal stroke-current"
           strokeWidth={strokeWidth}
@@ -42,7 +42,7 @@ const CircularProgress = ({ score }: { score: number }) => {
           fill="transparent"
         />
       </svg>
-      <span className="absolute text-[11px] font-bold text-ug-navy">
+      <span className="absolute text-[10px] font-semibold text-ug-navy">
         {score}%
       </span>
     </div>
@@ -91,6 +91,7 @@ export const IndustryChallengesMatcher: React.FC<MatcherProps> = ({
 }) => {
   const { showToast } = useToast();
   const formRef = useRef<HTMLDivElement>(null);
+  const generationCooldownRef = useRef<Record<string, number>>({});
   const [challenges, setChallenges] = useState<IndustryChallenge[]>([]);
   const [challengeMatches, setChallengeMatches] = useState<ChallengeMatch[]>([]);
   const [partnerChallenges, setPartnerChallenges] = useState<IndustryChallenge[]>([]);
@@ -146,10 +147,16 @@ export const IndustryChallengesMatcher: React.FC<MatcherProps> = ({
         }
       }
 
-      await ChallengeService.generateChallengeMatches(
-        selectedChallengeId !== 'all' ? selectedChallengeId : undefined,
-        user.id
-      );
+      const generationKey = `${user.id}:${selectedChallengeId}`;
+      const now = Date.now();
+      const lastGeneratedAt = generationCooldownRef.current[generationKey] || 0;
+      if (now - lastGeneratedAt > 60 * 1000) {
+        generationCooldownRef.current[generationKey] = now;
+        await ChallengeService.generateChallengeMatches(
+          selectedChallengeId !== 'all' ? selectedChallengeId : undefined,
+          user.id
+        );
+      }
 
       const loadedMatches = await ChallengeService.getChallengeMatches(
         user.id,
@@ -311,9 +318,9 @@ ${proposalText}`;
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3">
-        <Loader2 className="animate-spin text-ug-teal" size={32} />
-        <p className="text-[11px] font-semibold text-gray-400 tracking-wide animate-pulse">Finding challenges for you...</p>
+      <div className="flex flex-col items-center justify-center py-10 gap-3">
+        <Loader2 className="animate-spin text-ug-teal" size={30} />
+        <p className="text-[11px] font-medium text-gray-400 tracking-wide animate-pulse">Finding challenges for you...</p>
       </div>
     );
   }
@@ -321,23 +328,23 @@ ${proposalText}`;
   const isCandidate = user?.role === 'Student' || user?.role === 'Researcher';
 
   return (
-    <div className="space-y-8 text-left font-sans">
+    <div className="space-y-5 text-left font-sans text-sm">
       
       {/* ----------------- CANDIDATE VIEW (STUDENTS/RESEARCHERS) ----------------- */}
       {isCandidate && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Challenge Matcher Explanation Banner */}
-          <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-5 sm:p-6 rounded-2xl text-white shadow-xl">
-            <div className="max-w-xl space-y-2">
-              <h2 className="text-lg sm:text-xl font-bold tracking-tight leading-tight">Recommended Challenges</h2>
-              <p className="text-xs text-white/80 font-medium leading-relaxed">
+          <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-4 sm:p-5 rounded-2xl text-white shadow-md">
+            <div className="max-w-xl space-y-1.5">
+              <h2 className="text-base sm:text-lg font-semibold tracking-tight leading-tight">Recommended Challenges</h2>
+              <p className="text-[11px] sm:text-xs text-white/80 font-normal leading-relaxed">
                 Real-world challenges from industry partners, matched to your profile and skills.
               </p>
             </div>
           </div>
 
           {/* List of matched challenges */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {challengeMatches.length === 0 ? (
               <div className="py-10 text-center bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100 p-8">
                 <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm text-gray-300">
@@ -358,16 +365,16 @@ ${proposalText}`;
                   return (
                     <div 
                       key={match.id}
-                      className={`p-5 md:p-6 border rounded-2xl bg-white transition-all duration-300 shadow-sm ${
+                      className={`p-3.5 sm:p-4 border rounded-xl bg-white transition-all duration-300 shadow-sm ${
                         match.status === 'invited' 
                           ? 'border-amber-300 bg-amber-50/10 shadow-amber-100/50' 
-                          : 'border-gray-100 hover:border-ug-teal/20 hover:shadow-xl'
+                          : 'border-gray-100 hover:border-ug-teal/20 hover:shadow-md'
                       }`}
                     >
-                      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+                      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                         
                         {/* Circular Score & Text details */}
-                        <div className="flex items-start gap-4 md:gap-5 flex-1 min-w-0">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
                           <CircularProgress score={match.totalScore} />
                           <div className="min-w-0 flex-1 space-y-1">
                             <div className="flex flex-wrap items-center gap-2">
@@ -388,39 +395,39 @@ ${proposalText}`;
                                 </span>
                               )}
                             </div>
-                            <h4 className="font-bold text-ug-navy text-sm md:text-base tracking-tight">{ch.title}</h4>
-                            <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Posted by: {ch.partner_company || 'Industry Partner'}</p>
-                            <p className="text-xs text-gray-500 font-medium leading-relaxed italic">"{ch.summary}"</p>
+                            <h4 className="font-semibold text-ug-navy text-[13px] sm:text-sm tracking-tight leading-snug">{ch.title}</h4>
+                            <p className="text-[11px] font-medium text-gray-400 tracking-wide">Posted by: {ch.partner_company || 'Industry Partner'}</p>
+                            <p className="text-[11px] sm:text-xs text-gray-500 font-normal leading-relaxed line-clamp-2">"{ch.summary}"</p>
                           </div>
                         </div>
 
                         {/* Interactive actions */}
-                        <div className="flex items-center lg:items-end justify-between lg:justify-start lg:flex-col gap-3 shrink-0 border-t lg:border-t-0 pt-4 lg:pt-0 border-gray-100">
+                        <div className="flex flex-col sm:flex-row lg:flex-col sm:items-center lg:items-end justify-between lg:justify-start gap-3 shrink-0 border-t lg:border-t-0 pt-3 lg:pt-0 border-gray-100">
                           <div className="text-left lg:text-right">
                             <p className="text-[11px] font-semibold text-gray-400 tracking-wide leading-none mb-1">Collaboration Type</p>
                             <p className="text-xs font-bold text-ug-navy">{ch.collaboration_type}</p>
                           </div>
                           
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap justify-end gap-2">
                             {match.status !== 'interested' ? (
                               <>
                                 <button
                                   onClick={() => handleOpenProposal(match)}
-                                  className="bg-ug-navy text-white hover:bg-ug-teal px-5 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition shadow-md active:scale-95 shrink-0"
+                                    className="bg-ug-navy text-white hover:bg-ug-teal px-3.5 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition shadow-sm active:scale-95 shrink-0"
                                 >
                                   Submit Proposal
                                 </button>
                                 {match.status !== 'saved' && (
                                   <button
                                     onClick={() => handleUpdateStatus(match.id, 'saved', 'Challenge saved to your matches.')}
-                                    className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-4 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition active:scale-95 shrink-0"
+                                      className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition active:scale-95 shrink-0"
                                   >
                                     Save
                                   </button>
                                 )}
                                 <button
                                   onClick={() => handleUpdateStatus(match.id, 'dismissed', 'Match dismissed.')}
-                                  className="bg-white border border-transparent text-gray-400 hover:text-red-500 hover:border-red-100 px-3 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition active:scale-95 shrink-0"
+                                  className="bg-white border border-transparent text-gray-400 hover:text-red-500 hover:border-red-100 px-2.5 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition active:scale-95 shrink-0"
                                   title="Dismiss Match"
                                 >
                                   <X size={12} />
@@ -437,7 +444,7 @@ ${proposalText}`;
                       </div>
 
                       {/* Expand/Collapse Breakdown Controls */}
-                      <div className="mt-4 border-t border-gray-100/60 pt-3 flex items-center justify-between">
+                       <div className="mt-3 border-t border-gray-100/60 pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <button
                           onClick={() => setExpandedMatchId(isExpanded ? null : match.id)}
                           className="flex items-center gap-1.5 text-[11px] font-semibold text-ug-teal hover:text-ug-navy tracking-wide transition"
@@ -453,7 +460,7 @@ ${proposalText}`;
                           )}
                         </button>
                         
-                        <div className="flex flex-wrap gap-4 text-[11px] text-gray-400 font-bold tracking-wider">
+                         <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-gray-400 font-semibold tracking-wide">
                           <div className="flex items-center gap-1">
                             <DollarSign size={11} className="text-ug-teal" /> Budget: <span className="text-ug-navy">{ch.budget_range || 'N/A'}</span>
                           </div>
@@ -559,11 +566,11 @@ ${proposalText}`;
 
       {/* ----------------- PARTNER / INDUSTRY VIEW (CHALLENGE TALENT FINDER) ----------------- */}
       {!isCandidate && (
-        <div className="space-y-6">
-          <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-5 sm:p-6 rounded-2xl text-white shadow-xl">
+        <div className="space-y-4">
+          <div className="bg-gradient-to-r from-ug-navy to-ug-teal p-4 sm:p-5 rounded-2xl text-white shadow-md">
             <div className="max-w-md space-y-2">
-              <h2 className="text-lg sm:text-xl font-bold tracking-tight leading-tight">Challenge Talent Finder</h2>
-              <p className="text-xs text-white/80 font-medium leading-relaxed">
+              <h2 className="text-base sm:text-lg font-semibold tracking-tight leading-tight">Challenge Talent Finder</h2>
+              <p className="text-[11px] sm:text-xs text-white/80 font-normal leading-relaxed">
                 Discover academic talent matched to your active challenges.
               </p>
             </div>
@@ -577,7 +584,7 @@ ${proposalText}`;
                 initial={{ opacity: 0, y: -15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
-                className="bg-white border border-gray-100 rounded-2xl p-5 sm:p-6 shadow-xl space-y-6"
+                className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-md space-y-5"
               >
                 <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                   <div className="flex items-center gap-2.5">
@@ -736,7 +743,7 @@ ${proposalText}`;
           </AnimatePresence>
 
           {/* Challenge Selector */}
-          <div className="p-5 bg-white border border-gray-100 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-4 bg-white border border-gray-100 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1 flex-1">
               <label className="block text-[11px] font-semibold text-ug-navy tracking-wide">Select Challenge to Filter Candidates</label>
               <select
@@ -759,10 +766,10 @@ ${proposalText}`;
               </select>
             </div>
 
-            <div className="flex gap-2 shrink-0">
+            <div className="flex flex-wrap gap-2 shrink-0">
               <button
                 onClick={() => setPartnerActiveTab('researchers')}
-                className={`px-5 py-2.5 rounded-full text-[11px] font-semibold tracking-wide transition-all ${
+                className={`px-4 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition-all ${
                   partnerActiveTab === 'researchers'
                     ? 'bg-ug-navy text-white shadow-md'
                     : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -772,7 +779,7 @@ ${proposalText}`;
               </button>
               <button
                 onClick={() => setPartnerActiveTab('students')}
-                className={`px-5 py-2.5 rounded-full text-[11px] font-semibold tracking-wide transition-all ${
+                className={`px-4 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition-all ${
                   partnerActiveTab === 'students'
                     ? 'bg-ug-navy text-white shadow-md'
                     : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -784,7 +791,7 @@ ${proposalText}`;
           </div>
 
           {/* Matches lists */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {partnerChallenges.length === 0 ? (
               <div className="py-10 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100 p-8">
                 <Users size={32} className="text-gray-300 mx-auto mb-3" />
@@ -827,13 +834,13 @@ ${proposalText}`;
                     return (
                       <div 
                         key={match.id}
-                        className="p-5 md:p-6 bg-white border border-gray-100 rounded-2xl hover:border-ug-teal/20 hover:shadow-lg transition-all duration-300 space-y-4"
+                         className="p-3.5 sm:p-4 bg-white border border-gray-100 rounded-xl hover:border-ug-teal/20 hover:shadow-md transition-all duration-300 space-y-3"
                       >
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                           
                           {/* Profile Details */}
-                          <div className="flex items-center gap-4 flex-1 min-w-0">
-                            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl shadow border border-gray-100 overflow-hidden bg-ug-navy shrink-0 relative">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg shadow-sm border border-gray-100 overflow-hidden bg-ug-navy shrink-0 relative">
                               {cand.avatar_url ? (
                                 <img src={cand.avatar_url} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt="" />
                               ) : (
@@ -849,13 +856,13 @@ ${proposalText}`;
                                   {match.recommendedRole || 'Technical Assistant'}
                                 </span>
                               </div>
-                              <h4 className="font-bold text-ug-navy text-sm tracking-tight truncate">{cand.name}</h4>
-                              <p className="text-[11px] text-gray-400 font-bold tracking-wider">{cand.department || 'Biomedical Directorate'}</p>
+                              <h4 className="font-semibold text-ug-navy text-[13px] sm:text-sm tracking-tight truncate">{cand.name}</h4>
+                              <p className="text-[11px] text-gray-400 font-medium tracking-wide">{cand.department || 'Biomedical Directorate'}</p>
                             </div>
                           </div>
 
                           {/* Dynamic actions for partner */}
-                          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                          <div className="flex flex-wrap items-center justify-end gap-2 shrink-0 self-end sm:self-auto">
                             
                             {match.status === 'invited' ? (
                               <div className="flex items-center gap-1 px-3 py-2 bg-amber-50 text-amber-700 border border-amber-100 rounded-xl text-[11px] font-semibold tracking-wide">
@@ -864,7 +871,7 @@ ${proposalText}`;
                             ) : (
                               <button
                                 onClick={() => handleUpdateStatus(match.id, 'invited', 'Candidate invited to apply for challenge.')}
-                                className="bg-ug-navy text-white hover:bg-ug-teal px-4 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition"
+                                className="bg-ug-navy text-white hover:bg-ug-teal px-3.5 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition"
                               >
                                 Invite To Apply
                               </button>
@@ -877,7 +884,7 @@ ${proposalText}`;
                             ) : (
                               <button
                                 onClick={() => handleUpdateStatus(match.id, 'shortlisted', 'Candidate added to shortlist.')}
-                                className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition"
+                                className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition"
                               >
                                 Shortlist
                               </button>
@@ -885,7 +892,7 @@ ${proposalText}`;
 
                             <button
                               onClick={() => handleOpenChat(match)}
-                              className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2.5 rounded-xl text-[11px] font-semibold tracking-wide transition flex items-center gap-1"
+                              className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition flex items-center gap-1"
                             >
                               <MessageSquare size={12} /> Chat
                             </button>
@@ -895,7 +902,7 @@ ${proposalText}`;
                         </div>
 
                         {/* Expandable score weighting */}
-                        <div className="border-t border-gray-50 pt-3 flex items-center justify-between">
+                        <div className="border-t border-gray-50 pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                           <button
                             onClick={() => setExpandedMatchId(isExpanded ? null : match.id)}
                             className="flex items-center gap-1 text-[11px] font-semibold text-ug-teal hover:text-ug-navy tracking-wide transition"
@@ -903,7 +910,7 @@ ${proposalText}`;
                             {isExpanded ? <><ChevronUp size={12} /> Hide breakdown</> : <><ChevronDown size={12} /> View breakdown</>}
                           </button>
                           
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-1.5">
                             {cand.skills?.slice(0, 3).map((sk, idx) => (
                               <span key={idx} className="text-[11px] font-bold text-gray-400 px-2 py-0.5 bg-gray-50 rounded-lg capitalize border border-gray-100">
                                 {sk}
@@ -961,11 +968,11 @@ ${proposalText}`;
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-2xl bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden flex flex-col p-6 md:p-8 space-y-6"
+              className="relative w-full max-w-2xl bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden flex flex-col p-4 sm:p-5 md:p-6 space-y-5"
             >
               <div className="flex items-start justify-between border-b border-gray-100 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-ug-teal/10 rounded-2xl text-ug-teal">
+                  <div className="p-2.5 bg-ug-teal/10 rounded-xl text-ug-teal">
                     <SendIcon size={18} />
                   </div>
                   <div>
@@ -994,21 +1001,21 @@ ${proposalText}`;
                   rows={8}
                   value={proposalText}
                   onChange={(e) => setProposalText(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 text-xs font-medium text-gray-700 leading-relaxed font-sans focus:outline-none resize-none"
+                  className="w-full bg-gray-50 border border-gray-100 rounded-xl p-4 text-xs font-normal text-gray-700 leading-relaxed font-sans focus:outline-none resize-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
+              <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-3 border-t border-gray-100 pt-4">
                 <button
                   onClick={() => setIsProposalModalOpen(false)}
-                  className="px-6 py-3 bg-white border border-gray-200 rounded-xl text-[11px] font-semibold tracking-wide"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 rounded-lg text-[11px] font-semibold tracking-wide"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmitProposal}
                   disabled={isSubmittingProposal}
-                  className="px-8 py-3 bg-ug-navy text-white rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition flex items-center gap-2"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-ug-navy text-white rounded-lg text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition flex items-center justify-center gap-2"
                 >
                   {isSubmittingProposal ? <Loader2 className="animate-spin" size={12} /> : null}
                   Send Proposal

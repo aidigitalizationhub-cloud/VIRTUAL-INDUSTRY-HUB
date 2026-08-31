@@ -26,3 +26,6 @@ dist-ssr
 
 # Migrated prompt history (contains internal prompts; must not be committed)
 migrated_prompt_history/
+
+# Local architecture and research documentation
+docs/

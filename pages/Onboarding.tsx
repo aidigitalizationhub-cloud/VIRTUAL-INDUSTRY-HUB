@@ -161,9 +161,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist@5.7.284/build/pdf.worker.min.mjs';
             }
 
-            let loadingTask = pdfjsLib.getDocument({ 
+            // verbosity: 0 (ERRORS) silences benign font-sanitization warnings
+            // like "TT: undefined function: 32" emitted by pdf.js for some PDFs'
+            // TrueType hinting programs. Text extraction is unaffected.
+            const QUIET = { verbosity: 0 as const };
+
+            let loadingTask = pdfjsLib.getDocument({
               data: arrayBuffer,
               useWorkerFetch: false,
+              ...QUIET,
             });
 
             let pdf;
@@ -176,6 +182,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               const fallbackTask = pdfjsLib.getDocument({
                 data: arrayBuffer,
                 useWorkerFetch: false,
+                ...QUIET,
               });
               pdf = await fallbackTask.promise;
             }
@@ -247,7 +254,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
       // Generate Embedding for matching
       let embedding: number[] | undefined;
       try {
-        embedding = (await EmbeddingService.getEmbedding(profile.embedding_text)) ?? undefined;
+        // Fall back to any semantic content if the extractor omitted embedding_text
+        const embeddingInput: string =
+          (profile as any).embedding_text ||
+          [user?.name, selectedRole, (profile as any).semantic_summary, answers?.problemStatement]
+            .filter(Boolean)
+            .join(' ');
+        embedding = (await EmbeddingService.getEmbedding(embeddingInput)) ?? undefined;
       } catch (err: any) {
         console.error("Embedding generation failed:", err);
         showToast(err?.message || "AI profile setup failed due to missing credentials. Using local fallbacks.", "warning");
@@ -268,8 +281,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
       }
       
       setStep('summary');
-    } catch (error) {
-      showToast("Simulation Error: AI Processing failed. Please try again.", "error");
+    } catch (error: any) {
+      console.error("Onboarding profile processing failed:", error);
+      showToast(error?.message || "Simulation Error: AI Processing failed. Please try again.", "error");
       setStep(userType === 'entity' ? 'entity_ai_questions' : 'resume');
     } finally {
       setIsProcessing(false);

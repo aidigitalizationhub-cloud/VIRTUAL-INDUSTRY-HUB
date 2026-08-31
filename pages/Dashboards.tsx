@@ -3665,13 +3665,12 @@ ${senderName}`
       // 2. BACKGROUND AI RE-RANKING: Asynchronously refine scores with cached or background Gemini ranking
       if (user.ai_profile) {
         setIsProcessing(true);
-        Promise.all([
-          MatchingService.rankMatches(user.ai_profile, profiles),
-          MatchingService.rankMatches(user.ai_profile, projects)
-        ]).then(([rankedProfiles, rankedProjects]) => {
+        (async () => {
+          const rankedProfiles = await MatchingService.rankMatches(user.ai_profile!, profiles);
+          const rankedProjects = await MatchingService.rankMatches(user.ai_profile!, projects);
           if (rankedProfiles && rankedProfiles.length > 0) setProfileMatches(rankedProfiles);
           if (rankedProjects && rankedProjects.length > 0) setProjectMatches(rankedProjects);
-        }).catch((rankError) => {
+        })().catch((rankError) => {
           console.warn("Background AI Ranking silent fallback:", rankError);
         }).finally(() => {
           setIsProcessing(false);
@@ -3776,15 +3775,15 @@ ${senderName}`
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-14 gap-4">
-        <Loader2 className="animate-spin text-ug-teal" size={40} />
-        <p className="text-[11px] font-semibold text-gray-400 tracking-wide animate-pulse">Finding matches...</p>
+      <div className="flex flex-col items-center justify-center py-10 gap-3">
+        <Loader2 className="animate-spin text-ug-teal" size={32} />
+        <p className="text-[11px] font-medium text-gray-400 tracking-wide animate-pulse">Finding matches...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 font-sans">
+    <div className="space-y-4 font-sans text-sm">
       
       {/* Sub-navigation tabs */}
       <div className="grid grid-cols-2 sm:flex sm:gap-6 border-b border-gray-100">
@@ -3822,16 +3821,16 @@ ${senderName}`
         />
       ) : (
         <>
-          <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
-          <h2 className="text-base sm:text-lg font-bold text-ug-navy">Project Matches</h2>
+          <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
+          <h2 className="text-sm sm:text-base font-semibold text-ug-navy tracking-tight">Project Matches</h2>
 
           {/* Controls: Rerun Matching and Status */}
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleRerunMatching}
               disabled={isRerunning || isProcessing}
-              className={`group flex items-center gap-2 px-3.5 py-2 rounded-xl border text-[11px] font-semibold tracking-wide transition-all duration-300 shadow-sm ${
+              className={`group flex items-center gap-1.5 px-3 py-2 rounded-lg border text-[11px] font-semibold tracking-wide transition-all duration-300 shadow-sm ${
                 isRerunning
                   ? 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed'
                   : 'bg-white border-ug-teal text-ug-teal hover:bg-ug-teal hover:text-white active:scale-95 cursor-pointer'
@@ -3859,11 +3858,11 @@ ${senderName}`
 
 
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {(showAllProjects ? projectMatches : projectMatches.slice(0, 5)).map((proj, i) => (
-            <div key={proj.id} className="p-4 sm:p-5 border border-gray-100 rounded-2xl bg-white hover:border-ug-teal/30 transition-all text-left">
-              <div className="flex items-start gap-3 sm:gap-4">
-                <div className="w-12 h-12 bg-ug-navy/5 rounded-xl flex items-center justify-center text-ug-navy shrink-0 overflow-hidden">
+            <div key={proj.id} className="p-3.5 sm:p-4 border border-gray-100 rounded-xl bg-white hover:border-ug-teal/30 transition-all text-left">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 bg-ug-navy/5 rounded-lg flex items-center justify-center text-ug-navy shrink-0 overflow-hidden">
                   {proj.image_url && proj.image_url.trim() !== '' ?
                     <img src={proj.image_url.split('|')[0] || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" /> :
                     <Globe size={20} />
@@ -3871,7 +3870,7 @@ ${senderName}`
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
-                    <h4 className="font-bold text-ug-navy text-sm tracking-tight leading-snug min-w-0">{proj.title}</h4>
+                    <h4 className="font-semibold text-ug-navy text-[13px] sm:text-sm tracking-tight leading-snug min-w-0">{proj.title}</h4>
                     {proj.ai_score !== undefined && proj.ai_score !== null && !isNaN(Number(proj.ai_score)) && (
                       <span className="shrink-0 text-[11px] font-bold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-full">
                         {Math.round(Number(proj.ai_score))}%
@@ -3892,11 +3891,11 @@ ${senderName}`
                       {proj.status || 'Active'}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 font-medium line-clamp-2 mt-1.5">"{proj.ai_reasoning || proj.description}"</p>
+                   <p className="text-[11px] sm:text-xs text-gray-500 font-normal leading-relaxed line-clamp-2 mt-1.5">"{proj.ai_reasoning || proj.description}"</p>
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
-                <button onClick={(e) => { e.stopPropagation(); handleExpressInterestClick(proj); }} className="bg-ug-navy text-white px-4 py-2 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition active:scale-95">Express Interest</button>
+                <button onClick={(e) => { e.stopPropagation(); handleExpressInterestClick(proj); }} className="bg-ug-navy text-white px-3.5 py-2 rounded-lg text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition active:scale-95">Express Interest</button>
               </div>
             </div>
           ))}
@@ -3929,17 +3928,17 @@ ${senderName}`
         </div>
       </div>
 
-      <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
         <div className="flex items-center gap-2.5 mb-4">
-          <Users size={18} className="text-ug-teal" />
-          <h2 className="text-lg md:text-xl font-bold text-ug-navy">Suggested Collaborators</h2>
+          <Users size={16} className="text-ug-teal" />
+          <h2 className="text-sm sm:text-base font-semibold text-ug-navy tracking-tight">Suggested Collaborators</h2>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
            {(showAllProfiles ? profileMatches : profileMatches.slice(0, 5)).map((collab, i) => (
-             <div key={collab.id} className="p-4 sm:p-5 border border-gray-100 rounded-2xl bg-white hover:border-ug-teal/30 transition-all text-left">
-               <div className="flex items-start gap-3 sm:gap-4">
-                 <div className="w-12 h-12 rounded-xl overflow-hidden bg-ug-navy shrink-0">
+             <div key={collab.id} className="p-3.5 sm:p-4 border border-gray-100 rounded-xl bg-white hover:border-ug-teal/30 transition-all text-left">
+               <div className="flex items-start gap-3">
+                 <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg overflow-hidden bg-ug-navy shrink-0">
                    {collab.avatar_url || collab.image_url ?
                      <img src={collab.avatar_url || collab.image_url} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt="" /> :
                      <UserIcon className="w-full h-full p-3.5 text-white/20" />
@@ -3948,8 +3947,8 @@ ${senderName}`
                  <div className="min-w-0 flex-1">
                    <div className="flex items-start justify-between gap-3">
                      <div className="min-w-0">
-                       <h4 className="font-bold text-ug-navy text-sm tracking-tight truncate">{collab.name || 'UG Science Partner'}</h4>
-                       <p className="text-[11px] font-semibold text-ug-teal tracking-wide truncate">{collab.role}</p>
+                        <h4 className="font-semibold text-ug-navy text-[13px] sm:text-sm tracking-tight truncate">{collab.name || 'UG Science Partner'}</h4>
+                        <p className="text-[11px] font-medium text-ug-teal tracking-wide truncate">{collab.role}</p>
                      </div>
                      {collab.ai_score !== undefined && collab.ai_score !== null && !isNaN(Number(collab.ai_score)) && (
                        <span className="shrink-0 text-[11px] font-bold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-full">
@@ -3958,13 +3957,13 @@ ${senderName}`
                      )}
                    </div>
                    {(collab.ai_reasoning || collab.semantic_summary) && (
-                     <p className="text-xs text-gray-500 font-medium leading-relaxed line-clamp-2 mt-1.5">
-                       "{collab.ai_reasoning || collab.semantic_summary}"
-                     </p>
+                      <p className="text-[11px] sm:text-xs text-gray-500 font-normal leading-relaxed line-clamp-2 mt-1.5">
+                        "{collab.ai_reasoning || collab.semantic_summary}"
+                      </p>
                    )}
                  </div>
                </div>
-               <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end gap-2">
+                <div className="mt-3 pt-3 border-t border-gray-100 flex flex-wrap justify-end gap-2">
                  <button
                    onClick={(e) => {
                      e.stopPropagation();
@@ -3973,14 +3972,14 @@ ${senderName}`
                        setActiveTab('messages');
                      }
                    }}
-                   className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3.5 py-2 rounded-xl text-[11px] font-semibold tracking-wide transition active:scale-95"
+                    className="bg-white border border-gray-200 text-ug-navy hover:text-ug-teal hover:border-ug-teal px-3 py-2 rounded-lg text-[11px] font-semibold tracking-wide transition active:scale-95"
                    title="Open direct chat"
                  >
                    <span className="flex items-center gap-1"><MessageSquare size={12} /> Chat</span>
                  </button>
                  <button
                    onClick={(e) => { e.stopPropagation(); handleInitiateCollaborationClick(collab); }}
-                   className="bg-ug-navy text-white px-4 py-2 rounded-xl text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition active:scale-95"
+                    className="bg-ug-navy text-white px-3.5 py-2 rounded-lg text-[11px] font-semibold tracking-wide hover:bg-ug-teal transition active:scale-95"
                  >
                    Initiate Proposal
                  </button>

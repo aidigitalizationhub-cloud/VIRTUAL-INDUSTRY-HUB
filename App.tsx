@@ -1,25 +1,11 @@
 
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AIAssistant from './components/AIAssistant';
 import AuthModal from './components/AuthModal';
-import Home from './pages/Home';
-import Projects from './pages/Projects';
-import ProjectDetail from './pages/ProjectDetail';
-import ResearcherPortfolio from './pages/ResearcherPortfolio';
-import Dashboards from './pages/Dashboards';
-import { Onboarding } from './pages/Onboarding';
-import Products from './pages/Products';
-import News from './pages/News';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import ForgotPassword from './pages/ForgotPassword';
-import VerifyOTP from './pages/VerifyOTP';
-import ResetPassword from './pages/ResetPassword';
 import { UserRole, User } from './types';
-import { AdminLogin } from './pages/AdminLogin';
 import { AlertCircle, X, CheckCircle2, BellRing, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from './lib/supabase';
@@ -27,6 +13,21 @@ import { authClient } from './lib/auth-client';
 import { StorageService } from './services/storageService';
 import { AIScoutService } from './services/aiScoutService';
 import { useSystemTheme } from './hooks/useSystemTheme';
+
+const Home = lazy(() => import('./pages/Home'));
+const Projects = lazy(() => import('./pages/Projects'));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
+const ResearcherPortfolio = lazy(() => import('./pages/ResearcherPortfolio'));
+const Dashboards = lazy(() => import('./pages/Dashboards'));
+const Onboarding = lazy(() => import('./pages/Onboarding').then((module) => ({ default: module.Onboarding })));
+const Products = lazy(() => import('./pages/Products'));
+const News = lazy(() => import('./pages/News'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const VerifyOTP = lazy(() => import('./pages/VerifyOTP'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const AdminLogin = lazy(() => import('./pages/AdminLogin').then((module) => ({ default: module.AdminLogin })));
 
 // --- TOAST SYSTEM ---
 interface Toast {
@@ -40,6 +41,12 @@ const ToastContext = createContext<{
 }>({ showToast: () => {} });
 
 export const useToast = () => useContext(ToastContext);
+
+const RouteFallback = () => (
+  <div className="min-h-[50vh] flex items-center justify-center text-[11px] font-semibold tracking-[0.2em] text-ug-teal uppercase">
+    Loading workspace...
+  </div>
+);
 
 const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => void }> = ({ toasts, removeToast }) => (
   <div className="fixed top-24 right-6 z-[200] space-y-3 pointer-events-none">
@@ -277,54 +284,56 @@ const AppContent: React.FC = () => {
         )}
         
         <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/projects/:id" element={<ProjectDetail />} />
-            <Route path="/researcher/:id" element={<ResearcherPortfolio />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/verify-otp" element={<VerifyOTP />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            
-            <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute 
-                    isAuthenticated={isAuthenticated} 
-                    onUnauthorized={handleUnauthorizedAccess}
-                  >
-                    {userProfile?.role !== UserRole.Admin && !userProfile?.ai_profile && !localStorage.getItem(`onboarding_skipped_${userProfile?.id}`) ? (
-                      <Onboarding 
-                        user={userProfile} 
-                        onComplete={() => userProfile && loadProfile(userProfile.id)} 
-                        onSkip={() => {
-                          if (userProfile?.id) {
-                            localStorage.setItem(`onboarding_skipped_${userProfile.id}`, 'true');
-                            loadProfile(userProfile.id);
-                          }
-                        }}
-                      />
-                    ) : (
-                      <Dashboards 
-                        role={userProfile?.role || UserRole.Researcher} 
-                        user={userProfile} 
-                        initialThreadId={selectedThreadId}
-                        onThreadHandled={() => setSelectedThreadId(null)}
-                        onLogout={handleLogout}
-                        onProfileUpdate={() => userProfile && loadProfile(userProfile.id)}
-                      />
-                    )}
-                  </ProtectedRoute>
-                } 
-            />
-            
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:id" element={<ProjectDetail />} />
+              <Route path="/researcher/:id" element={<ResearcherPortfolio />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/news" element={<News />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/verify-otp" element={<VerifyOTP />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              
+              <Route 
+                  path="/dashboard" 
+                  element={
+                    <ProtectedRoute 
+                      isAuthenticated={isAuthenticated} 
+                      onUnauthorized={handleUnauthorizedAccess}
+                    >
+                      {userProfile?.role !== UserRole.Admin && !userProfile?.ai_profile && !localStorage.getItem(`onboarding_skipped_${userProfile?.id}`) ? (
+                        <Onboarding 
+                          user={userProfile} 
+                          onComplete={() => userProfile && loadProfile(userProfile.id)} 
+                          onSkip={() => {
+                            if (userProfile?.id) {
+                              localStorage.setItem(`onboarding_skipped_${userProfile.id}`, 'true');
+                              loadProfile(userProfile.id);
+                            }
+                          }}
+                        />
+                      ) : (
+                        <Dashboards 
+                          role={userProfile?.role || UserRole.Researcher} 
+                          user={userProfile} 
+                          initialThreadId={selectedThreadId}
+                          onThreadHandled={() => setSelectedThreadId(null)}
+                          onLogout={handleLogout}
+                          onProfileUpdate={() => userProfile && loadProfile(userProfile.id)}
+                        />
+                      )}
+                    </ProtectedRoute>
+                  } 
+              />
+              
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </main>
 
         <AuthModal 

@@ -1259,6 +1259,17 @@ export const StorageService = {
   // Profiles
   getProfile: async (userId: string) => {
     if (!userId) return null;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      try {
+        const data = await getJson<{ profile?: any | null }>('/api/profile/me');
+        return data?.profile || null;
+      } catch (error) {
+        console.warn('Server profile lookup failed:', error);
+        return null;
+      }
+    }
+
     const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
     if (!profile) return null;
 
@@ -1323,7 +1334,10 @@ export const StorageService = {
     // Security check: Ensure current user possesses ownership over this record, or holds an Administrative role
     const { data: { session } } = await supabase.auth.getSession();
     const currentUserId = session?.user?.id;
-    if (!currentUserId) throw new Error("Authentication required.");
+    if (!currentUserId) {
+      await postJson('/api/profile/update', { profile });
+      return;
+    }
 
     // Retrieve active profile structure
     const { data: existing } = await supabase
@@ -1443,26 +1457,45 @@ export const StorageService = {
 
     const validEmbedding = EmbeddingService.ensureDimension(embedding, 768);
 
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      try {
+        return await postJson<{ profiles: any[]; projects: any[] }>('/api/matches', {
+          userId,
+          embedding: validEmbedding,
+        });
+      } catch (error) {
+        console.warn('Server match lookup failed:', error);
+      }
+    }
+
     try {
-      const [{ data: profiles, error: profErr }, { data: projects, error: projErr }] = await Promise.all([
-        supabase.rpc('match_profiles', {
-          query_embedding: validEmbedding,
-          match_threshold: 0.0,
-          match_count: 20,
-          excluded_id: userId
-        }),
-        supabase.rpc('match_projects', {
-          query_embedding: validEmbedding,
-          match_threshold: 0.0,
-          match_count: 20
-        })
-      ]);
+      let finalProfiles: any[] = [];
+      let finalProjects: any[] = [];
 
-      if (profErr) console.warn("match_profiles RPC warning/error:", profErr);
-      if (projErr) console.warn("match_projects RPC warning/error:", projErr);
+      if (validEmbedding.length > 0) {
+        const [{ data: profiles, error: profErr }, { data: projects, error: projErr }] = await Promise.all([
+          supabase.rpc('match_profiles', {
+            query_embedding: validEmbedding,
+            match_threshold: 0.0,
+            match_count: 20,
+            excluded_id: userId
+          }),
+          supabase.rpc('match_projects', {
+            query_embedding: validEmbedding,
+            match_threshold: 0.0,
+            match_count: 20
+          })
+        ]);
 
-      let finalProfiles = profiles || [];
-      let finalProjects = projects || [];
+        if (profErr) console.warn("match_profiles RPC warning/error:", profErr);
+        if (projErr) console.warn("match_projects RPC warning/error:", projErr);
+
+        finalProfiles = profiles || [];
+        finalProjects = projects || [];
+      } else {
+        console.warn("Vector matching skipped: no valid embedding available.");
+      }
 
       // Fallback 1: If no vector-matched profiles are returned (e.g. similarity is NULL due to zero-vectors or NULL embeddings), fetch other users directly.
       if (finalProfiles.length === 0) {

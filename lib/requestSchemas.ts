@@ -17,7 +17,8 @@ export const chatRequestSchema = z.object({
 });
 
 export const embedRequestSchema = z.object({
-  text: z.string().min(1).max(20000),
+  // Sanity cap only — server truncates to model-safe length before calling the provider
+  text: z.string().min(1).max(200_000),
 });
 
 export const extractDocumentRequestSchema = z.object({
@@ -27,9 +28,20 @@ export const extractDocumentRequestSchema = z.object({
 });
 
 export const aiProfileRequestSchema = z.object({
-  cvText: z.string().max(20000).optional(),
+  // Sanity cap only — server slices to 15k chars for the extraction prompt
+  cvText: z.string().max(500_000).optional(),
   questionnaire: z.record(z.string(), z.any()).optional(),
   userType: z.string().max(50).optional(),
+});
+
+export const profileUpdateRequestSchema = z.object({
+  profile: z.record(z.string(), z.any()),
+  answers: z.record(z.string(), z.any()).optional(),
+});
+
+export const matchesRequestSchema = z.object({
+  userId: z.string().max(100),
+  embedding: z.array(z.number()).max(2048).optional(),
 });
 
 export const aiScoutSyncRequestSchema = z.object({

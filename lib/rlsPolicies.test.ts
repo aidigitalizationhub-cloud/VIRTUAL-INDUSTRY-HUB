@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const setupSql = readFileSync(resolve(process.cwd(), 'supabase_setup.sql'), 'utf8');
+const setupSql = readFileSync(resolve(process.cwd(), 'docs/database/supabase_setup.sql'), 'utf8');
 
 describe('supabase_setup.sql RLS invariants', () => {
   it('uses the is_admin() helper for privileged policies', () => {

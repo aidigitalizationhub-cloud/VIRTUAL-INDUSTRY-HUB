@@ -24,6 +24,9 @@ export const AIScoutService = {
   autoSyncNews: async (force: boolean = false): Promise<boolean> => {
     try {
       if (!force) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) return false;
+
         const lastSync = await AIScoutService.getLastSyncTime();
         if (lastSync) {
           const timeDiff = new Date().getTime() - lastSync.getTime();

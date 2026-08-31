@@ -1,6 +1,5 @@
 import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import Groq from 'groq-sdk';
@@ -25,6 +24,8 @@ import {
   embedRequestSchema,
   extractDocumentRequestSchema,
   aiProfileRequestSchema,
+  profileUpdateRequestSchema,
+  matchesRequestSchema,
   aiScoutSyncRequestSchema,
   aiMatchRequestSchema,
   createChallengeRequestSchema,
@@ -40,26 +41,25 @@ try {
   process.loadEnvFile('.env');
 } catch {}
 
-// Safe detection of run directory in both CommonJS and ES Module modes
-const getDirname = () => {
-  if (typeof __dirname !== 'undefined' && __dirname) {
-    return __dirname;
-  }
-  if (typeof import.meta !== 'undefined' && import.meta && import.meta.url) {
-    try {
-      return path.dirname(fileURLToPath(import.meta.url));
-    } catch (e) {}
-  }
-  return process.cwd();
-};
-const currentDirName = getDirname();
-
 // Clean validation of server-side API keys to prevent platform placeholders or empty checks bypassing
 const isValidKey = (key: any): boolean => {
   if (!key) return false;
   const k = String(key).trim();
   if (k === '' || k === 'undefined' || k === 'null' || k.startsWith('sb_') || k.length < 10) return false;
   return true;
+};
+
+const isValidSupabaseServiceKey = (key: any): boolean => {
+  if (!key) return false;
+  const k = String(key).trim().replace(/^['"]|['"]$/g, '');
+  if (!k || k === 'undefined' || k === 'null' || k.includes('your-')) return false;
+  if (/^(gsk_|AIza|sk-|xai-|hf_)/i.test(k)) return false;
+  return k.startsWith('eyJ') || k.startsWith('sb_secret_') || k.startsWith('sb_service_role_');
+};
+
+const isSupabaseApiKeyError = (error: any): boolean => {
+  const message = String(error?.message || '').toLowerCase();
+  return message.includes('invalid api key') || message.includes('service_role') || message.includes('anon');
 };
 
 // --- AI Gateway: centralized provider clients + model fallback ---
@@ -106,13 +106,36 @@ const generateWithFallback = async (
   throw lastError || new Error('All models failed.');
 };
 
-// Try Groq first, then fall back through the Gemini model list. Returns which
+// Try Gemini first, then fall back to Groq. Returns which
 // provider/model actually produced the response so callers can record accurate
 // provenance metadata in the AI decision ledger.
 const generateWithProviders = async (
   prompt: string,
   opts?: { json?: boolean; system?: string }
 ): Promise<{ provider: string; model: string; text: string } | null> => {
+  const ai = getGeminiClient();
+  if (ai) {
+    let lastError: any;
+    for (const modelName of GEMINI_FALLBACK_MODELS) {
+      try {
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: prompt,
+          config: opts?.json ? { responseMimeType: 'application/json' } : undefined
+        });
+        if (response && response.text) {
+          return { provider: 'google', model: modelName, text: response.text };
+        }
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`Gemini primary model ${modelName} failed:`, err?.message || err);
+      }
+    }
+    if (lastError) {
+      console.warn("All Gemini primary models failed, trying Groq fallback:", lastError?.message || lastError);
+    }
+  }
+
   const groq = getGroqClient();
   if (groq) {
     try {
@@ -129,30 +152,7 @@ const generateWithProviders = async (
         return { provider: 'groq', model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b', text: content };
       }
     } catch (err: any) {
-      console.warn("Groq primary call failed:", err?.message || err);
-    }
-  }
-
-  const ai = getGeminiClient();
-  if (ai) {
-    let lastError: any;
-    for (const modelName of GEMINI_FALLBACK_MODELS) {
-      try {
-        const response = await ai.models.generateContent({
-          model: modelName,
-          contents: prompt,
-          config: opts?.json ? { responseMimeType: 'application/json' } : undefined
-        });
-        if (response && response.text) {
-          return { provider: 'google', model: modelName, text: response.text };
-        }
-      } catch (err: any) {
-        lastError = err;
-        console.warn(`Model ${modelName} failed:`, err?.message || err);
-      }
-    }
-    if (lastError) {
-      console.warn("All Gemini fallback models failed:", lastError?.message || lastError);
+      console.warn("Groq fallback call failed:", err?.message || err);
     }
   }
 
@@ -227,6 +227,30 @@ let globalSkipImageGeneration = false;
 const PORT = 3000;
 const app = express();
 
+// --- Dev request logger (non-production only) ---
+// One compact line per request: METHOD path → status ms · who
+// Skips Vite internals/static assets so /api traffic is readable.
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+      const url = req.originalUrl || req.url;
+      if (
+        req.url === '/api/health' ||
+        /^\/(@vite|@id|node_modules|src|assets|__open-in-editor)/.test(url) ||
+        /\.(js|mjs|css|map|png|jpg|jpeg|svg|ico|woff2?|ttf)(\?|$)/i.test(url)
+      ) return;
+      const u: any = (req as any).user;
+      const who = u?.email
+        ? `${u.email}${(req as any).authSource ? ` via ${(req as any).authSource}` : ''}`
+        : 'anon';
+      const dur = Date.now() - start;
+      console.log(`[api] ${req.method} ${url.split('?')[0]} → ${res.statusCode} ${dur}ms · ${who}`);
+    });
+    next();
+  });
+}
+
 // Strict CORS allowlist (no wildcard). Configure via comma-separated CORS_ORIGINS env var.
 const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || '')
   .split(',')
@@ -234,7 +258,8 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || '')
   .filter(Boolean);
 
 // Better Auth handler — must be before JSON body parsing for its routes
-app.all("/api/auth/*", toNodeHandler(auth));
+// Express 5 uses path-to-regexp v6 where /* is invalid — use /*splat
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 // Security and CORS middleware for external frontends and container preview
 app.use((req, res, next) => {
@@ -300,9 +325,21 @@ const getServiceClient = () => {
     console.warn('SUPABASE_SERVICE_ROLE_KEY missing in server process.env. Platform write operations will fall back to the caller role.');
     return null;
   }
+  if (!isValidSupabaseServiceKey(serviceKey)) {
+    console.warn('SUPABASE_SERVICE_ROLE_KEY is invalid or appears to be a non-Supabase provider key.');
+    return null;
+  }
   return createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
+};
+
+const serviceClientConfigError = (): string => {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY || '';
+  if (key && !isValidSupabaseServiceKey(key)) {
+    return 'Server Supabase service key is invalid. Check SUPABASE_SERVICE_ROLE_KEY and restart the server.';
+  }
+  return 'Server Supabase service key is missing. Set SUPABASE_SERVICE_ROLE_KEY and restart the server.';
 };
 
 // Append-only AI decision provenance ledger write.
@@ -382,10 +419,10 @@ const authenticateUser = async (req: express.Request, res: express.Response, nex
         const svc = getServiceClient();
         if (svc) {
           let profile: any = null;
-          const { data: byId } = await svc.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+          const { data: byId } = await svc.from('profiles').select('id, role').eq('id', session.user.id).maybeSingle();
           profile = byId;
           if (!profile && session.user.email) {
-            const { data: byEmail } = await svc.from('profiles').select('role').eq('email', session.user.email).maybeSingle();
+            const { data: byEmail } = await svc.from('profiles').select('id, role').eq('email', session.user.email).maybeSingle();
             profile = byEmail;
             // If found by email but id differs, record the linkage for future (non-blocking)
             if (profile && (byEmail as any)?.id) {
@@ -444,6 +481,24 @@ const requireRole = (...roles: string[]) => {
   };
 };
 
+const getRequestProfileId = (req: express.Request): string | undefined =>
+  (req as any).resolvedProfileId || (req as any).user?.id;
+
+const getDbClientForRequest = (req: express.Request) => {
+  const token = (req as any).userToken;
+  if (token) return getSupabaseClient(token);
+  return getServiceClient();
+};
+
+const normalizeEmbedding = (embedding: unknown, dimension = 768): number[] => {
+  if (!Array.isArray(embedding) || embedding.length === 0) return [];
+  const values = embedding.filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
+  if (values.length === 0) return [];
+  if (values.length === dimension) return values;
+  if (values.length > dimension) return values.slice(0, dimension);
+  return [...values, ...new Array(dimension - values.length).fill(0)];
+};
+
 interface RateLimitRecord {
   count: number;
   resetTime: number;
@@ -489,6 +544,186 @@ const throttleLimit = (maxRequests: number, windowMs: number) => {
     next();
   };
 };
+
+app.get('/api/profile/me', authenticateUser, async (req, res) => {
+  try {
+    const profileId = getRequestProfileId(req);
+    const db = getDbClientForRequest(req);
+    if (!db || !profileId) {
+      return res.status(503).json({ error: serviceClientConfigError() });
+    }
+
+    const { data: profile, error } = await db.from('profiles').select('*').eq('id', profileId).maybeSingle();
+    if (error) throw error;
+    return res.json({ profile: profile || null });
+  } catch (error: any) {
+    console.error('Server profile load error:', error);
+    if (isSupabaseApiKeyError(error)) {
+      return res.status(503).json({ error: 'Server Supabase service key is invalid. Check SUPABASE_SERVICE_ROLE_KEY and restart the server.' });
+    }
+    return res.status(500).json({ error: 'Profile load failed. Please try again.' });
+  }
+});
+
+app.post('/api/matches', validateBody(matchesRequestSchema), authenticateUser, async (req, res) => {
+  try {
+    const profileId = getRequestProfileId(req);
+    const requestedUserId = req.body.userId;
+    if (!profileId || requestedUserId !== profileId) {
+      return res.status(403).json({ error: 'Unauthorized: Match request is invalid.' });
+    }
+
+    const db = getDbClientForRequest(req);
+    if (!db) {
+      return res.status(503).json({ error: serviceClientConfigError() });
+    }
+
+    const validEmbedding = normalizeEmbedding(req.body.embedding, 768);
+    let finalProfiles: any[] = [];
+    let finalProjects: any[] = [];
+
+    if (validEmbedding.length > 0) {
+      const [{ data: profiles, error: profErr }, { data: projects, error: projErr }] = await Promise.all([
+        db.rpc('match_profiles', {
+          query_embedding: validEmbedding,
+          match_threshold: 0.0,
+          match_count: 20,
+          excluded_id: profileId,
+        }),
+        db.rpc('match_projects', {
+          query_embedding: validEmbedding,
+          match_threshold: 0.0,
+          match_count: 20,
+        }),
+      ]);
+
+      if (profErr) console.warn('match_profiles RPC warning/error:', profErr);
+      if (projErr) console.warn('match_projects RPC warning/error:', projErr);
+      finalProfiles = profiles || [];
+      finalProjects = projects || [];
+    }
+
+    if (finalProfiles.length === 0) {
+      const { data: fallbackProfiles } = await db
+        .from('profiles')
+        .select('id, name, role, ai_profile, semantic_summary, avatar_url')
+        .neq('id', profileId)
+        .limit(10);
+      finalProfiles = (fallbackProfiles || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        role: p.role || 'Researcher',
+        ai_profile: p.ai_profile,
+        semantic_summary: p.semantic_summary || 'Digital identity registered in University of Ghana Ecosystem.',
+        similarity: 0.82,
+        avatar_url: p.avatar_url,
+      }));
+    }
+
+    if (finalProjects.length === 0) {
+      const { data: fallbackProjects } = await db
+        .from('projects')
+        .select('id, title, description, image_url, research_area, visibility, owner_id, disclosure_status')
+        .limit(10);
+      finalProjects = (fallbackProjects || []).map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        image_url: p.image_url,
+        research_area: p.research_area || 'General Research',
+        visibility: p.visibility,
+        owner_id: p.owner_id,
+        disclosure_status: p.disclosure_status,
+        similarity: 0.80,
+      }));
+    }
+
+    return res.json({ profiles: finalProfiles, projects: finalProjects });
+  } catch (error: any) {
+    console.error('Server match retrieval error:', error);
+    if (isSupabaseApiKeyError(error)) {
+      return res.status(503).json({ error: 'Server Supabase service key is invalid. Check SUPABASE_SERVICE_ROLE_KEY and restart the server.' });
+    }
+    return res.json({ profiles: [], projects: [] });
+  }
+});
+
+app.post('/api/profile/update', validateBody(profileUpdateRequestSchema), authenticateUser, async (req, res) => {
+  try {
+    const serviceClient = getServiceClient();
+    if (!serviceClient) {
+      return res.status(503).json({ error: serviceClientConfigError() });
+    }
+
+    const incomingProfile = req.body.profile || {};
+    const answers = req.body.answers || incomingProfile.answers;
+    const authUser = (req as any).user;
+    const resolvedProfileId = (req as any).resolvedProfileId;
+    const targetProfileId = resolvedProfileId || incomingProfile.id || authUser?.id;
+    const allowedIds = new Set([authUser?.id, resolvedProfileId].filter(Boolean));
+
+    if (!targetProfileId || !allowedIds.has(targetProfileId)) {
+      return res.status(403).json({ error: 'Unauthorized: Profile mutation request is invalid.' });
+    }
+
+    const { answers: _discardAnswers, ...profilePayload } = incomingProfile;
+    const mainProfile = {
+      ...profilePayload,
+      id: targetProfileId,
+      email: profilePayload.email || authUser?.email || null,
+    };
+
+    const { data: existing } = await serviceClient
+      .from('profiles')
+      .select('id')
+      .eq('id', targetProfileId)
+      .maybeSingle();
+
+    const result = existing
+      ? await serviceClient.from('profiles').update(mainProfile).eq('id', targetProfileId)
+      : await serviceClient.from('profiles').insert([mainProfile]);
+
+    if (result.error) throw result.error;
+
+    if (answers && mainProfile.role) {
+      if (mainProfile.role === 'Student') {
+        await serviceClient.from('student_profiles').upsert({
+          user_id: targetProfileId,
+          education_level: answers.edu_level,
+          availability: answers.availability,
+          looking_for: Array.isArray(answers.looking_for) ? answers.looking_for.join(', ') : answers.looking_for,
+        });
+      } else if (mainProfile.role === 'Researcher') {
+        await serviceClient.from('researcher_profiles').upsert({
+          user_id: targetProfileId,
+          research_stage: answers.research_stage,
+          funding_needed: answers.funding_needed,
+          needs_students: answers.needs_students,
+        });
+      } else if (mainProfile.role === 'Investor') {
+        await serviceClient.from('investor_profiles').upsert({
+          user_id: targetProfileId,
+          funding_range: answers.funding_range,
+          investment_focus: answers.investment_focus,
+        });
+      } else if (mainProfile.role === 'Industry/Partner') {
+        await serviceClient.from('industry_profiles').upsert({
+          user_id: targetProfileId,
+          sector: answers.sector,
+          collaboration_type: answers.collab_type,
+        });
+      }
+    }
+
+    return res.json({ success: true, profileId: targetProfileId });
+  } catch (error: any) {
+    console.error('Server profile update error:', error);
+    if (isSupabaseApiKeyError(error)) {
+      return res.status(503).json({ error: 'Server Supabase service key is invalid. Check SUPABASE_SERVICE_ROLE_KEY and restart the server.' });
+    }
+    return res.status(500).json({ error: 'Profile update failed. Please try again.' });
+  }
+});
 
 // 1.5. Live Translation Endpoint using Gemini
 app.post('/api/translate', validateBody(translateRequestSchema), authenticateUser, throttleLimit(30, 60 * 1000), async (req: express.Request, res: express.Response) => {
@@ -641,9 +876,16 @@ app.post('/api/gemini/embed', validateBody(embedRequestSchema), authenticateUser
   }
 
   try {
+    // Embedding models are token-limited — clamp to a safe ceiling.
+    // The head of the document carries the strongest semantic signal for matching.
+    const EMBED_MAX_CHARS = 8_000;
+    const clamped = typeof text === 'string' && text.length > EMBED_MAX_CHARS
+      ? text.slice(0, EMBED_MAX_CHARS)
+      : text;
+
     const result = await ai.models.embedContent({
       model: 'gemini-embedding-2-preview',
-      contents: text
+      contents: clamped
     });
 
     const findArray = (obj: any): number[] | undefined => {
@@ -879,7 +1121,7 @@ ${(cvText || '').slice(0, 15000)}
 
 SOURCE 2: QUESTIONNAIRE RESPONSES
 <JSON_START>
-${JSON.stringify(questionnaire)}
+${JSON.stringify(questionnaire).slice(0, 10000)}
 <JSON_END>
 
 Provide semantic_summary (2-3 sentences) summarizing the profile, and embedding_text (concise keyword dump for semantic vector analysis).`;
@@ -1075,12 +1317,20 @@ app.post('/api/ai-scout/sync', validateBody(aiScoutSyncRequestSchema), authentic
 
   const today = new Date().toISOString().split('T')[0];
 
+  // Collapse concurrent duplicate syncs (StrictMode double-mount + News page both trigger)
+  const scoutState = (global as any).__scoutSync || ((global as any).__scoutSync = { running: false, lastDone: 0 });
+  if (scoutState.running) {
+    console.log('[scout] ⏳ sync already in flight — collapsing duplicate request');
+    return res.json({ didUpdate: false, message: 'Sync already in progress.' });
+  }
+  scoutState.running = true;
+
   try {
     const supabaseServer = getSupabaseClient()!;
     const finalizedItems: any[] = [];
 
     try {
-      console.log("Server AI Scout: scouting global trend news using live AI (Groq-first)...");
+      console.log(`[scout] ▶ starting news scout (force=${!!force}, last run ${scoutState.lastDone ? Math.round((Date.now() - scoutState.lastDone) / 1000) + 's ago' : 'never'})...`);
 
       const sitesPrompt = UG_SOURCES.join(", ");
       const globalPrompt = GLOBAL_ACCREDITED.join(", ");
@@ -1194,6 +1444,8 @@ Output: JSON array of objects with the precise structure outlined.`;
           .upsert(finalizedItems, { onConflict: 'title' });
 
         if (upsertError) throw upsertError;
+        console.log(`[scout] ✔ added ${finalizedItems.length} news items (upsert)`);
+        scoutState.lastDone = Date.now();
         return res.json({ didUpdate: true, count: finalizedItems.length });
       } catch (upsertErr: any) {
         console.warn("Server News: Upsert failed, executing single-row fallback inserts...", upsertErr?.message || upsertErr);
@@ -1229,15 +1481,21 @@ Output: JSON array of objects with the precise structure outlined.`;
             console.warn(`Failed syncing individual item "${item.title}":`, itemErr);
           }
         }
+        console.log(`[scout] ✔ fallback path done · new items: ${insertCount}/${finalizedItems.length}`);
+        scoutState.lastDone = Date.now();
         return res.json({ didUpdate: insertCount > 0, count: finalizedItems.length, fallbackUsed: true });
       }
     }
 
+    console.log('[scout] = finished — 0 new items (feeds up to date)');
+    scoutState.lastDone = Date.now();
     res.json({ didUpdate: false, message: 'No items synchronized.' });
   } catch (error: any) {
-    console.error('Server news sync failed:', error);
+    console.error('[scout] ✖ sync failed:', error.message);
     console.warn('AI Scout sync issue:', error.message);
       res.json({ didUpdate: false, error: 'Sync encountered an issue and will retry automatically.' });
+  } finally {
+    scoutState.running = false;
   }
 });
 
@@ -1393,14 +1651,16 @@ app.get('/api/industry-challenges', async (req, res) => {
 app.post('/api/industry-challenges', validateBody(createChallengeRequestSchema), authenticateUser, async (req, res) => {
   try {
     const { title, summary, description, category, required_skills, collaboration_type, budget_range, deadline, location } = req.body;
-    const partner_id = (req as any).user?.id;
-    const token = (req as any).userToken;
+    const partner_id = getRequestProfileId(req);
 
     if (!title || !category) {
       return res.status(400).json({ error: 'Title and Category are required.' });
     }
 
-    const supabaseClient = getSupabaseClient(token)!;
+    const supabaseClient = getDbClientForRequest(req)!;
+    if (!supabaseClient || !partner_id) {
+      return res.status(503).json({ error: 'Database client is not configured for authenticated writes.' });
+    }
     
     // Check if user is Partner or Admin
     const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', partner_id).single();
@@ -1440,9 +1700,11 @@ app.put('/api/industry-challenges/:id', validateBody(updateChallengeRequestSchem
   try {
     const { id } = req.params;
     const updates = req.body;
-    const userId = (req as any).user?.id;
-    const token = (req as any).userToken;
-    const supabaseClient = getSupabaseClient(token)!;
+    const userId = getRequestProfileId(req);
+    const supabaseClient = getDbClientForRequest(req)!;
+    if (!supabaseClient || !userId) {
+      return res.status(503).json({ error: 'Database client is not configured for authenticated writes.' });
+    }
 
     const { data: challenge } = await supabaseClient.from('industry_challenges').select('partner_id').eq('id', id).single();
     if (!challenge) {
@@ -1485,9 +1747,11 @@ app.put('/api/industry-challenges/:id', validateBody(updateChallengeRequestSchem
 app.delete('/api/industry-challenges/:id', authenticateUser, async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = (req as any).user?.id;
-    const token = (req as any).userToken;
-    const supabaseClient = getSupabaseClient(token)!;
+    const userId = getRequestProfileId(req);
+    const supabaseClient = getDbClientForRequest(req)!;
+    if (!supabaseClient || !userId) {
+      return res.status(503).json({ error: 'Database client is not configured for authenticated writes.' });
+    }
 
     const { data: challenge } = await supabaseClient.from('industry_challenges').select('partner_id').eq('id', id).single();
     if (!challenge) {
@@ -1515,10 +1779,9 @@ app.delete('/api/industry-challenges/:id', authenticateUser, async (req, res) =>
 // GET /api/challenge-matches - Fetch matches for logged-in user
 app.get('/api/challenge-matches', authenticateUser, async (req, res) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = getRequestProfileId(req);
     const { challengeId, role } = req.query;
-    const token = (req as any).userToken;
-    const supabaseClient = getSupabaseClient(token)!;
+    const supabaseClient = getDbClientForRequest(req)!;
     if (!supabaseClient) {
       return res.json({ matches: [] });
     }
@@ -1660,14 +1923,16 @@ const getInterests = (user: any) => {
 };
 
 // POST /api/challenge-matches/generate - Calculate match scores
-app.post('/api/challenge-matches/generate', validateBody(generateMatchesRequestSchema), authenticateUser, throttleLimit(4, 60 * 1000), async (req, res) => {
+app.post('/api/challenge-matches/generate', validateBody(generateMatchesRequestSchema), authenticateUser, throttleLimit(12, 60 * 1000), async (req, res) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = getRequestProfileId(req);
     const { challengeId } = req.body;
-    const token = (req as any).userToken;
-    const supabaseClient = getSupabaseClient(token)!;
+    const supabaseClient = getDbClientForRequest(req)!;
     const serviceClient = getServiceClient();
     const matchWriter = (serviceClient || supabaseClient)!;
+    if (!supabaseClient || !userId) {
+      return res.status(503).json({ error: 'Database client is not configured for authenticated matching.' });
+    }
 
     const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
     if (!profile) {
@@ -1841,14 +2106,16 @@ app.put('/api/challenge-matches/:id', validateBody(updateMatchStatusRequestSchem
   try {
     const { id } = req.params;
     const { status } = req.body;
-    const userId = (req as any).user?.id;
-    const token = (req as any).userToken;
+    const userId = getRequestProfileId(req);
 
     if (!status) {
       return res.status(400).json({ error: 'Status is required.' });
     }
 
-    const supabaseClient = getSupabaseClient(token)!;
+    const supabaseClient = getDbClientForRequest(req)!;
+    if (!supabaseClient || !userId) {
+      return res.status(503).json({ error: 'Database client is not configured for authenticated writes.' });
+    }
     const { data: match } = await supabaseClient.from('challenge_matches').select('*').eq('id', id).maybeSingle();
     
     if (!match) {
@@ -1882,9 +2149,7 @@ app.put('/api/challenge-matches/:id', validateBody(updateMatchStatusRequestSchem
 // --- AI Decision Provenance Ledger (Admin) ---
 app.get('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : undefined;
-    const supabaseClient = getSupabaseClient(token)!;
+    const supabaseClient = getDbClientForRequest(req)!;
     if (!supabaseClient) {
       return res.json({ decisions: [] });
     }
