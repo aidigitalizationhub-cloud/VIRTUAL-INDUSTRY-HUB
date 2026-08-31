@@ -78,14 +78,23 @@ const hashPassword = async (password: string) => {
   return bcrypt.hash(password, 10);
 };
 
+const betterAuthBaseURL =
+  process.env.BETTER_AUTH_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+const betterAuthTrustedOrigins = Array.from(new Set([
+  betterAuthBaseURL,
+  ...(process.env.CORS_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+]));
+
 export const auth = betterAuth({
   database: pool as any,
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL || process.env.VITE_BETTER_AUTH_URL || "http://localhost:3000",
-  trustedOrigins: (process.env.CORS_ORIGINS || "http://localhost:3000")
-    .split(",")
-    .map((o) => o.trim())
-    .filter(Boolean),
+  baseURL: betterAuthBaseURL,
+  trustedOrigins: betterAuthTrustedOrigins,
   advanced: {
     database: {
       // Must emit UUIDs to satisfy FKs profiles.id uuid, projects.owner_id uuid

@@ -1,7 +1,8 @@
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-  baseURL: (import.meta as any).env.VITE_BETTER_AUTH_URL || "http://localhost:3000",
+  // Same-origin is the safe production default; localhost is only for local development.
+  baseURL: (import.meta as any).env.VITE_BETTER_AUTH_URL || window.location.origin,
   fetchOptions: {
     credentials: "include",
   },
