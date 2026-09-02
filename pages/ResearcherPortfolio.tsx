@@ -10,7 +10,7 @@ import {
 import { StorageService } from '../services/storageService';
 import { User, Project } from '../types';
 import { useToast } from '../App';
-import { supabase } from '../lib/supabase';
+import { getAuthUser } from '../lib/auth-client';
 import { safeExternalUrl } from '../lib/urlSafety';
 
 // --- CONTACT PI MODAL ---
@@ -31,10 +31,10 @@ const ContactPIModal: React.FC<{
     e.preventDefault();
     setSending(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const user = await getAuthUser();
       let senderName = "External Contact";
-      if (session?.user?.id) {
-        const profile = await StorageService.getProfile(session.user.id);
+      if (user?.id) {
+        const profile = await StorageService.getProfile(user.id);
         if (profile?.name) senderName = profile.name;
       }
 

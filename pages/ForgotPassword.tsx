@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, ArrowRight, ArrowLeft, AlertCircle, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { authClient } from '../lib/auth-client';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -16,16 +16,13 @@ const ForgotPassword: React.FC = () => {
     setError(null);
 
     try {
-      // Supabase resetPasswordForEmail sends a recovery OTP or Link depending on project config.
-      // For OTP flow, we expect the user to receive a 6-digit code.
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      const result: any = await (authClient as any).requestPasswordReset({
+        email: email.trim(),
         redirectTo: `${window.location.origin}/#/reset-password`,
       });
-
-      if (resetError) throw resetError;
-
-      // Redirect to verification page with email in state
-      navigate('/verify-otp', { state: { email } });
+      if (result?.error) throw result.error;
+      setError(null);
+      window.alert('If an account exists for this email, a password reset link has been sent.');
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Failed to send recovery code. Please try again.');

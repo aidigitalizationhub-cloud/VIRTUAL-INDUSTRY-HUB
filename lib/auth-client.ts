@@ -8,5 +8,10 @@ export const authClient = createAuthClient({
   },
 });
 
+export const getAuthUser = async (): Promise<{ id: string; email?: string; name?: string } | null> => {
+  const result: any = await (authClient as any).getSession?.();
+  return result?.data?.user || result?.user || null;
+};
+
 // Re-export useful hooks for convenience
 export const { useSession, signIn, signUp, signOut } = authClient;

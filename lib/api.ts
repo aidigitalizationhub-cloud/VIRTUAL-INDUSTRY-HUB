@@ -1,19 +1,19 @@
-import { supabase } from './supabase';
-
 const authHeaders = async (): Promise<Record<string, string>> => {
-  // Better Auth uses httpOnly cookie (credentials:'include'), Supabase uses Bearer JWT.
-  // Send both when available so server dual-mode authenticateUser can accept either.
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  return { 'Content-Type': 'application/json' };
+};
+
+const requestWithTimeout = async (url: string, init: RequestInit): Promise<Response> => {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 15000);
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-  } catch {}
-  return headers;
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    window.clearTimeout(timeout);
+  }
 };
 
 export const getJson = async <T = any>(url: string): Promise<T> => {
-  const res = await fetch(url, { headers: await authHeaders(), credentials: 'include' });
+  const res = await requestWithTimeout(url, { headers: await authHeaders(), credentials: 'include' });
   if (!res.ok) {
     let message = `Request failed (${res.status})`;
     try {
@@ -29,7 +29,7 @@ export const getJson = async <T = any>(url: string): Promise<T> => {
 
 export const postJson = async <T = any>(url: string, body: any): Promise<T> => {
   const headers = await authHeaders();
-  const res = await fetch(url, {
+  const res = await requestWithTimeout(url, {
     method: 'POST',
     headers,
     credentials: 'include',
@@ -47,5 +47,40 @@ export const postJson = async <T = any>(url: string, body: any): Promise<T> => {
     throw new Error(message);
   }
 
+  return res.json();
+};
+
+export const putJson = async <T = any>(url: string, body: any): Promise<T> => {
+  const res = await requestWithTimeout(url, {
+    method: 'PUT',
+    headers: await authHeaders(),
+    credentials: 'include',
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let message = `Request failed (${res.status})`;
+    try {
+      const errData = await res.json();
+      if (errData?.error) message = errData.error;
+    } catch {}
+    throw new Error(message);
+  }
+  return res.json();
+};
+
+export const deleteJson = async <T = any>(url: string): Promise<T> => {
+  const res = await requestWithTimeout(url, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    let message = `Request failed (${res.status})`;
+    try {
+      const errData = await res.json();
+      if (errData?.error) message = errData.error;
+    } catch {}
+    throw new Error(message);
+  }
   return res.json();
 };

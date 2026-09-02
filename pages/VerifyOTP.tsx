@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { ShieldCheck, ArrowRight, ArrowLeft, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 const VerifyOTP: React.FC = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -47,50 +46,17 @@ const VerifyOTP: React.FC = () => {
     }
   };
 
-  const handleVerify = async (e: React.FormEvent) => {
+  useEffect(() => {
+    navigate('/forgot-password', { replace: true });
+  }, [navigate]);
+
+  const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    const token = otp.join('');
-    if (token.length < 6) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { error: verifyError } = await supabase.auth.verifyOtp({
-        email,
-        token,
-        type: 'recovery',
-      });
-
-      if (verifyError) throw verifyError;
-
-      // On success, Supabase logs the user in with a recovery session.
-      // Redirect to the reset password page.
-      navigate('/reset-password');
-    } catch (err: any) {
-      console.error(err);
-      setError('Invalid or expired security code. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    setError('Better Auth uses a secure password-reset link instead of an OTP code.');
   };
 
-  const handleResend = async () => {
-    if (countdown > 0) return;
-    
-    setResending(true);
-    setError(null);
-    try {
-      const { error: resendError } = await supabase.auth.resetPasswordForEmail(email);
-      if (resendError) throw resendError;
-      setCountdown(60);
-      setOtp(['', '', '', '', '', '']);
-      inputRefs.current[0]?.focus();
-    } catch (err: any) {
-      setError('Failed to resend code. Please try again later.');
-    } finally {
-      setResending(false);
-    }
+  const handleResend = () => {
+    navigate('/forgot-password', { replace: true });
   };
 
   return (

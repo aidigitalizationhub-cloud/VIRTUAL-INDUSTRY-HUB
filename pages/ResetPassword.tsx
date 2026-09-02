@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Check, ShieldAlert, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { authClient } from '../lib/auth-client';
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -13,15 +13,8 @@ const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Basic check: In a real Supabase recovery flow, the user is temporarily authenticated.
-    // If there is no session, they shouldn't be here.
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/forgot-password');
-      }
-    };
-    checkSession();
+    const token = new URLSearchParams(window.location.search).get('token');
+    if (!token) navigate('/forgot-password');
   }, [navigate]);
 
   const validatePassword = (pass: string) => {
@@ -45,16 +38,15 @@ const ResetPassword: React.FC = () => {
     setLoading(true);
 
     try {
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: password,
-      });
-
-      if (updateError) throw updateError;
+      const token = new URLSearchParams(window.location.search).get('token');
+      if (!token) throw new Error('This password reset link is missing or expired.');
+      const result: any = await (authClient as any).resetPassword({ newPassword: password, token });
+      if (result?.error) throw result.error;
 
       setSuccess(true);
       // Invalidate ALL sessions (this device + others) after a brief delay
       setTimeout(async () => {
-        await supabase.auth.signOut({ scope: 'global' });
+        try { await (authClient as any).signOut?.(); } catch {}
         navigate('/');
       }, 3000);
     } catch (err: any) {

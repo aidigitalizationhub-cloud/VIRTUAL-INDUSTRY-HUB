@@ -42,13 +42,14 @@ import { StorageService } from '../services/storageService';
 import { AIScoutService } from '../services/aiScoutService';
 import { DocumentExtractionService } from '../services/documentExtractionService';
 import { NewsItem } from '../types';
-import { supabase } from '../lib/supabase';
+import { getAuthUser } from '../lib/auth-client';
 import { useToast } from '../App';
 import { useNavigate } from 'react-router-dom';
 import { getGeminiResponse } from '../services/geminiService';
 import { Tr } from '../components/Tr';
 import { useTranslatedText } from '../services/translationService';
 import { formatDateMedium } from '../lib/format';
+import { safeExternalUrl } from '../lib/urlSafety';
 
 const News: React.FC = () => {
   const navigate = useNavigate();
@@ -70,9 +71,9 @@ const News: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setCurrentUser(session.user);
+    getAuthUser().then(user => {
+      if (user) {
+        setCurrentUser(user);
       }
     });
   }, []);
@@ -1548,7 +1549,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                 {/* Primary Citation Link */}
                 {selectedDetailedNews.external_url && (
                   <a
-                    href={selectedDetailedNews.external_url.startsWith('http') ? selectedDetailedNews.external_url : `https://${selectedDetailedNews.external_url}`}
+                    href={safeExternalUrl(selectedDetailedNews.external_url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-between p-3.5 bg-ug-teal/5 hover:bg-ug-teal hover:text-white border border-ug-teal/20 hover:border-ug-teal rounded-xl text-xs font-bold text-ug-teal transition duration-200 group w-full"
@@ -1567,7 +1568,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                     {selectedDetailedNews.reference_links.filter(Boolean).slice(0, 6).map((link, idx) => (
                       <a
                         key={idx}
-                        href={link.startsWith('http') ? link : `https://${link}`}
+                        href={safeExternalUrl(link)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-between px-3.5 py-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200/60 rounded-xl text-xs font-medium text-slate-700 transition group"

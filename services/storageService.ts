@@ -3,7 +3,9 @@ import { Project, NewsItem, User, UserRole, SavedSearch, AlertNotification, Acco
 import { supabase } from '../lib/supabase';
 import { EmbeddingService } from './embeddingService';
 import { decryptMessage } from '../lib/cryptoService';
-import { getJson, postJson } from '../lib/api';
+import { deleteJson, getJson, postJson, putJson } from '../lib/api';
+import { getAuthUser } from '../lib/auth-client';
+import { validateStorageUpload } from '../lib/uploadGuard';
 
 const getStorageFilePath = (urlOrPath: string, bucket = 'projects'): string => {
   if (!urlOrPath) return '';
@@ -41,8 +43,7 @@ export const StorageService = {
   // Initialization
   init: async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session;
+      return getAuthUser();
     } catch (error) {
       console.error('Session initialization error:', error);
       return null;
@@ -51,181 +52,62 @@ export const StorageService = {
 
   // --- FILE UPLOAD LOGIC ---
   uploadFile: async (file: File, bucket: string): Promise<string> => {
-    const bucketName = bucket.toLowerCase();
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-    const filePath = `${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from(bucketName)
-      .upload(filePath, file);
-
-    if (uploadError) {
-      console.error(`Upload failed for bucket ${bucketName}:`, uploadError);
-      throw new Error(`Upload failed: ${uploadError.message || 'Check storage permissions'}`);
+    const validation = validateStorageUpload({ name: file.name, mimeType: file.type, sizeBytes: file.size });
+    if (!validation.ok) throw new Error(validation.error || 'File upload rejected.');
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    let binary = '';
+    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+      binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
     }
-
-    const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-    return data.publicUrl;
+    const result = await postJson<{ path: string; url?: string | null }>('/api/storage/upload', {
+      bucket: bucket.toLowerCase(),
+      fileName: file.name,
+      mimeType: file.type,
+      contentBase64: btoa(binary),
+    });
+    return result.url || result.path;
   },
 
-  signProjectUrls: async (projects: Project[]): Promise<Project[]> => {
+  signProjectUrls: async (projects: Project[], includeProtectedDocuments = true): Promise<Project[]> => {
     if (!projects || projects.length === 0) return [];
-    
+
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
-
-      let isAdmin = false;
-      if (userId) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', userId)
-          .maybeSingle();
-        if (profile?.role === 'Admin') {
-          isAdmin = true;
-        }
-      }
-
-      const briefsToSign: { index: number; filePath: string; expiry: number }[] = [];
-      const docsToSign: { projectIndex: number; docIndex: number; filePath: string }[] = [];
-      const imagesToSign: { projectIndex: number; partIndex: number; filePath: string }[] = [];
-      
       const mutableProjects = JSON.parse(JSON.stringify(projects)) as Project[];
-      const projectImageParts: { [projectIndex: number]: string[] } = {};
-
-      for (let pIdx = 0; pIdx < mutableProjects.length; pIdx++) {
-        const proj = mutableProjects[pIdx];
-        const isOwnerOrAdmin = isAdmin || (userId && proj.owner_id === userId);
-
-        if (proj.image_url) {
-          const parts = proj.image_url.split('|');
-          projectImageParts[pIdx] = parts;
-          parts.forEach((part, partIdx) => {
-            if (isStorageUrl(part, 'projects')) {
-              const filePath = getStorageFilePath(part, 'projects');
-              if (filePath) {
-                imagesToSign.push({ projectIndex: pIdx, partIndex: partIdx, filePath });
-              }
-            }
-          });
-        }
-
-        if (proj.technical_details_url) {
-          let canAccessBrief = isOwnerOrAdmin;
-          let remainingSeconds = 3600;
-
-          if (!canAccessBrief && userId) {
-            // Check if they have an approved and active secure reveal
-            const { approved, remainingMinutes } = await StorageService.getRevealApprovalDetails(userId, proj.id);
-            if (approved) {
-              canAccessBrief = true;
-              remainingSeconds = remainingMinutes * 60;
-            }
+      const requests: { projectId: string; path: string; kind: 'image' | 'brief' | 'document'; projectIndex: number; docIndex?: number }[] = [];
+      mutableProjects.forEach((project, projectIndex) => {
+        project.image_url?.split('|').forEach((part, partIndex) => {
+          if (isStorageUrl(part, 'projects') && !part.includes('/object/public/projects/')) {
+            const path = getStorageFilePath(part, 'projects');
+            if (path) requests.push({ projectId: project.id, path, kind: 'image', projectIndex, docIndex: partIndex });
           }
-
-          if (canAccessBrief) {
-            const filePath = getStorageFilePath(proj.technical_details_url);
-            if (filePath) {
-              briefsToSign.push({ index: pIdx, filePath, expiry: remainingSeconds });
-            }
-          } else {
-            // Keep the property so the UI renders the locked brief box,
-            // but set it to a placeholder/non-downloadable value so they cannot direct-download
-            proj.technical_details_url = "locked";
-          }
+        });
+        if (project.technical_details_url && includeProtectedDocuments) {
+          const path = getStorageFilePath(project.technical_details_url);
+          if (path) requests.push({ projectId: project.id, path, kind: 'brief', projectIndex });
+        } else if (project.technical_details_url) {
+          project.technical_details_url = 'locked';
         }
-        
-        // Supporting documents: ONLY visible/accessible for owner or admins!
-        if (isOwnerOrAdmin && Array.isArray(proj.requested_documents)) {
-          proj.requested_documents.forEach((doc, dIdx) => {
-            if (doc.url) {
-              const filePath = getStorageFilePath(doc.url);
-              if (filePath) {
-                docsToSign.push({ projectIndex: pIdx, docIndex: dIdx, filePath });
-              }
-            }
+        if (includeProtectedDocuments && Array.isArray(project.requested_documents)) {
+          project.requested_documents.forEach((doc, docIndex) => {
+            const path = doc.url ? getStorageFilePath(doc.url) : '';
+            if (path) requests.push({ projectId: project.id, path, kind: 'document', projectIndex, docIndex });
           });
         } else {
-          proj.requested_documents = undefined;
-        }
-      }
-      
-      const briefPromises = briefsToSign.map(async (item) => {
-        try {
-          const { data, error } = await supabase.storage
-            .from('projects')
-            .createSignedUrl(item.filePath, item.expiry);
-          if (!error && data?.signedUrl) {
-            return { index: item.index, signedUrl: data.signedUrl };
-          }
-        } catch (e) {
-          console.warn(`Failed to sign brief filePath "${item.filePath}":`, e);
-        }
-        return { index: item.index, signedUrl: null };
-      });
-      
-      const docPromises = docsToSign.map(async (item) => {
-        try {
-          const { data, error } = await supabase.storage
-            .from('projects')
-            .createSignedUrl(item.filePath, 3600);
-          if (!error && data?.signedUrl) {
-            return { projectIndex: item.projectIndex, docIndex: item.docIndex, signedUrl: data.signedUrl };
-          }
-        } catch (e) {
-          console.warn(`Failed to sign doc filePath "${item.filePath}":`, e);
-        }
-        return { projectIndex: item.projectIndex, docIndex: item.docIndex, signedUrl: null };
-      });
-
-      const imagePromises = imagesToSign.map(async (item) => {
-        try {
-          const { data, error } = await supabase.storage
-            .from('projects')
-            .createSignedUrl(item.filePath, 3600);
-          if (!error && data?.signedUrl) {
-            return { projectIndex: item.projectIndex, partIndex: item.partIndex, signedUrl: data.signedUrl };
-          }
-        } catch (e) {
-          console.warn(`Failed to sign image filePath "${item.filePath}":`, e);
-        }
-        return { projectIndex: item.projectIndex, partIndex: item.partIndex, signedUrl: null };
-      });
-      
-      const [signedBriefs, signedDocs, signedImages] = await Promise.all([
-        Promise.all(briefPromises),
-        Promise.all(docPromises),
-        Promise.all(imagePromises)
-      ]);
-      
-      signedBriefs.forEach(item => {
-        if (item.signedUrl) {
-          mutableProjects[item.index].technical_details_url = item.signedUrl;
+          project.requested_documents = undefined;
         }
       });
-      
-      signedDocs.forEach(item => {
-        const doc = mutableProjects[item.projectIndex]?.requested_documents?.[item.docIndex];
-        if (item.signedUrl && doc) {
-          doc.url = item.signedUrl;
+      const { signed } = await postJson<{ signed: { projectIndex: number; docIndex?: number; kind: string; url: string }[] }>('/api/storage/sign', { requests });
+      signed.forEach(item => {
+        const project = mutableProjects[item.projectIndex];
+        if (!project) return;
+        if (item.kind === 'brief') project.technical_details_url = item.url;
+        if (item.kind === 'document' && item.docIndex !== undefined && project.requested_documents?.[item.docIndex]) project.requested_documents[item.docIndex].url = item.url;
+        if (item.kind === 'image' && item.docIndex !== undefined) {
+          const parts = project.image_url?.split('|') || [];
+          parts[item.docIndex] = item.url;
+          project.image_url = parts.join('|');
         }
       });
-
-      signedImages.forEach(item => {
-        if (item.signedUrl && projectImageParts[item.projectIndex]) {
-          projectImageParts[item.projectIndex][item.partIndex] = item.signedUrl;
-        }
-      });
-
-      Object.keys(projectImageParts).forEach(pIdxStr => {
-        const pIdx = parseInt(pIdxStr, 10);
-        if (mutableProjects[pIdx]) {
-          mutableProjects[pIdx].image_url = projectImageParts[pIdx].join('|');
-        }
-      });
-      
       return mutableProjects;
     } catch (err) {
       console.warn("Error in signProjectUrls, returning unmodified projects:", err);
@@ -236,8 +118,8 @@ export const StorageService = {
   // Projects CRUD
   getProjects: async (): Promise<Project[]> => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
+      const user = await getAuthUser();
+      const userId = user?.id;
 
       const { data, error } = await supabase
         .from('projects')
@@ -329,7 +211,7 @@ export const StorageService = {
         };
       });
 
-      return await StorageService.signProjectUrls(projectsWithOwners);
+       return await StorageService.signProjectUrls(projectsWithOwners, false);
     } catch (e) {
       return [];
     }
@@ -340,8 +222,8 @@ export const StorageService = {
   getProjectById: async (projectId: string): Promise<Project | null> => {
     if (!projectId) return null;
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id || null;
+      const user = await getAuthUser();
+      const userId = user?.id || null;
       let isAdmin = false;
       if (userId) {
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle();
@@ -398,99 +280,28 @@ export const StorageService = {
   getMyProjects: async (userId: string): Promise<Project[]> => {
     if (!userId) return [];
     try {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('owner_id', userId)
-        .order('created_at', { ascending: false });
-      
-      if (error || !data) return [];
+      const { projects } = await getJson<{ projects: Project[] }>('/api/projects/mine');
+      const data = projects || [];
 
       // Since these are already the user's projects (or the user is the owner),
       // we don't need to strip owner properties, but we DO need to generate
       // signed URLs for the technical brief & requested documents.
-      return await StorageService.signProjectUrls(data);
+      return await StorageService.signProjectUrls(data, false);
     } catch (e) {
       return [];
     }
   },
 
   getSignedTechnicalBrief: async (projectId: string): Promise<string> => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
-    if (!userId) throw new Error("Authentication required to access technical brief.");
-
-    const { data: project, error: projError } = await supabase
-      .from('projects')
-      .select('owner_id, technical_details_url')
-      .eq('id', projectId)
-      .single();
-
-    if (projError || !project) {
-      throw new Error("Project not found.");
-    }
-
-    let isAuthorized = project.owner_id === userId;
-    if (!isAuthorized) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .maybeSingle();
-      if (profile?.role === 'Admin') {
-        isAuthorized = true;
-      }
-    }
-
-    let expirySeconds = 3600; // def 1 hour
-
-    if (!isAuthorized) {
-      const { approved, remainingMinutes } = await StorageService.getRevealApprovalDetails(userId, projectId);
-      if (approved) {
-        isAuthorized = true;
-        expirySeconds = remainingMinutes * 60;
-      }
-    }
-
-    if (!isAuthorized) {
-      throw new Error("Access denied. A secure reveal approval is required to view this technical brief.");
-    }
-
-    if (!project.technical_details_url || project.technical_details_url === 'locked') {
-      // Fetch raw technical details url bypassing cached sign mapping if any
-      const { data: rawProj } = await supabase
-        .from('projects')
-        .select('technical_details_url')
-        .eq('id', projectId)
-        .single();
-      project.technical_details_url = rawProj?.technical_details_url;
-    }
-
-    if (!project.technical_details_url || project.technical_details_url === 'locked') {
-      throw new Error("No technical brief exists for this project.");
-    }
-
-    const filePath = getStorageFilePath(project.technical_details_url);
-    if (!filePath) {
-      throw new Error("Invalid technical brief path.");
-    }
-
-    const { data: signedData, error: signError } = await supabase.storage
-      .from('projects')
-      .createSignedUrl(filePath, expirySeconds);
-
-    if (signError || !signedData?.signedUrl) {
-      throw new Error("Failed to generate secure signed URL: " + (signError?.message || "unknown storage error"));
-    }
-
-    return signedData.signedUrl;
+    const authorizedUrl = await getJson<{ url: string }>(`/api/projects/${encodeURIComponent(projectId)}/technical-brief`);
+    return authorizedUrl.url;
   },
 
   getPublicResearcherProjects: async (researcherId: string): Promise<Project[]> => {
     if (!researcherId) return [];
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const currentUserId = session?.user?.id;
+      const user = await getAuthUser();
+      const currentUserId = user?.id;
 
       let isAdmin = false;
       if (currentUserId) {
@@ -540,7 +351,7 @@ export const StorageService = {
 
       // Return researcher's public disclosures (they won't get briefs signed by default here,
       // they must use approved reveal dynamically in ProjectDetail page via the secure 1-hour window)
-      return await StorageService.signProjectUrls(sanitized);
+       return await StorageService.signProjectUrls(sanitized, false);
     } catch (e) {
       console.error("Failed to retrieve researcher public projects:", e);
       return [];
@@ -567,8 +378,8 @@ export const StorageService = {
   },
 
   saveProject: async (project: Partial<Project>) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const currentUserId = session?.user?.id;
+    const user = await getAuthUser();
+    const currentUserId = user?.id;
 
     if (!currentUserId && !project.id) throw new Error("Authentication required.");
 
@@ -618,191 +429,36 @@ export const StorageService = {
       }
     }
 
-    let attempt = 0;
-    const maxAttempts = 12;
+    const saved = project.id
+      ? await putJson<{ project: Project }>(`/api/projects/${encodeURIComponent(project.id)}`, { project: payload })
+      : await postJson<{ project: Project }>('/api/projects', { project: payload });
+    return saved.project;
 
-    while (attempt < maxAttempts) {
-      try {
-        if (project.id) {
-          // Security Check: Get existing project owner_id
-          const { data: existingProject } = await supabase
-            .from('projects')
-            .select('owner_id')
-            .eq('id', project.id)
-            .maybeSingle();
-            
-          if (!existingProject) throw new Error("Project not found.");
-          
-          let isAdmin = false;
-          if (currentUserId) {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('role')
-              .eq('id', currentUserId)
-              .maybeSingle();
-            if (profile?.role === 'Admin') {
-              isAdmin = true;
-            }
-          }
-
-          if (existingProject.owner_id !== currentUserId && !isAdmin) {
-            throw new Error("Unauthorized. You do not have permission to modify this project.");
-          }
-
-          const { data, error } = await supabase
-            .from('projects')
-            .update(payload)
-            .eq('id', project.id)
-            .select()
-            .single();
-          if (error) throw error;
-          return data;
-        } else {
-          const { data, error } = await supabase
-            .from('projects')
-            .insert([payload])
-            .select()
-            .single();
-          if (error) throw error;
-          return data;
-        }
-      } catch (err: any) {
-        attempt++;
-        const errorMsg = (err?.message || "").toLowerCase();
-        const errorDetails = (err?.details || "").toLowerCase();
-        const fullErrorInfo = `${errorMsg} ${errorDetails}`;
-        
-        const isColumnOrSchemaError = 
-          err?.code === 'PGRST204' || 
-          fullErrorInfo.includes('column') || 
-          fullErrorInfo.includes('cache') || 
-          fullErrorInfo.includes('does not exist') ||
-          fullErrorInfo.includes('not found') || 
-          fullErrorInfo.includes('not exist');
-
-        if (isColumnOrSchemaError && attempt < maxAttempts) {
-          let columnRemoved = false;
-          
-          // Try to extract column name from error message/details (e.g. "Could not find the 'disclosure_status' column...")
-          const quotedMatches = fullErrorInfo.match(/['"`]([a-z0-9_]+)['"`]/g);
-          if (quotedMatches) {
-            for (const match of quotedMatches) {
-              const colName = match.replace(/['"`]/g, '');
-              if (payload[colName] !== undefined) {
-                console.warn(`[Autocorrect] Removing missing column '${colName}' from payload and retrying...`);
-                delete payload[colName];
-                columnRemoved = true;
-              }
-            }
-          }
-
-          // Fallback check against known custom or newer columns
-          if (!columnRemoved) {
-            const potentialNewColumns = [
-              'disclosure_status', 'internal_notes', 'requested_documents', 
-              'disclosure_timeline', 'ai_verification', 'owner_id', 
-              'funding_amount_usd', 'open_to_collaboration', 'technical_details_url',
-              'embedding', 'achievements', 'needs', 'views', 
-              'expressions_of_interest', 'requests'
-            ];
-            for (const colName of potentialNewColumns) {
-              if (payload[colName] !== undefined && fullErrorInfo.includes(colName)) {
-                console.warn(`[Autocorrect] Removing missing column '${colName}' from payload and retrying...`);
-                delete payload[colName];
-                columnRemoved = true;
-                break;
-              }
-            }
-          }
-
-          // Last-resort fallback to absolutely basic columns
-          if (!columnRemoved) {
-            console.warn("[Autocorrect] Schema mismatch detected, dropping to core columns.");
-            const coreFields = [
-              'title', 'description', 'department', 'status', 'visibility', 'trl', 'research_area', 'image_url', 'budget', 'start_date'
-            ];
-            const newPayload: any = {};
-            for (const key of coreFields) {
-              if (payload[key] !== undefined) {
-                newPayload[key] = payload[key];
-              }
-            }
-            if (payload.owner_id !== undefined && !fullErrorInfo.includes('owner_id')) {
-              newPayload.owner_id = payload.owner_id;
-            }
-            payload = newPayload;
-          }
-        } else {
-          console.error("Supabase Save Project Error:", err);
-          throw err;
-        }
-      }
-    }
   },
 
   deleteProject: async (projectId: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const currentUserId = session?.user?.id;
-    if (!currentUserId) throw new Error("Authentication required.");
-
-    // Security Check: Verify owner or Admin role
-    const { data: existingProject } = await supabase
-      .from('projects')
-      .select('owner_id')
-      .eq('id', projectId)
-      .maybeSingle();
-      
-    if (!existingProject) throw new Error("Project not found.");
-
-    let isAdmin = false;
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', currentUserId)
-      .maybeSingle();
-    if (profile?.role === 'Admin') {
-      isAdmin = true;
-    }
-
-    if (existingProject.owner_id !== currentUserId && !isAdmin) {
-      throw new Error("Unauthorized. You do not have permission to withdraw this project.");
-    }
-
-    const { error } = await supabase.from('projects').delete().eq('id', projectId);
-    if (error) throw error;
+    await deleteJson(`/api/projects/${encodeURIComponent(projectId)}`);
     return true;
   },
 
   // Bookmarks
   toggleBookmark: async (userId: string, projectId: string): Promise<boolean> => {
-    const { data: existing } = await supabase
-      .from('bookmarks')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('project_id', projectId)
-      .maybeSingle();
-
-    if (existing) {
-      await supabase.from('bookmarks').delete().eq('id', existing.id);
-      return false; 
-    } else {
-      await supabase.from('bookmarks').insert([{ user_id: userId, project_id: projectId }]);
-      return true; 
-    }
+    const { bookmarked } = await postJson<{ bookmarked: boolean }>('/api/bookmarks/toggle', { projectId });
+    return bookmarked;
   },
 
   isBookmarked: async (userId: string, projectId: string): Promise<boolean> => {
     if (!userId) return false;
-    const { data } = await supabase.from('bookmarks').select('id').eq('user_id', userId).eq('project_id', projectId).maybeSingle();
-    return !!data;
+    const { bookmarked } = await getJson<{ bookmarked: boolean }>(`/api/bookmarks/${encodeURIComponent(projectId)}/check`);
+    return bookmarked;
   },
 
   getBookmarks: async (userId: string): Promise<Project[]> => {
     if (!userId) return [];
     
     try {
-      const { data } = await supabase.from('bookmarks').select('projects(*)').eq('user_id', userId);
-      const projects = data?.map(item => (item as any).projects).filter(p => !!p) || [];
+      const { bookmarks } = await getJson<{ bookmarks: Project[] }>('/api/bookmarks');
+      const projects = bookmarks || [];
       
       if (projects.length === 0) return [];
 
@@ -831,7 +487,7 @@ export const StorageService = {
         return p;
       });
 
-      return await StorageService.signProjectUrls(sanitized);
+       return await StorageService.signProjectUrls(sanitized, false);
     } catch (err) {
       console.warn("Failed to retrieve secured bookmarks:", err);
       return [];
@@ -967,90 +623,25 @@ export const StorageService = {
 
   // Expression of Interest (EOI) / Messaging System (Full Duplex)
   submitEOI: async (project_id: string | null, user_name: string, message: string, recipient_id?: string, metric: 'expressions_of_interest' | 'requests' = 'expressions_of_interest') => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const sender_id = session?.user?.id;
-    
-    if (!sender_id) {
-      throw new Error("Authentication Required: Please sign in to transmit messages.");
-    }
-
-    let finalUserName = user_name;
-    const { data: senderProfile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', sender_id)
-      .maybeSingle();
-    
-    if (senderProfile?.role === 'Admin') {
-      finalUserName = 'UG Industry Hub Admin';
-    }
-
-    let target_recipient = recipient_id;
-    let validProjectId: string | null = null;
-
-    // Resolve project owner as recipient if not provided, and ensure project_id exists in public.projects
-    if (project_id) {
-      const { data: proj } = await supabase
-        .from('projects')
-        .select('id, owner_id')
-        .eq('id', project_id)
-        .maybeSingle();
-
-      if (proj) {
-        validProjectId = proj.id;
-        if (!target_recipient) {
-          target_recipient = proj.owner_id;
-        }
-      } else if (!target_recipient) {
-        throw new Error("Recipient Error: Could not resolve Project Investigator.");
-      }
-    }
-
-    if (!target_recipient) {
-      throw new Error("Recipient Error: No target identified for this transmission.");
-    }
-
-    const { error } = await supabase
-      .from('eois')
-      .insert([{ 
-        project_id: validProjectId, 
-        user_name: finalUserName, 
-        message,
-        read: false,
-        sender_id: sender_id,
-        recipient_id: target_recipient,
-        status: 'pending'
-      }]);
-    
-    if (error) {
-      console.error("StorageService.submitEOI Failure:", error);
-      throw new Error(error.message || "Database Error: Transmission failed.");
-    }
-
-    // Increment specified metric if validProjectId is present
-    if (validProjectId) {
-      StorageService.incrementProjectMetric(validProjectId, metric);
-    }
+    await postJson('/api/eois', { projectId: project_id, message, recipientId: recipient_id, metric });
   },
 
   getUnreadCount: async (userId: string): Promise<number> => {
     if (!userId) return 0;
-    const { count, error } = await supabase
-      .from('eois')
-      .select('*', { count: 'exact', head: true })
-      .eq('recipient_id', userId)
-      .eq('read', false);
-    
-    if (error) return 0;
-    return count || 0;
+    try {
+      const { count } = await getJson<{ count: number }>('/api/eois/unread-count');
+      return count || 0;
+    } catch {
+      return 0;
+    }
   },
 
   searchUsers: async (query: string): Promise<User[]> => {
     if (!query || query.length < 2) return [];
     
     // Ensure the user searching is authenticated
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return [];
+    const user = await getAuthUser();
+    if (!user) return [];
 
     // Strip PostgREST-reserved syntax characters so the term cannot alter the filter shape
     const sanitized = query.replace(/[%(),*"']/g, '').trim().slice(0, 60);
@@ -1072,16 +663,11 @@ export const StorageService = {
 
   getConversations: async (userId: string) => {
     if (!userId) return [];
-    const { data, error } = await supabase
-      .from('eois')
-      .select('*, projects(title, image_url)')
-      .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`)
-      .order('created_at', { ascending: false });
-    
-    if (error || !data) return [];
+    const { eois: data } = await getJson<{ eois: any[] }>('/api/eois/conversations');
+    if (!data) return [];
 
     // Map profiles to replace any admin's user_name with 'UG Industry Hub Admin'
-    const userIds = Array.from(new Set(data.flatMap(msg => [msg.sender_id, msg.recipient_id])));
+    const userIds = Array.from(new Set(data.flatMap(msg => [msg.sender_id, msg.recipient_id]).filter((id): id is string => Boolean(id))));
     const adminUserIds = new Set<string>();
 
     if (userIds.length > 0) {
@@ -1118,50 +704,16 @@ export const StorageService = {
 
   markAsRead: async (userId: string, threadId: string | null, partnerId: string) => {
     if (!userId) return;
-    const query = supabase
-      .from('eois')
-      .update({ read: true })
-      .eq('recipient_id', userId)
-      .eq('read', false)
-      .eq('sender_id', partnerId);
-    
-    if (threadId) {
-      query.eq('project_id', threadId);
-    } else {
-      query.is('project_id', null);
-    }
-
-    await query;
+    await postJson('/api/eois/read-thread', { partnerId, projectId: threadId });
   },
 
   getEOIsForPI: async (userId: string) => {
     if (!userId) return [];
     try {
-      const { data: myProjects } = await supabase.from('projects').select('id').eq('owner_id', userId);
-      const projectIds = myProjects?.map(p => p.id) || [];
-      let query = supabase.from('eois').select('*, projects(title, image_url)').order('created_at', { ascending: false });
-      if (projectIds.length > 0) {
-        const projectList = projectIds.join(',');
-        query = query.or(`project_id.in.(${projectList}),recipient_id.eq.${userId}`);
-      } else {
-        query = query.eq('recipient_id', userId);
-      }
-      const { data, error } = await query;
-      if (error) {
-        console.warn("Error fetching EOIs with projects join, falling back to basic query:", error);
-        let fallbackQuery = supabase.from('eois').select('*').order('created_at', { ascending: false });
-        if (projectIds.length > 0) {
-          fallbackQuery = fallbackQuery.or(`project_id.in.(${projectIds.join(',')}),recipient_id.eq.${userId}`);
-        } else {
-          fallbackQuery = fallbackQuery.eq('recipient_id', userId);
-        }
-        const { data: fbData } = await fallbackQuery;
-        if (!fbData) return [];
-        return fbData;
-      }
+      const { eois: data } = await getJson<{ eois: any[] }>('/api/eois/received');
       if (!data) return [];
 
-    const userIds = Array.from(new Set(data.flatMap(msg => [msg.sender_id, msg.recipient_id])));
+    const userIds = Array.from(new Set(data.flatMap(msg => [msg.sender_id, msg.recipient_id]).filter((id): id is string => Boolean(id))));
     const adminUserIds = new Set<string>();
 
     if (userIds.length > 0) {
@@ -1195,13 +747,11 @@ export const StorageService = {
   },
 
   markEOIRead: async (id: string) => {
-    const { error } = await supabase.from('eois').update({ read: true }).eq('id', id);
-    if (error) throw error;
+    await putJson(`/api/eois/${encodeURIComponent(id)}/read`, {});
   },
 
   updateEOIStatus: async (id: string, status: string) => {
-    const { error } = await supabase.from('eois').update({ status }).eq('id', id);
-    if (error) throw error;
+    await putJson(`/api/eois/${encodeURIComponent(id)}/status`, { status });
   },
 
   checkRevealApproved: async (userId: string, projectId: string): Promise<boolean> => {
@@ -1257,64 +807,25 @@ export const StorageService = {
   },
 
   // Profiles
+  getCurrentProfile: async () => {
+    try {
+      const data = await getJson<{ profile?: any | null }>('/api/profile/me');
+      return data?.profile || null;
+    } catch (error) {
+      console.warn('Current profile lookup failed:', error);
+      return null;
+    }
+  },
+
   getProfile: async (userId: string) => {
     if (!userId) return null;
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) {
-      try {
-        const data = await getJson<{ profile?: any | null }>('/api/profile/me');
-        return data?.profile || null;
-      } catch (error) {
-        console.warn('Server profile lookup failed:', error);
-        return null;
-      }
-    }
-
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
-    if (!profile) return null;
-
     try {
-      if (profile.role === 'Student') {
-        const { data: student } = await supabase.from('student_profiles').select('*').eq('user_id', userId).maybeSingle();
-        if (student) {
-          Object.assign(profile, {
-            education_level: student.education_level,
-            availability: student.availability,
-            looking_for: student.looking_for,
-            program: student.program
-          });
-        }
-      } else if (profile.role === 'Researcher') {
-        const { data: researcher } = await supabase.from('researcher_profiles').select('*').eq('user_id', userId).maybeSingle();
-        if (researcher) {
-          Object.assign(profile, {
-            research_stage: researcher.research_stage,
-            funding_needed: researcher.funding_needed,
-            needs_students: researcher.needs_students
-          });
-        }
-      } else if (profile.role === 'Investor') {
-        const { data: investor } = await supabase.from('investor_profiles').select('*').eq('user_id', userId).maybeSingle();
-        if (investor) {
-          Object.assign(profile, {
-            funding_range: investor.funding_range,
-            investment_focus: investor.investment_focus
-          });
-        }
-      } else if (profile.role === 'Industry/Partner' || profile.role === 'IndustryPartner') {
-        const { data: industry } = await supabase.from('industry_profiles').select('*').eq('user_id', userId).maybeSingle();
-        if (industry) {
-          Object.assign(profile, {
-            sector: industry.sector,
-            collaboration_type: industry.collaboration_type
-          });
-        }
-      }
-    } catch (err) {
-      console.warn("Error fetching role-specific profile data:", err);
+      const data = await getJson<{ profile?: any | null }>(`/api/profile/${encodeURIComponent(userId)}`);
+      return data?.profile || null;
+    } catch (error) {
+      console.warn('Server profile lookup failed:', error);
+      return null;
     }
-
-    return profile;
   },
 
   testConnection: async () => {
@@ -1331,124 +842,7 @@ export const StorageService = {
   updateProfile: async (profile: Partial<User & { embedding?: number[], semantic_summary?: string, answers?: any }>) => {
     if (!profile.id) throw new Error("Profile ID is required for update.");
     
-    // Security check: Ensure current user possesses ownership over this record, or holds an Administrative role
-    const { data: { session } } = await supabase.auth.getSession();
-    const currentUserId = session?.user?.id;
-    if (!currentUserId) {
-      await postJson('/api/profile/update', { profile });
-      return;
-    }
-
-    // Retrieve active profile structure
-    const { data: existing } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', profile.id)
-      .maybeSingle();
-
-    let isAdmin = false;
-    const { data: currentUserProfile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', currentUserId)
-      .maybeSingle();
-    if (currentUserProfile?.role === 'Admin') {
-      isAdmin = true;
-    }
-
-    if (profile.id !== currentUserId && !isAdmin) {
-      throw new Error("Unauthorized: Profile mutation request is invalid.");
-    }
-
-    let result;
-    const { answers, ...mainProfile } = profile as any;
-    
-    // Safety check: Ensure embedding is exactly 768 dimensions using central helper
-    if (mainProfile.embedding && Array.isArray(mainProfile.embedding)) {
-      mainProfile.embedding = EmbeddingService.ensureDimension(mainProfile.embedding, 768);
-    }
-
-    try {
-      if (existing) {
-        result = await supabase
-          .from('profiles')
-          .update(mainProfile)
-          .eq('id', profile.id);
-      } else {
-        result = await supabase
-          .from('profiles')
-          .insert([mainProfile]);
-      }
-
-      if (result.error) {
-        throw result.error;
-      }
-    } catch (err: any) {
-      // If it's a schema/cache column error, fall back to core columns only
-      const errorStr = (err?.message || "").toLowerCase();
-      const isColumnError = err?.code === 'PGRST204' || errorStr.includes('column') || errorStr.includes('cache');
-      
-      if (isColumnError) {
-        console.warn("Schema mismatch detected, falling back to core profiles columns:", err);
-        const coreProfile = {
-          id: profile.id,
-          name: profile.name,
-          email: profile.email,
-          role: profile.role
-        };
-        
-        if (existing) {
-          result = await supabase
-            .from('profiles')
-            .update(coreProfile)
-            .eq('id', profile.id);
-        } else {
-          result = await supabase
-            .from('profiles')
-            .insert([coreProfile]);
-        }
-        
-        if (result.error) {
-          console.error("Supabase Profile Fallback Update Error:", result.error);
-          throw result.error;
-        }
-      } else {
-        console.error("Supabase Profile Update Error:", err);
-        throw err;
-      }
-    }
-
-    // Sync to Role Specific Tables
-    if (answers && profile.role) {
-      if (profile.role === UserRole.Student) {
-        await supabase.from('student_profiles').upsert({
-          user_id: profile.id,
-          education_level: answers.edu_level,
-          availability: answers.availability,
-          looking_for: Array.isArray(answers.looking_for) ? answers.looking_for.join(', ') : answers.looking_for,
-          program: answers.program
-        });
-      } else if (profile.role === UserRole.Researcher) {
-        await supabase.from('researcher_profiles').upsert({
-          user_id: profile.id,
-          research_stage: answers.research_stage,
-          funding_needed: answers.funding_needed,
-          needs_students: answers.needs_students
-        });
-      } else if (profile.role === UserRole.Investor) {
-        await supabase.from('investor_profiles').upsert({
-          user_id: profile.id,
-          funding_range: answers.funding_range,
-          investment_focus: answers.investment_focus
-        });
-      } else if (profile.role === UserRole.IndustryPartner) {
-        await supabase.from('industry_profiles').upsert({
-          user_id: profile.id,
-          sector: answers.sector,
-          collaboration_type: answers.collab_type
-        });
-      }
-    }
+    await postJson('/api/profile/update', { profile });
   },
 
   getMatches: async (userId: string, embedding: number[]) => {
@@ -1457,16 +851,14 @@ export const StorageService = {
 
     const validEmbedding = EmbeddingService.ensureDimension(embedding, 768);
 
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) {
-      try {
-        return await postJson<{ profiles: any[]; projects: any[] }>('/api/matches', {
-          userId,
-          embedding: validEmbedding,
-        });
-      } catch (error) {
-        console.warn('Server match lookup failed:', error);
-      }
+    try {
+      return await postJson<{ profiles: any[]; projects: any[] }>('/api/matches', {
+        userId,
+        embedding: validEmbedding,
+      });
+    } catch (error) {
+      console.warn('Server match lookup failed:', error);
+      return { profiles: [], projects: [] };
     }
 
     try {
@@ -1506,8 +898,9 @@ export const StorageService = {
           .neq('id', userId)
           .limit(10);
 
-        if (fallbackProfiles && fallbackProfiles.length > 0) {
-          finalProfiles = fallbackProfiles.map(p => ({
+        const safeFallbackProfiles = fallbackProfiles || [];
+        if (safeFallbackProfiles.length > 0) {
+          finalProfiles = safeFallbackProfiles.map(p => ({
             id: p.id,
             name: p.name,
             role: p.role || 'Researcher',
@@ -1527,8 +920,9 @@ export const StorageService = {
           .select('id, title, description, image_url, research_area')
           .limit(10);
 
-        if (fallbackProjects && fallbackProjects.length > 0) {
-          finalProjects = fallbackProjects.map(p => ({
+        const safeFallbackProjects = fallbackProjects || [];
+        if (safeFallbackProjects.length > 0) {
+          finalProjects = safeFallbackProjects.map(p => ({
             id: p.id,
             title: p.title,
             description: p.description,
@@ -1542,14 +936,15 @@ export const StorageService = {
       // Enrich profiles with avatar_url
       if (finalProfiles.length > 0) {
         try {
-          const profileIds = finalProfiles.map((p: any) => p.id);
+          const profileIds = finalProfiles.map((p: any) => p.id).filter((id: any): id is string => Boolean(id));
           const { data: enrichedData, error: enrichError } = await supabase
             .from('profiles')
             .select('id, avatar_url')
             .in('id', profileIds);
           
-          if (!enrichError && enrichedData && enrichedData.length > 0) {
-            const avatarMap = new Map(enrichedData.map(row => [row.id, row.avatar_url]));
+          const safeEnrichedData = enrichedData || [];
+          if (!enrichError && safeEnrichedData.length > 0) {
+            const avatarMap = new Map(safeEnrichedData.map(row => [row.id, row.avatar_url]));
             finalProfiles = finalProfiles.map((p: any) => ({
               ...p,
               avatar_url: avatarMap.get(p.id) || p.avatar_url || null
@@ -1570,8 +965,9 @@ export const StorageService = {
             .select('id, visibility, owner_id, disclosure_status')
             .in('id', projectIds);
 
-          if (visData) {
-            const visMap = new Map(visData.map(row => [row.id, row]));
+          const safeVisData = visData || [];
+          if (safeVisData.length > 0) {
+            const visMap = new Map(safeVisData.map(row => [row.id, row]));
             finalProjects = finalProjects.filter((p: any) => {
               const row = visMap.get(p.id);
               if (!row) return false;
@@ -1694,12 +1090,12 @@ export const StorageService = {
   // --- ADMINISTRATIVE PORTAL OPERATIONS ---
   verifyAdmin: async (): Promise<boolean> => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user?.id) return false;
+      const user = await getAuthUser();
+      if (!user?.id) return false;
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
-        .eq('id', session.user.id)
+        .eq('id', user.id)
         .maybeSingle();
       return profile?.role === 'Admin';
     } catch (e) {
@@ -1879,15 +1275,7 @@ export const StorageService = {
 
   getStudentApplications: async (userId: string) => {
     if (!userId) return [];
-    const { data, error } = await supabase
-      .from('eois')
-      .select('*, projects(*)')
-      .eq('sender_id', userId)
-      .order('created_at', { ascending: false });
-    if (error) {
-      console.error("Error fetching student applications:", error);
-      return [];
-    }
+    const { eois: data } = await getJson<{ eois: any[] }>('/api/eois/sent');
     const list = data || [];
     for (const msg of list) {
       msg.raw_message = msg.message;
@@ -2100,7 +1488,6 @@ export const StorageService = {
       // Ignore
     }
 
-    await supabase.auth.signOut();
   }
 };
 

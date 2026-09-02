@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import { randomUUID } from 'node:crypto';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import Groq from 'groq-sdk';
@@ -14,10 +15,11 @@ import {
   parseAIJson
 } from './lib/aiSchemas';
 import { computeLocalMatchRankings } from './lib/scoring';
-import { validateUpload } from './lib/uploadGuard';
+import { canAccessReleasedProject, canMutateMatch, canSignProjectObject, isSelfMatchRequest } from './lib/authorization';
+import { validateStorageUpload, validateUpload } from './lib/uploadGuard';
 import { z } from 'zod';
 import { toNodeHandler } from 'better-auth/node';
-import { auth } from './lib/auth';
+import { auth, markPasswordResetComplete } from './lib/auth';
 import {
   translateRequestSchema,
   chatRequestSchema,
@@ -257,10 +259,6 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || '')
   .map(o => o.trim())
   .filter(Boolean);
 
-// Better Auth handler — must be before JSON body parsing for its routes
-// Express 5 uses path-to-regexp v6 where /* is invalid — use /*splat
-app.all("/api/auth/*splat", toNodeHandler(auth));
-
 // Security and CORS middleware for external frontends and container preview
 app.use((req, res, next) => {
   const origin = req.headers.origin;
@@ -292,6 +290,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// Better Auth handler must be before JSON body parsing for its routes.
+// Express 5 uses path-to-regexp v6 where /* is invalid — use /*splat.
+app.all("/api/auth/*splat", toNodeHandler(auth));
+
 // Set up larger JSON payload limits for large resumes/documents/images
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ limit: '15mb', extended: true }));
@@ -318,20 +320,27 @@ const getSupabaseClient = (token?: string) => {
 
 // Initialize backend Supabase service-role client (server-only, bypasses RLS).
 // Used exclusively for platform-generated writes (e.g. challenge match scores).
+let cachedServiceClient: any | null | undefined;
+
 const getServiceClient = () => {
+  if (cachedServiceClient !== undefined) return cachedServiceClient;
+
   const url = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY || '';
   if (!url || !serviceKey) {
     console.warn('SUPABASE_SERVICE_ROLE_KEY missing in server process.env. Platform write operations will fall back to the caller role.');
+    cachedServiceClient = null;
     return null;
   }
   if (!isValidSupabaseServiceKey(serviceKey)) {
     console.warn('SUPABASE_SERVICE_ROLE_KEY is invalid or appears to be a non-Supabase provider key.');
+    cachedServiceClient = null;
     return null;
   }
-  return createClient(url, serviceKey, {
+  cachedServiceClient = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
+  return cachedServiceClient;
 };
 
 const serviceClientConfigError = (): string => {
@@ -404,57 +413,43 @@ app.get('/api/health', (req, res) => {
 });
 
 // --- Authentication & Throttling Middleware ---
-// Dual-mode: tries Better Auth session cookie first, falls back to Supabase Bearer JWT
-// This allows gradual cutover — new Better Auth users and legacy Supabase users both work.
+// Better Auth is the sole application identity provider. Supabase remains the
+// data and storage layer, but its Auth JWTs are no longer accepted here.
 const authenticateUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
-    // 1. Try Better Auth session (cookie-based)
-    try {
-      const session = await (auth as any).api.getSession({ headers: req.headers as any });
-      if (session?.user) {
-        (req as any).user = session.user;
-        (req as any).userToken = null; // Better Auth has no Supabase JWT
-        (req as any).authSource = 'better-auth';
-        // Fetch role via service client — try Better Auth id, then email fallback for legacy linked accounts
-        const svc = getServiceClient();
-        if (svc) {
-          let profile: any = null;
-          const { data: byId } = await svc.from('profiles').select('id, role').eq('id', session.user.id).maybeSingle();
-          profile = byId;
-          if (!profile && session.user.email) {
-            const { data: byEmail } = await svc.from('profiles').select('id, role').eq('email', session.user.email).maybeSingle();
-            profile = byEmail;
-            // If found by email but id differs, record the linkage for future (non-blocking)
-            if (profile && (byEmail as any)?.id) {
-              (req as any).resolvedProfileId = (byEmail as any).id;
-            }
-          }
-          (req as any).userRole = profile?.role || 'Guest';
-        } else {
-          (req as any).userRole = 'Guest';
-        }
-        return next();
-      }
-    } catch (e) {
-      // fall through to Supabase check
+    const session = await (auth as any).api.getSession({ headers: req.headers as any });
+    if (!session?.user) {
+      return res.status(401).json({ error: 'Authentication required.' });
     }
 
-    // 2. Fallback: Supabase Bearer JWT (legacy)
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authentication token is missing or invalid' });
+    (req as any).user = session.user;
+    (req as any).userToken = null;
+    (req as any).authSource = 'better-auth';
+
+    // A successful authenticated request proves that a migrated credential
+    // reset completed; keep the migration status table in sync.
+    try {
+      await markPasswordResetComplete(session.user.id);
+    } catch (error) {
+      console.warn('[better-auth] Could not update migration reset status:', error);
     }
-    const token = authHeader.split(' ')[1];
-    const supabaseServer = getSupabaseClient(token)!;
-    const { data: { user }, error } = await supabaseServer.auth.getUser(token);
-    if (error || !user) {
-      return res.status(401).json({ error: 'Unauthorized: Invalid access token' });
+
+    const svc = getServiceClient();
+    if (svc) {
+      let profile: any = null;
+      const { data: byId } = await svc.from('profiles').select('id, role').eq('id', session.user.id).maybeSingle();
+      profile = byId;
+      if (!profile && session.user.email) {
+        const { data: byEmail } = await svc.from('profiles').select('id, role').eq('email', session.user.email).maybeSingle();
+        profile = byEmail;
+        if (profile?.id) {
+          (req as any).resolvedProfileId = profile.id;
+        }
+      }
+      (req as any).userRole = profile?.role || 'Guest';
+    } else {
+      (req as any).userRole = 'Guest';
     }
-    (req as any).user = user;
-    (req as any).userToken = token;
-    (req as any).authSource = 'supabase';
-    const { data: profile } = await supabaseServer.from('profiles').select('role').eq('id', user.id).maybeSingle();
-    (req as any).userRole = (profile as any)?.role || 'Guest';
     return next();
   } catch (err: any) {
     console.error('Authentication Error:', err);
@@ -470,6 +465,28 @@ const Roles = {
   Student: 'Student',
   Investor: 'Investor',
 } as const;
+
+const SELF_ASSIGNABLE_ROLES = new Set([
+  Roles.IndustryPartner,
+  Roles.Researcher,
+  Roles.Student,
+  Roles.Investor,
+]);
+
+const PROFILE_MUTABLE_FIELDS = new Set([
+  'name', 'title', 'bio', 'company', 'department', 'website_url', 'website_url_2',
+  'website_url_3', 'website_url_4', 'avatar_url', 'user_type', 'education_level',
+  'program', 'research_area', 'research_stage', 'funding_needed', 'needs_students',
+  'availability', 'looking_for', 'funding_range', 'investment_focus', 'sector',
+  'collaboration_type', 'ai_profile', 'semantic_summary', 'embedding',
+]);
+
+const PROJECT_MUTABLE_FIELDS = new Set([
+  'title', 'description', 'department', 'status', 'visibility', 'trl', 'research_area',
+  'image_url', 'budget', 'start_date', 'funding_amount_usd', 'open_to_collaboration',
+  'technical_details_url', 'achievements', 'needs', 'embedding', 'disclosure_status',
+  'internal_notes', 'requested_documents', 'disclosure_timeline', 'ai_verification',
+]);
 
 const requireRole = (...roles: string[]) => {
   return (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -565,11 +582,172 @@ app.get('/api/profile/me', authenticateUser, async (req, res) => {
   }
 });
 
+app.get('/api/profile/:id', async (req, res) => {
+  try {
+    const profileId = req.params.id;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profileId)) {
+      return res.status(400).json({ error: 'Invalid profile ID.' });
+    }
+
+    const db = getServiceClient();
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+
+    let { data: profile, error } = await db
+      .from('profiles')
+      .select('id, name, email, title, role, bio, company, department, website_url, website_url_2, website_url_3, website_url_4, avatar_url, user_type')
+      .eq('id', profileId)
+      .maybeSingle();
+    if (error) {
+      console.warn('Rich public profile projection unavailable; using base columns:', error.message);
+      const fallback = await db
+        .from('profiles')
+        .select('id, name, email, role')
+        .eq('id', profileId)
+        .maybeSingle();
+      profile = fallback.data;
+      error = fallback.error;
+    }
+    if (error) throw error;
+    if (!profile) return res.json({ profile: null });
+
+    let roleProfile: any = null;
+    const roleTables: Record<string, string> = {
+      Student: 'student_profiles',
+      Researcher: 'researcher_profiles',
+      Investor: 'investor_profiles',
+      'Industry/Partner': 'industry_profiles',
+    };
+    const roleTable = roleTables[profile.role];
+    if (roleTable) {
+      try {
+        const { data, error: roleError } = await db.from(roleTable).select('*').eq('user_id', profileId).maybeSingle();
+        if (roleError) console.warn(`Role profile lookup failed for ${roleTable}:`, roleError.message);
+        roleProfile = data;
+      } catch (roleError: any) {
+        console.warn(`Role profile lookup failed for ${roleTable}:`, roleError?.message || roleError);
+      }
+    }
+    return res.json({ profile: { ...profile, ...(roleProfile || {}) } });
+  } catch (error: any) {
+    console.error('Public profile load error:', error);
+    return res.status(500).json({ error: 'Profile load failed. Please try again.' });
+  }
+});
+
+app.post('/api/storage/upload', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const userId = (req as any).user.id;
+    const { bucket, fileName, mimeType, contentBase64 } = req.body || {};
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    if (bucket !== 'projects' && bucket !== 'avatars') return res.status(400).json({ error: 'Invalid storage bucket.' });
+    if (typeof contentBase64 !== 'string' || !contentBase64) return res.status(400).json({ error: 'File content is required.' });
+
+    const content = Buffer.from(contentBase64, 'base64');
+    const validation = validateStorageUpload({ name: fileName, mimeType, sizeBytes: content.byteLength });
+    if (!validation.ok) return res.status(400).json({ error: validation.error });
+
+    const extension = String(fileName).split('.').pop()?.toLowerCase() || 'bin';
+    const objectPath = `${userId}/${randomUUID()}.${extension}`;
+    const { error: uploadError } = await db.storage.from(bucket).upload(objectPath, content, {
+      contentType: mimeType || 'application/octet-stream',
+      upsert: false,
+    });
+    if (uploadError) throw uploadError;
+
+    const { error: ownerError } = await db
+      .schema('storage')
+      .from('objects')
+      .update({ owner: userId })
+      .eq('bucket_id', bucket)
+      .eq('name', objectPath);
+    if (ownerError) console.warn('Storage owner metadata update failed:', ownerError.message);
+
+    const isImage = String(mimeType || '').startsWith('image/');
+    const publicUrl = isImage ? db.storage.from(bucket).getPublicUrl(objectPath).data.publicUrl : null;
+    return res.status(201).json({ path: objectPath, url: publicUrl });
+  } catch (error: any) {
+    console.error('Storage upload error:', error);
+    return res.status(500).json({ error: 'File upload failed.' });
+  }
+});
+
+const getStoredObjectPath = (value: string, bucket: string): string => {
+  if (!value) return '';
+  const marker = `/object/public/${bucket}/`;
+  const signedMarker = `/object/sign/${bucket}/`;
+  const start = value.indexOf(marker);
+  const signedStart = value.indexOf(signedMarker);
+  if (start >= 0) return decodeURIComponent(value.slice(start + marker.length).split('?')[0]);
+  if (signedStart >= 0) return decodeURIComponent(value.slice(signedStart + signedMarker.length).split('?')[0]);
+  return value;
+};
+
+app.post('/api/storage/sign', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const user = (req as any).user;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const requests = Array.isArray(req.body?.requests) ? req.body.requests : [];
+    if (requests.length > 100) return res.status(400).json({ error: 'Too many storage objects requested.' });
+    const isAdmin = (req as any).userRole === Roles.Admin;
+    const projectIds = [...new Set(requests.map((item: any) => item?.projectId).filter(Boolean))];
+    const { data: projects, error: projectError } = await db.from('projects').select('id, owner_id').in('id', projectIds);
+    if (projectError) throw projectError;
+    const projectMap = new Map<string, { id: string; owner_id: string }>((projects || []).map((project: any) => [project.id, project]));
+    const signed: any[] = [];
+    for (const item of requests) {
+      if (!item?.projectId || !item?.path || !['image', 'brief', 'document'].includes(item.kind)) continue;
+      const project = projectMap.get(item.projectId);
+      if (!project) continue;
+      const owner = isAdmin || project.owner_id === user.id;
+      if (!owner && item.kind === 'brief') {
+        const { data: approvals } = await db.from('eois').select('status').eq('sender_id', user.id).eq('project_id', item.projectId);
+        if (!canSignProjectObject(item.kind, owner, (approvals || []).map((row: any) => row.status))) continue;
+      } else if (!canSignProjectObject(item.kind, owner)) {
+        continue;
+      }
+      const { data, error } = await db.storage.from('projects').createSignedUrl(getStoredObjectPath(String(item.path), 'projects'), item.kind === 'brief' ? 3600 : 3600);
+      if (!error && data?.signedUrl) signed.push({ projectIndex: item.projectIndex, docIndex: item.docIndex, kind: item.kind, url: data.signedUrl });
+    }
+    return res.json({ signed });
+  } catch (error: any) {
+    console.error('Storage signing error:', error);
+    return res.status(500).json({ error: 'Storage objects could not be signed.' });
+  }
+});
+
+app.get('/api/projects/:id/technical-brief', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const user = (req as any).user;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data: project, error } = await db.from('projects').select('owner_id, technical_details_url').eq('id', req.params.id).maybeSingle();
+    if (error) throw error;
+    if (!project || !project.technical_details_url || project.technical_details_url === 'locked') return res.status(404).json({ error: 'Technical brief not found.' });
+
+    let authorized = project.owner_id === user.id || (req as any).userRole === Roles.Admin;
+    if (!authorized) {
+      const { data: approvals } = await db.from('eois').select('status').eq('sender_id', user.id).eq('project_id', req.params.id);
+      authorized = canAccessReleasedProject((approvals || []).map((row: any) => row.status));
+    }
+    if (!authorized) return res.status(403).json({ error: 'Secure reveal approval is required.' });
+
+    const objectPath = getStoredObjectPath(project.technical_details_url, 'projects');
+    const { data: signed, error: signError } = await db.storage.from('projects').createSignedUrl(objectPath, 3600);
+    if (signError || !signed?.signedUrl) throw signError || new Error('Could not sign technical brief.');
+    return res.json({ url: signed.signedUrl, expiresIn: 3600 });
+  } catch (error: any) {
+    console.error('Technical brief access error:', error);
+    return res.status(500).json({ error: 'Technical brief could not be opened.' });
+  }
+});
+
 app.post('/api/matches', validateBody(matchesRequestSchema), authenticateUser, async (req, res) => {
   try {
     const profileId = getRequestProfileId(req);
     const requestedUserId = req.body.userId;
-    if (!profileId || requestedUserId !== profileId) {
+    if (!isSelfMatchRequest(profileId, requestedUserId)) {
       return res.status(403).json({ error: 'Unauthorized: Match request is invalid.' });
     }
 
@@ -659,25 +837,36 @@ app.post('/api/profile/update', validateBody(profileUpdateRequestSchema), authen
     const answers = req.body.answers || incomingProfile.answers;
     const authUser = (req as any).user;
     const resolvedProfileId = (req as any).resolvedProfileId;
-    const targetProfileId = resolvedProfileId || incomingProfile.id || authUser?.id;
+    const targetProfileId = resolvedProfileId || authUser?.id;
     const allowedIds = new Set([authUser?.id, resolvedProfileId].filter(Boolean));
 
     if (!targetProfileId || !allowedIds.has(targetProfileId)) {
       return res.status(403).json({ error: 'Unauthorized: Profile mutation request is invalid.' });
     }
 
-    const { answers: _discardAnswers, ...profilePayload } = incomingProfile;
-    const mainProfile = {
-      ...profilePayload,
+    const profilePayload = Object.fromEntries(
+      Object.entries(incomingProfile).filter(([key]) => PROFILE_MUTABLE_FIELDS.has(key))
+    );
+    const mainProfile: Record<string, any> = {
       id: targetProfileId,
-      email: profilePayload.email || authUser?.email || null,
+      ...profilePayload,
+      email: authUser?.email || null,
     };
 
     const { data: existing } = await serviceClient
       .from('profiles')
-      .select('id')
+      .select('id, role')
       .eq('id', targetProfileId)
       .maybeSingle();
+
+    if (existing) {
+      mainProfile.role = existing.role;
+    } else {
+      const requestedRole = incomingProfile.role;
+      mainProfile.role = SELF_ASSIGNABLE_ROLES.has(requestedRole)
+        ? requestedRole
+        : Roles.Researcher;
+    }
 
     const result = existing
       ? await serviceClient.from('profiles').update(mainProfile).eq('id', targetProfileId)
@@ -722,6 +911,274 @@ app.post('/api/profile/update', validateBody(profileUpdateRequestSchema), authen
       return res.status(503).json({ error: 'Server Supabase service key is invalid. Check SUPABASE_SERVICE_ROLE_KEY and restart the server.' });
     }
     return res.status(500).json({ error: 'Profile update failed. Please try again.' });
+  }
+});
+
+app.get('/api/projects/mine', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const userId = (req as any).user.id;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data, error } = await db.from('projects').select('*').eq('owner_id', userId).order('created_at', { ascending: false });
+    if (error) throw error;
+    return res.json({ projects: data || [] });
+  } catch (error: any) {
+    console.error('Owned projects load error:', error);
+    return res.status(500).json({ error: 'Projects could not be loaded.' });
+  }
+});
+
+app.post('/api/projects', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const incoming = req.body?.project || req.body || {};
+    const project = Object.fromEntries(Object.entries(incoming).filter(([key]) => PROJECT_MUTABLE_FIELDS.has(key)));
+    project.owner_id = (req as any).user.id;
+    const { data, error } = await db.from('projects').insert([project]).select().single();
+    if (error) throw error;
+    return res.status(201).json({ project: data });
+  } catch (error: any) {
+    console.error('Project create error:', error);
+    return res.status(500).json({ error: 'Project could not be created.' });
+  }
+});
+
+app.put('/api/projects/:id', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const user = (req as any).user;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data: existing, error: existingError } = await db.from('projects').select('owner_id').eq('id', req.params.id).maybeSingle();
+    if (existingError) throw existingError;
+    if (!existing) return res.status(404).json({ error: 'Project not found.' });
+    if (existing.owner_id !== user.id && (req as any).userRole !== Roles.Admin) {
+      return res.status(403).json({ error: 'You do not have permission to modify this project.' });
+    }
+    const incoming = req.body?.project || req.body || {};
+    const project = Object.fromEntries(Object.entries(incoming).filter(([key]) => PROJECT_MUTABLE_FIELDS.has(key)));
+    delete project.owner_id;
+    const { data, error } = await db.from('projects').update(project).eq('id', req.params.id).select().single();
+    if (error) throw error;
+    return res.json({ project: data });
+  } catch (error: any) {
+    console.error('Project update error:', error);
+    return res.status(500).json({ error: 'Project could not be updated.' });
+  }
+});
+
+app.delete('/api/projects/:id', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const user = (req as any).user;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data: existing } = await db.from('projects').select('owner_id').eq('id', req.params.id).maybeSingle();
+    if (!existing) return res.status(404).json({ error: 'Project not found.' });
+    if (existing.owner_id !== user.id && (req as any).userRole !== Roles.Admin) {
+      return res.status(403).json({ error: 'You do not have permission to delete this project.' });
+    }
+    const { error } = await db.from('projects').delete().eq('id', req.params.id);
+    if (error) throw error;
+    return res.json({ success: true });
+  } catch (error: any) {
+    console.error('Project delete error:', error);
+    return res.status(500).json({ error: 'Project could not be deleted.' });
+  }
+});
+
+app.get('/api/bookmarks', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data, error } = await db.from('bookmarks').select('id, project_id, projects(*)').eq('user_id', (req as any).user.id);
+    if (error) throw error;
+    return res.json({ bookmarks: (data || []).map((row: any) => row.projects).filter(Boolean) });
+  } catch (error: any) {
+    console.error('Bookmarks load error:', error);
+    return res.status(500).json({ error: 'Bookmarks could not be loaded.' });
+  }
+});
+
+app.get('/api/bookmarks/:projectId/check', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data, error } = await db.from('bookmarks').select('id').eq('user_id', (req as any).user.id).eq('project_id', req.params.projectId).maybeSingle();
+    if (error) throw error;
+    return res.json({ bookmarked: Boolean(data) });
+  } catch (error: any) {
+    console.error('Bookmark status error:', error);
+    return res.status(500).json({ error: 'Bookmark status could not be loaded.' });
+  }
+});
+
+app.post('/api/bookmarks/toggle', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const userId = (req as any).user.id;
+    const projectId = req.body?.projectId;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    if (!projectId) return res.status(400).json({ error: 'Project ID is required.' });
+    const { data: existing } = await db.from('bookmarks').select('id').eq('user_id', userId).eq('project_id', projectId).maybeSingle();
+    if (existing) {
+      const { error } = await db.from('bookmarks').delete().eq('id', existing.id);
+      if (error) throw error;
+      return res.json({ bookmarked: false });
+    }
+    const { error } = await db.from('bookmarks').insert([{ user_id: userId, project_id: projectId }]);
+    if (error) throw error;
+    return res.json({ bookmarked: true });
+  } catch (error: any) {
+    console.error('Bookmark mutation error:', error);
+    return res.status(500).json({ error: 'Bookmark could not be updated.' });
+  }
+});
+
+app.post('/api/eois', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const senderId = (req as any).user.id;
+    const { projectId, message, recipientId } = req.body || {};
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    if (!message || typeof message !== 'string' || message.length > 10000) return res.status(400).json({ error: 'A valid message is required.' });
+    let targetRecipient = recipientId || null;
+    let validProjectId = null;
+    if (projectId) {
+      const { data: project } = await db.from('projects').select('id, owner_id').eq('id', projectId).maybeSingle();
+      if (!project) return res.status(404).json({ error: 'Project not found.' });
+      validProjectId = project.id;
+      targetRecipient = targetRecipient || project.owner_id;
+    }
+    if (!targetRecipient || targetRecipient === senderId) return res.status(400).json({ error: 'A valid recipient is required.' });
+    const { data, error } = await db.from('eois').insert([{
+      project_id: validProjectId,
+      user_name: (req as any).user.name || 'Platform User',
+      message: message.trim(),
+      read: false,
+      sender_id: senderId,
+      recipient_id: targetRecipient,
+      status: 'pending',
+    }]).select().single();
+    if (error) throw error;
+    return res.status(201).json({ eoi: data });
+  } catch (error: any) {
+    console.error('EOI create error:', error);
+    return res.status(500).json({ error: 'Message could not be sent.' });
+  }
+});
+
+app.get('/api/eois/sent', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data, error } = await db.from('eois').select('*, projects(*)').eq('sender_id', (req as any).user.id).order('created_at', { ascending: false });
+    if (error) throw error;
+    return res.json({ eois: data || [] });
+  } catch (error: any) {
+    console.error('Sent EOI load error:', error);
+    return res.status(500).json({ error: 'Applications could not be loaded.' });
+  }
+});
+
+app.get('/api/eois/received', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const userId = (req as any).user.id;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data: ownedProjects, error: projectError } = await db.from('projects').select('id').eq('owner_id', userId);
+    if (projectError) throw projectError;
+    const projectIds = (ownedProjects || []).map((project: any) => project.id);
+    let query = db.from('eois').select('*, projects(*)').order('created_at', { ascending: false });
+    query = projectIds.length > 0
+      ? query.or(`project_id.in.(${projectIds.join(',')}),recipient_id.eq.${userId}`)
+      : query.eq('recipient_id', userId);
+    const { data, error } = await query;
+    if (error) throw error;
+    return res.json({ eois: data || [] });
+  } catch (error: any) {
+    console.error('Received EOI load error:', error);
+    return res.status(500).json({ error: 'Received messages could not be loaded.' });
+  }
+});
+
+app.get('/api/eois/conversations', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const userId = (req as any).user.id;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data, error } = await db.from('eois').select('*, projects(title, image_url)').or(`sender_id.eq.${userId},recipient_id.eq.${userId}`).order('created_at', { ascending: false });
+    if (error) throw error;
+    return res.json({ eois: data || [] });
+  } catch (error: any) {
+    console.error('Conversation load error:', error);
+    return res.status(500).json({ error: 'Conversations could not be loaded.' });
+  }
+});
+
+app.get('/api/eois/unread-count', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { count, error } = await db.from('eois').select('id', { count: 'exact', head: true }).eq('recipient_id', (req as any).user.id).eq('read', false);
+    if (error) throw error;
+    return res.json({ count: count || 0 });
+  } catch (error: any) {
+    console.error('Unread count error:', error);
+    return res.status(500).json({ error: 'Unread count could not be loaded.' });
+  }
+});
+
+app.put('/api/eois/:id/read', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const userId = (req as any).user.id;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    const { data: eoi } = await db.from('eois').select('sender_id, recipient_id').eq('id', req.params.id).maybeSingle();
+    if (!eoi) return res.status(404).json({ error: 'Message not found.' });
+    if (eoi.sender_id !== userId && eoi.recipient_id !== userId) return res.status(403).json({ error: 'You cannot update this message.' });
+    const { error } = await db.from('eois').update({ read: true }).eq('id', req.params.id);
+    if (error) throw error;
+    return res.json({ success: true });
+  } catch (error: any) {
+    console.error('EOI read update error:', error);
+    return res.status(500).json({ error: 'Message could not be updated.' });
+  }
+});
+
+app.post('/api/eois/read-thread', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const userId = (req as any).user.id;
+    const { partnerId, projectId } = req.body || {};
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    if (!partnerId) return res.status(400).json({ error: 'Conversation participant is required.' });
+    let query = db.from('eois').update({ read: true }).eq('recipient_id', userId).eq('sender_id', partnerId).eq('read', false);
+    query = projectId ? query.eq('project_id', projectId) : query.is('project_id', null);
+    const { error } = await query;
+    if (error) throw error;
+    return res.json({ success: true });
+  } catch (error: any) {
+    console.error('Conversation read update error:', error);
+    return res.status(500).json({ error: 'Conversation could not be marked as read.' });
+  }
+});
+
+app.put('/api/eois/:id/status', authenticateUser, async (req, res) => {
+  try {
+    const db = getServiceClient();
+    const userId = (req as any).user.id;
+    const status = req.body?.status;
+    if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+    if (typeof status !== 'string' || status.length < 1 || status.length > 100) return res.status(400).json({ error: 'Invalid EOI status.' });
+    const { data: eoi } = await db.from('eois').select('sender_id, recipient_id').eq('id', req.params.id).maybeSingle();
+    if (!eoi) return res.status(404).json({ error: 'Message not found.' });
+    if (eoi.recipient_id !== userId && (req as any).userRole !== Roles.Admin) return res.status(403).json({ error: 'Only the recipient or an administrator can change this status.' });
+    const { error } = await db.from('eois').update({ status }).eq('id', req.params.id);
+    if (error) throw error;
+    return res.json({ success: true });
+  } catch (error: any) {
+    console.error('EOI status update error:', error);
+    return res.status(500).json({ error: 'Message status could not be updated.' });
   }
 });
 
@@ -2122,7 +2579,7 @@ app.put('/api/challenge-matches/:id', validateBody(updateMatchStatusRequestSchem
       return res.status(404).json({ error: 'Match record not found.' });
     }
 
-    if (match.candidate_user_id !== userId && match.partner_user_id !== userId) {
+    if (!canMutateMatch(userId, match.candidate_user_id, match.partner_user_id, (req as any).userRole === Roles.Admin)) {
       return res.status(403).json({ error: 'Unauthorized to update this match status.' });
     }
 
@@ -2196,7 +2653,7 @@ app.post('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), valida
 
 // --- Vite Routing & Serving ---
 const startServer = async () => {
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     const vite = await createViteServer({
       server: { 
         middlewareMode: true,
@@ -2213,7 +2670,7 @@ const startServer = async () => {
     });
   }
 
-  if (!process.env.VERCEL_FUNCTION) {
+  if (!process.env.VERCEL && !process.env.VERCEL_FUNCTION) {
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server launched on port ${PORT}`);
     });

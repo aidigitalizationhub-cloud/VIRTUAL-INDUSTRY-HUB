@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { StorageService } from '../services/storageService';
 import { Project, ProjectStatus, ResearchArea } from '../types';
-import { supabase } from '../lib/supabase';
+import { getAuthUser } from '../lib/auth-client';
 import { useToast } from '../App';
 import { Tr } from '../components/Tr';
 import { useTranslatedText } from '../services/translationService';
@@ -26,10 +26,10 @@ const Products: React.FC = () => {
   const { showToast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setCurrentUser(session.user);
-        StorageService.getBookmarks(session.user.id).then(bookmarkedProjects => {
+    getAuthUser().then(user => {
+      if (user) {
+        setCurrentUser(user);
+        StorageService.getBookmarks(user.id).then(bookmarkedProjects => {
           setBookmarkedIds(bookmarkedProjects.map(p => p.id));
         });
       }

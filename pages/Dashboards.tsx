@@ -17,6 +17,7 @@ import {
 import { useToast } from '../App';
 import { Onboarding } from './Onboarding';
 import { AdminDashboard } from '../components/AdminDashboard';
+import { authClient } from '../lib/auth-client';
 import { supabase } from '../lib/supabase';
 import { AIProfileService } from '../services/aiProfileService';
 import { EmbeddingService } from '../services/embeddingService';
@@ -1849,13 +1850,6 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
 
   useEffect(() => {
     const userId = localUser?.id || user?.id;
-    if (userId) {
-       StorageService.getUnreadCount(userId).then(setInternalUnread).catch(() => {});
-    }
-  }, [activeTab, localUser?.id, user?.id]);
-
-  useEffect(() => {
-    const userId = localUser?.id || user?.id;
     if (!userId) return;
     const interval = setInterval(() => {
        StorageService.getUnreadCount(userId).then(setInternalUnread).catch(() => {});
@@ -1871,7 +1865,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
   const refreshProfile = async () => {
     const userId = localUser?.id || user?.id;
     if (!userId) return;
-    const freshProfile = await StorageService.getProfile(userId);
+     const freshProfile = await StorageService.getCurrentProfile();
     setLocalUser(freshProfile);
     if (onProfileUpdate) {
       onProfileUpdate();
@@ -2380,9 +2374,11 @@ const ResearcherDashboard = ({
     if (!user?.id) return;
     setLoading(true);
     try {
-      const pList = await StorageService.getMyProjects(user.id);
+      const [pList, eoiList] = await Promise.all([
+        StorageService.getMyProjects(user.id),
+        StorageService.getEOIsForPI(user.id),
+      ]);
       setProjects(pList);
-      const eoiList = await StorageService.getEOIsForPI(user.id);
       setEois(eoiList);
     } catch (err: any) {
       showToast(err.message || "Could not load your dashboard data. Please refresh.", "error");
@@ -4182,14 +4178,14 @@ const StudentDashboard = ({ user }: { user: User | null }) => {
      if (!user?.id) return;
      try {
        setLoading(true);
-       const allProjects = await StorageService.getProjects();
-       setProjects(allProjects);
-
-       const studentApps = await StorageService.getStudentApplications(user.id);
-       setApplications(studentApps);
-
-       const bookmarked = await StorageService.getBookmarks(user.id);
-       setBookmarks(bookmarked);
+        const [allProjects, studentApps, bookmarked] = await Promise.all([
+          StorageService.getProjects(),
+          StorageService.getStudentApplications(user.id),
+          StorageService.getBookmarks(user.id),
+        ]);
+        setProjects(allProjects);
+        setBookmarks(bookmarked);
+        setApplications(studentApps);
 
        // Recommendations
        const recs = getRecommendations(allProjects, user);
@@ -4875,8 +4871,11 @@ const ProfileSettings: React.FC<{
     
     setUpdatingPassword(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
+      const result: any = await (authClient as any).changePassword({
+        newPassword,
+        revokeOtherSessions: true,
+      });
+      if (result?.error) throw result.error;
       showToast("Password updated successfully!", "success");
       setIsResettingPassword(false);
       setNewPassword('');
@@ -4944,13 +4943,12 @@ const ProfileSettings: React.FC<{
 
     setDeletingAccount(true);
     try {
-      // Verify password with Supabase auth
-      const { error: signInErr } = await supabase.auth.signInWithPassword({
+      const signInResult: any = await (authClient as any).signIn.email({
         email: user.email,
-        password: deletePassword
+        password: deletePassword,
       });
 
-      if (signInErr) {
+      if (signInResult?.error) {
         showToast("Incorrect password. Please verify your current password.", "error");
         setDeletingAccount(false);
         return;

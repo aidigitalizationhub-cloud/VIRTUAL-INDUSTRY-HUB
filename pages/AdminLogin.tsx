@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ShieldAlert, Mail, Lock, Sparkles, ArrowRight, CheckCircle, RefreshCw } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { authClient, getAuthUser } from '../lib/auth-client';
 import { StorageService } from '../services/storageService';
 import { UserRole } from '../types';
 import { useToast } from '../App';
 
-export const AdminLogin: React.FC = () => {
+export const AdminLogin: React.FC<{ onAuthenticated: (user: { id: string }) => Promise<void> | void }> = ({ onAuthenticated }) => {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -19,23 +19,14 @@ export const AdminLogin: React.FC = () => {
     setLoading(true);
 
     try {
-      // Sign in standardly with password
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password,
-      });
-
-      if (signInError) throw signInError;
-      
-      const authUserId = signInData?.user?.id;
+      const result: any = await (authClient as any).signIn.email({ email: email.trim(), password });
+      if (result?.error) throw result.error;
+      const authUserId = (await getAuthUser())?.id;
       if (!authUserId) throw new Error("Could not resolve authorization token.");
 
       // Check user role in profiles
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authUserId)
-        .maybeSingle();
+      const profile = await StorageService.getCurrentProfile();
+      const profileError = null;
 
       if (profileError || !profile) {
         throw new Error("Could not retrieve administrative profile.");
@@ -43,12 +34,12 @@ export const AdminLogin: React.FC = () => {
 
       if (profile.role !== UserRole.Admin) {
         // Log out immediately to prevent illegal session
-        await supabase.auth.signOut();
+        await (authClient as any).signOut?.();
         throw new Error("Access Denied: Your profile does not possess Administrative clearance.");
       }
 
       showToast("Administrator Access Granted", "success");
-      navigate('/dashboard');
+      await onAuthenticated({ id: authUserId });
     } catch (err: any) {
       console.error("Admin Login Error:", err);
       showToast(err.message || "Failed to establish administrative privileges.", "error");

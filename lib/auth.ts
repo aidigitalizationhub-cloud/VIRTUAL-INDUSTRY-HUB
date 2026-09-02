@@ -7,6 +7,7 @@ try {
 import { betterAuth } from "better-auth";
 import { Pool } from "pg";
 import * as bcrypt from "bcryptjs";
+import { createTransport } from "nodemailer";
 
 // Reuse Supabase pooler string — must be transaction pooler 6543?pgbouncer=true
 // Fallback to SUPABASE_DATABASE_URL for backwards compat
@@ -63,6 +64,25 @@ if (!isPlaceholderUrl) {
   // Prevent actual connection attempts from crashing dev — pool will ECONNREFUSED only on query, not on init
 }
 
+export const markPasswordResetComplete = async (userId: string): Promise<void> => {
+  if (!pool || isPlaceholderUrl) return;
+
+  await pool.query(
+    `UPDATE public.better_auth_migration_status s
+     SET password_reset_required = false,
+         reset_completed_at = COALESCE(s.reset_completed_at, now()),
+         updated_at = now()
+     FROM better_auth.account a
+     WHERE s.better_auth_user_id = $1
+       AND a."userId" = s.better_auth_user_id
+       AND a."providerId" = 'credential'
+       AND a.issuer = 'local:credential'
+       AND a."accountId" = a."userId"::text
+       AND a.password IS NOT NULL`,
+    [userId],
+  );
+};
+
 // Dual-verifier: Supabase bcrypt ($2a$/$2b$) + Better Auth scrypt
 const verifyPassword = async (data: { hash: string; password: string }) => {
   const { hash, password } = data;
@@ -90,6 +110,21 @@ const betterAuthTrustedOrigins = Array.from(new Set([
     .filter(Boolean),
 ]));
 
+const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+const smtpPort = Number(process.env.SMTP_PORT || 465);
+const smtpUser = process.env.SMTP_USER || '';
+const smtpPassword = process.env.SMTP_PASSWORD || '';
+const smtpFrom = process.env.SMTP_FROM || smtpUser;
+const smtpConfigured = Boolean(smtpUser && smtpPassword && smtpFrom);
+const smtpTransport = smtpConfigured
+  ? createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: process.env.SMTP_SECURE !== 'false',
+      auth: { user: smtpUser, pass: smtpPassword },
+    })
+  : null;
+
 export const auth = betterAuth({
   database: pool as any,
   secret: process.env.BETTER_AUTH_SECRET,
@@ -104,6 +139,23 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
+    sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
+      if (!smtpTransport) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('Password reset email delivery is not configured.');
+        }
+        console.warn(`[better-auth] Password reset URL for ${user.email}: ${url}`);
+        return;
+      }
+
+      await smtpTransport.sendMail({
+        from: smtpFrom,
+        to: user.email,
+        subject: 'Reset your UG Virtual Industry Hub password',
+        text: `Use this secure link to set your new password: ${url}\n\nThis link expires automatically.`,
+        html: `<p>Use the following secure link to set your new password:</p><p><a href="${url}">Reset password</a></p><p>This link expires automatically.</p>`,
+      });
+    },
     password: {
       hash: hashPassword,
       verify: verifyPassword,

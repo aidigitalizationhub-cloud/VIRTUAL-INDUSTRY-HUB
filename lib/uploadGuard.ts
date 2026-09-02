@@ -19,6 +19,13 @@ const ALLOWED_MIME_TYPES = new Set([
   'application/msword',
 ]);
 
+const STORAGE_MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
+const STORAGE_ALLOWED_EXTENSIONS = new Set([
+  'txt', 'doc', 'docx', 'pdf', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'
+]);
+const STORAGE_ALLOWED_MIME_PREFIXES = ['image/'];
+const STORAGE_ALLOWED_MIME_TYPES = new Set([...ALLOWED_MIME_TYPES, 'application/pdf']);
+
 /**
  * Server-side upload validation (size + extension + MIME whitelist).
  * Rejects executables, scripts and archive patterns by virtue of the whitelist.
@@ -40,6 +47,23 @@ export const validateUpload = ({ name, mimeType, sizeBytes }: UploadFileInfo): U
   }
 
   if (mimeType && !ALLOWED_MIME_TYPES.has(mimeType)) {
+    return { ok: false, error: `Unsupported MIME type: ${mimeType}.` };
+  }
+
+  return { ok: true };
+};
+
+export const validateStorageUpload = ({ name, mimeType, sizeBytes }: UploadFileInfo): UploadValidationResult => {
+  if (!name || !name.trim()) return { ok: false, error: 'File name is required.' };
+  if (!Number.isFinite(sizeBytes) || sizeBytes <= 0) return { ok: false, error: 'File is empty.' };
+  if (sizeBytes > STORAGE_MAX_UPLOAD_BYTES) return { ok: false, error: 'File exceeds the 15MB upload limit.' };
+
+  const extension = (name.split('.').pop() || '').toLowerCase();
+  if (!STORAGE_ALLOWED_EXTENSIONS.has(extension)) {
+    return { ok: false, error: `Unsupported file type: .${extension}.` };
+  }
+
+  if (mimeType && !STORAGE_ALLOWED_MIME_TYPES.has(mimeType) && !STORAGE_ALLOWED_MIME_PREFIXES.some(prefix => mimeType.startsWith(prefix))) {
     return { ok: false, error: `Unsupported MIME type: ${mimeType}.` };
   }
 

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { StorageService } from '../services/storageService';
 import { Project, ProjectStatus, User, Visibility, ResearchArea, UserRole } from '../types';
-import { supabase } from '../lib/supabase';
+import { getAuthUser } from '../lib/auth-client';
 import { useToast } from '../App';
 import { Tr } from '../components/Tr';
 
@@ -31,16 +31,16 @@ const ContactPIModal: React.FC<{
     e.preventDefault();
     setSending(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const user = await getAuthUser();
       
-      if (!session) {
+      if (!user) {
         showToast("Authentication Required. Please log in to connect.", "error");
         setSending(false);
         return;
       }
 
       let senderName = "Research Partner";
-      const profile = await StorageService.getProfile(session.user.id);
+      const profile = await StorageService.getProfile(user.id);
       if (profile?.name) senderName = profile.name;
 
       await StorageService.submitEOI(projectId, senderName, `[DIRECT MESSAGE] ${message}`);
@@ -269,12 +269,12 @@ const ProjectDetail: React.FC = () => {
         setPageLoading(false);
       });
 
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          StorageService.isBookmarked(session.user.id, id).then(setIsBookmarked);
-          StorageService.getProfile(session.user.id).then(profile => {
+      getAuthUser().then(user => {
+        if (user) {
+          StorageService.isBookmarked(user.id, id).then(setIsBookmarked);
+          StorageService.getProfile(user.id).then(profile => {
             setCurrentUserProfile(profile);
-            StorageService.getRevealApprovalDetails(session.user.id, id).then(details => {
+            StorageService.getRevealApprovalDetails(user.id, id).then(details => {
               setRevealCleared(details.approved);
               setRemainingMinutes(details.approved ? details.remainingMinutes : null);
             });
@@ -328,16 +328,16 @@ const ProjectDetail: React.FC = () => {
     if (!id) return;
     setSubmittingEOI(type);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const user = await getAuthUser();
       
-      if (!session) {
+      if (!user) {
         showToast("Session Required. Please log in.", "error");
         setSubmittingEOI(null);
         return;
       }
 
       let senderName = "User in Hub";
-      const profile = await StorageService.getProfile(session.user.id);
+      const profile = await StorageService.getProfile(user.id);
       if (profile?.name) senderName = profile.name;
 
       let messageText = `[FORMAL EOI] Submission for ${type}. This partner wishes to engage in ${type.toLowerCase()} regarding this innovation.`;
@@ -408,13 +408,13 @@ const ProjectDetail: React.FC = () => {
 
   const handleToggleBookmark = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const user = await getAuthUser();
+      if (!user) {
         showToast("Authentication Required. Please log in to bookmark projects.", "error");
         return;
       }
       if (!id) return;
-      const result = await StorageService.toggleBookmark(session.user.id, id);
+      const result = await StorageService.toggleBookmark(user.id, id);
       setIsBookmarked(result);
       if (result) {
         showToast("Project saved to bookmarks.", "success");

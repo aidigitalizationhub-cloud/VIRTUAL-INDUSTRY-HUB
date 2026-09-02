@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase";
 import { postJson } from "../lib/api";
+import { getAuthUser } from "../lib/auth-client";
 
 export const AIScoutService = {
   getLastSyncTime: async (): Promise<Date | null> => {
@@ -24,8 +25,8 @@ export const AIScoutService = {
   autoSyncNews: async (force: boolean = false): Promise<boolean> => {
     try {
       if (!force) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) return false;
+        const user = await getAuthUser();
+        if (!user?.id) return false;
 
         const lastSync = await AIScoutService.getLastSyncTime();
         if (lastSync) {

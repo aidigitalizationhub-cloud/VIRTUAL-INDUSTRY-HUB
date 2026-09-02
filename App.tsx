@@ -8,10 +8,9 @@ import AuthModal from './components/AuthModal';
 import { UserRole, User } from './types';
 import { AlertCircle, X, CheckCircle2, BellRing, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { supabase } from './lib/supabase';
 import { authClient } from './lib/auth-client';
+import { getAuthUser } from './lib/auth-client';
 import { StorageService } from './services/storageService';
-import { AIScoutService } from './services/aiScoutService';
 import { useSystemTheme } from './hooks/useSystemTheme';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -78,7 +77,7 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ 
-  isAuthenticated: boolean; 
+  isAuthenticated: boolean | null;
   children: React.ReactNode;
   onUnauthorized: () => void;
 }> = ({ isAuthenticated, children, onUnauthorized }) => {
@@ -90,6 +89,10 @@ const ProtectedRoute: React.FC<{
     }
   }, [isAuthenticated, location.pathname, onUnauthorized]);
 
+  if (isAuthenticated === null) {
+    return <RouteFallback />;
+  }
+
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
@@ -100,7 +103,7 @@ const ProtectedRoute: React.FC<{
 const AppContent: React.FC = () => {
   useSystemTheme();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -123,72 +126,17 @@ const AppContent: React.FC = () => {
   };
 
   useEffect(() => {
-    // Check Supabase session (legacy)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setIsAuthenticated(true);
-        loadProfile(session.user.id);
-      }
-    });
-    // Check Better Auth session (new primary)
     (async () => {
       try {
-        const sess: any = await (authClient as any).getSession?.();
-        const baUser = sess?.data?.user || sess?.user;
-        if (baUser?.id) {
+        const user = await getAuthUser();
+        if (user?.id) {
+          await loadProfile(user.id);
           setIsAuthenticated(true);
-          loadProfile(baUser.id);
+        } else {
+          setIsAuthenticated(false);
         }
       } catch {}
     })();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setIsAuthenticated(true);
-        loadProfile(session.user.id);
-      } else {
-        // Only clear if Better Auth also has no session
-        (authClient as any).getSession?.().then((s: any) => {
-          const bu = s?.data?.user || s?.user;
-          if (!bu) {
-            setIsAuthenticated(false);
-            setUserProfile(null);
-            setUnreadCount(0);
-          }
-        }).catch(() => {
-          setIsAuthenticated(false);
-          setUserProfile(null);
-          setUnreadCount(0);
-        });
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Global news sync trigger (runs on app load + every 12 hours)
-  useEffect(() => {
-    const checkConnection = async () => {
-      const isConnected = await StorageService.testConnection();
-      if (!isConnected) {
-        showToast("Database Connection Error: Please check your Supabase settings.", "error");
-      }
-    };
-
-    const triggerSync = () => {
-      AIScoutService.autoSyncNews().then(didUpdate => {
-        if (didUpdate) {
-          // Sync completed silently; UI reflects new items on next fetch.
-        }
-      }).catch(err => {
-        console.error("Auto Sync Failed:", err);
-      });
-    };
-
-    checkConnection();
-    triggerSync();
-    const interval = setInterval(triggerSync, 12 * 60 * 60 * 1000); // 12 Hours
-    return () => clearInterval(interval);
   }, []);
 
   // Periodic unread count check (every 30 seconds or on route change)
@@ -204,15 +152,29 @@ const AppContent: React.FC = () => {
       const interval = setInterval(fetchCount, 30000);
       return () => clearInterval(interval);
     }
-  }, [isAuthenticated, userProfile?.id, location.pathname]);
+  }, [isAuthenticated, userProfile?.id]);
 
   const loadProfile = async (userId: string) => {
-    const profile = await StorageService.getProfile(userId);
-    if (profile) {
-      setUserProfile(profile);
-    } else {
-      setUserProfile({ id: userId, email: '', name: 'Researcher', role: UserRole.Researcher });
+    try {
+      const profile = await StorageService.getCurrentProfile();
+      if (profile) {
+        setUserProfile(profile);
+      } else {
+        setUserProfile({ id: userId, email: '', name: 'Researcher', role: UserRole.Researcher });
+      }
+    } catch (error) {
+      console.error('Profile load failed:', error);
+      setUserProfile(null);
     }
+  };
+
+  const handleAuthenticated = async (user: { id: string }) => {
+    setIsAuthenticated(null);
+    setShowLoginPrompt(false);
+    setIsAuthModalOpen(false);
+    await loadProfile(user.id);
+    setIsAuthenticated(true);
+    navigate('/dashboard');
   };
 
   const handleLogout = () => {
@@ -222,7 +184,6 @@ const AppContent: React.FC = () => {
   const executeLogout = async () => {
     setShowLogoutConfirm(false);
     try { await (authClient as any).signOut?.(); } catch {}
-    await supabase.auth.signOut();
     setIsAuthenticated(false);
     setUserProfile(null);
     setUnreadCount(0);
@@ -257,7 +218,7 @@ const AppContent: React.FC = () => {
       <div className="flex flex-col min-h-screen font-sans text-gray-900">
         {!hideLayout && (
           <Navbar 
-              isAuthenticated={isAuthenticated}
+              isAuthenticated={isAuthenticated === true}
               user={userProfile}
               onUserIconClick={handleUserIconClick}
               onLogout={handleLogout}
@@ -297,7 +258,7 @@ const AppContent: React.FC = () => {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/verify-otp" element={<VerifyOTP />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
+               <Route path="/admin/login" element={<AdminLogin onAuthenticated={handleAuthenticated} />} />
               
               <Route 
                   path="/dashboard" 
@@ -339,6 +300,7 @@ const AppContent: React.FC = () => {
         <AuthModal 
             isOpen={isAuthModalOpen} 
             onClose={() => setIsAuthModalOpen(false)}
+            onAuthenticated={handleAuthenticated}
         />
 
         <AnimatePresence>

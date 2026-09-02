@@ -4,7 +4,6 @@ import { X, Mail, Lock, User, ArrowRight, AlertCircle, Info, Eye, EyeOff, Target
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../types';
-import { supabase } from '../lib/supabase';
 import { authClient } from '../lib/auth-client';
 import { StorageService } from '../services/storageService';
 
@@ -25,9 +24,10 @@ const TITLE_OPTIONS = [
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAuthenticated: (user: { id: string }) => Promise<void> | void;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthenticated }) => {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -67,61 +67,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     try {
       if (isLogin) {
-        // Try Better Auth first, fallback to Supabase for legacy users
-        let userId: string | null = null;
-        try {
-          const res: any = await authClient.signIn.email({ email, password } as any);
-          if (res?.error) throw res.error;
-          const sess: any = await (authClient as any).getSession?.();
-          userId = sess?.data?.user?.id || sess?.user?.id || null;
-          // Ensure Supabase JWT exists for RLS-protected data (dual-write transitional)
-          try { await supabase.auth.signInWithPassword({ email, password }); } catch {}
-        } catch (baErr: any) {
-          const { data: signInData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
-          if (authError) throw authError;
-          userId = signInData?.user?.id || null;
-        }
+        const res: any = await authClient.signIn.email({ email: email.trim(), password } as any);
+        if (res?.error) throw res.error;
+        const userId = res?.data?.user?.id || (await (authClient as any).getSession?.())?.data?.user?.id || null;
         if (userId) {
-          const profile = await StorageService.getProfile(userId);
+          const profile = await StorageService.getCurrentProfile();
           if (profile && profile.role === UserRole.Admin) {
             try { await (authClient as any).signOut?.(); } catch {}
-            await supabase.auth.signOut();
             throw new Error("Access Denied: Administrative login must be performed through the secure Admin Portal (/admin/login).");
           }
         }
         if (!userId) throw new Error("Login failed: no session returned");
+        await onAuthenticated({ id: userId });
       } else {
         if (password.length < 6) throw new Error("Password must be at least 6 characters long.");
         if (password !== confirmPassword) throw new Error("Passwords do not match.");
         const effectiveTitle = getEffectiveTitle();
         const displayName = getFormattedDisplayName();
-        let newUserId: string | null = null;
-        try {
-          const res: any = await authClient.signUp.email({ email, password, name: displayName } as any);
-          if (res?.error) throw res.error;
-          const sess: any = await (authClient as any).getSession?.();
-          newUserId = sess?.data?.user?.id || sess?.user?.id || res?.data?.user?.id || null;
-          if (!newUserId) {
-            const s2: any = await authClient.signIn.email({ email, password } as any);
-            const sess2: any = await (authClient as any).getSession?.();
-            newUserId = sess2?.data?.user?.id || s2?.data?.user?.id || null;
-          }
-          // Dual-write: ensure Supabase auth user exists so existing RLS continues to work
-          try { await supabase.auth.signUp({ email, password }); } catch {}
-          try { await supabase.auth.signInWithPassword({ email, password }); } catch {}
-          // Refresh to obtain Supabase JWT for immediate profile insert
-          try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user?.id && session.user.id !== newUserId) {
-              // If Supabase generated a different UUID, prefer Supabase one for FK consistency until full migration
-              newUserId = session.user.id;
-            }
-          } catch {}
-        } catch (baErr: any) {
-          const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
-          if (authError) throw authError;
-          newUserId = authData.user?.id || null;
-        }
+        const res: any = await authClient.signUp.email({ email: email.trim(), password, name: displayName } as any);
+        if (res?.error) throw res.error;
+        const newUserId = res?.data?.user?.id || (await (authClient as any).getSession?.())?.data?.user?.id || null;
         if (newUserId) {
           await StorageService.updateProfile({
             id: newUserId,
@@ -131,6 +96,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             role: role,
             user_type: (role === UserRole.Investor || role === UserRole.IndustryPartner) ? userType : 'individual'
           });
+          await onAuthenticated({ id: newUserId });
         }
       }
       onClose();

@@ -7,6 +7,7 @@ import { HERO_IMAGES } from '../constants';
 import { ProjectStatus, Project, ResearchArea, NewsItem } from '../types';
 import { StorageService } from '../services/storageService';
 import { Tr } from '../components/Tr';
+import { safeExternalUrl } from '../lib/urlSafety';
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -275,7 +276,7 @@ const Home: React.FC = () => {
            {latestNews.length > 0 ? (
              <div className="grid md:grid-cols-3 gap-8">
                {latestNews.map(item => (
-                 <div key={item.id} onClick={() => item.external_url && window.open(item.external_url, '_blank', 'noopener,noreferrer')} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col h-full group cursor-pointer">
+                  <div key={item.id} onClick={() => { const url = safeExternalUrl(item.external_url); if (url) window.open(url, '_blank', 'noopener,noreferrer'); }} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col h-full group cursor-pointer">
                    <div className="h-44 overflow-hidden shrink-0">
                       <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                    </div>
