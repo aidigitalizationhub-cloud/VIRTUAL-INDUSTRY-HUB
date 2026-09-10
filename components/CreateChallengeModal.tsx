@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  X, Briefcase, Loader2, Plus, Sparkles, DollarSign, Calendar, MapPin, Tag 
-} from 'lucide-react';
-import { useToast } from '../App';
+  X, Briefcase, Loader2, Plus, DollarSign, Calendar, MapPin } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
 import { ChallengeService } from '../services/challengeService';
 import { User, IndustryChallenge } from '../types';
 

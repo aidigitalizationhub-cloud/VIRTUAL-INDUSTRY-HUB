@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Lock, Check, ShieldAlert, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { authClient } from '../lib/auth-client';
 
@@ -12,9 +12,14 @@ const ResetPassword: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
+  // Reset links are generated as `${origin}/#/reset-password`, so with HashRouter
+  // the token lives inside the hash — fall back to parsing it there.
+  const readResetToken = (): string | null =>
+    new URLSearchParams(window.location.search).get('token') ??
+    new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('token');
+
   useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get('token');
-    if (!token) navigate('/forgot-password');
+    if (!readResetToken()) navigate('/forgot-password');
   }, [navigate]);
 
   const validatePassword = (pass: string) => {
@@ -38,7 +43,7 @@ const ResetPassword: React.FC = () => {
     setLoading(true);
 
     try {
-      const token = new URLSearchParams(window.location.search).get('token');
+      const token = readResetToken();
       if (!token) throw new Error('This password reset link is missing or expired.');
       const result: any = await (authClient as any).resetPassword({ newPassword: password, token });
       if (result?.error) throw result.error;

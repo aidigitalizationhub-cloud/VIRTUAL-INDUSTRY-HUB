@@ -21,7 +21,7 @@ const ALLOWED_MIME_TYPES = new Set([
 
 const STORAGE_MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 const STORAGE_ALLOWED_EXTENSIONS = new Set([
-  'txt', 'doc', 'docx', 'pdf', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'
+  'txt', 'doc', 'docx', 'pdf', 'png', 'jpg', 'jpeg', 'jfif', 'webp', 'gif', 'svg'
 ]);
 const STORAGE_ALLOWED_MIME_PREFIXES = ['image/'];
 const STORAGE_ALLOWED_MIME_TYPES = new Set([...ALLOWED_MIME_TYPES, 'application/pdf']);

@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  FileSpreadsheet, FileText, Download, Eye, Calendar, Filter, Sparkles, 
-  CheckCircle2, RefreshCw, BarChart3, TrendingUp, Users, ShieldCheck, 
-  Globe, Activity, Loader2, HelpCircle, Layers, Check, AlertCircle, 
-  Building2, GraduationCap, Microscope, Briefcase, FileCheck, ArrowRight,
-  Printer, X, MessageSquare, ChevronRight, Lock
-} from 'lucide-react';
+  FileSpreadsheet, FileText, Download, Eye, Filter, Sparkles, Loader2, Layers, X } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { User, Project, NewsItem, UserRole, AccountDeletionRecord, IndustryChallenge, ChallengeMatch } from '../types';
-import { useToast } from '../App';
-import { StorageService } from '../services/storageService';
+import { useToast } from '../contexts/ToastContext';
 import { ChallengeService } from '../services/challengeService';
 import { getGeminiResponse } from '../services/geminiService';
 
@@ -69,7 +63,7 @@ export const ReportCenter: React.FC<ReportCenterProps> = ({
   // Challenges and matches loaded from services
   const [challenges, setChallenges] = useState<IndustryChallenge[]>([]);
   const [matches, setMatches] = useState<ChallengeMatch[]>([]);
-  const [loadingData, setLoadingData] = useState<boolean>(true);
+  const [, setLoadingData] = useState<boolean>(true);
 
   // Preview Modal state
   const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
@@ -122,7 +116,6 @@ export const ReportCenter: React.FC<ReportCenterProps> = ({
 
   // Filtered Datasets
   const filteredProfiles = profiles.filter(p => filterByDate(p.created_at));
-  const filteredProjects = projects.filter(p => filterByDate(p.created_at));
   const filteredChallenges = challenges.filter(c => filterByDate(c.created_at));
   const filteredMatches = matches.filter(m => filterByDate(m.createdAt));
   const filteredEOIs = eois.filter(e => filterByDate(e.created_at));
@@ -136,8 +129,6 @@ export const ReportCenter: React.FC<ReportCenterProps> = ({
   const investorsCount = profiles.filter(p => p.role === UserRole.Investor).length;
 
   const openChallengesCount = challenges.filter(c => c.status === 'Open' || !c.status).length;
-  const inProgressChallengesCount = challenges.filter(c => c.status === 'Closed' || c.status === 'Draft').length;
-  const solvedChallengesCount = matches.filter(m => m.status === 'interested').length;
 
   const totalMatchesCount = matches.length;
   const acceptedMatchesCount = matches.filter(m => m.status === 'accepted').length || matches.filter(m => m.status === 'interested').length;

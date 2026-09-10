@@ -1,49 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Users, FileText, Settings, Bell, ShieldCheck, 
-  Trash2, Plus, Edit, RefreshCw, Layers, CheckCircle2, 
-  MapPin, Clock, Search, ExternalLink, Filter, HelpCircle, 
-  TrendingUp, BarChart3, Radio, FileSpreadsheet, Lock, Sparkles,
-  MessageSquare, Download, Eye, AlertTriangle, ThumbsUp, Check, Loader2, ChevronDown, ChevronUp, X, Link2, Upload, ChevronLeft, ChevronRight,
-  Calendar, Tag, Globe, Zap, Maximize2, Minimize2, Mail, Copy, Building2, GraduationCap, Microscope, Briefcase, UserCheck, FileDown, FolderGit2,
-  ShieldAlert, Fingerprint, FileCheck
-} from 'lucide-react';
+  Users, FileText, ShieldCheck, 
+  Trash2, Plus, Edit, RefreshCw, Layers, CheckCircle2, Clock, Search, ExternalLink, 
+  TrendingUp, FileSpreadsheet, Lock, Sparkles, Download, Eye, AlertTriangle, Check, Loader2, X, Upload, ChevronLeft, ChevronRight, Globe, Mail, Copy, Building2, GraduationCap, Microscope, FileDown, Fingerprint } from 'lucide-react';
 import { User, Project, NewsItem, UserRole, ProjectStatus, Visibility, ResearchArea, DisclosureStatus, AccountDeletionRecord, AiDecision } from '../types';
 import { StorageService } from '../services/storageService';
-import { supabase } from '../lib/supabase';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
 import { AIScoutService } from '../services/aiScoutService';
 import { getGeminiResponse } from '../services/geminiService';
 import { DocumentExtractionService } from '../services/documentExtractionService';
 import { inspectMessageEnvelope, isMessageEncrypted, computeSHA256 } from '../lib/cryptoService';
 import { ReportCenter } from './ReportCenter';
+import { DisclosureAdminReview } from './admin/DisclosureAdminReview';
+import { TtoQueue } from './tto/TtoQueue';
+import { PublicationDecision } from './superadmin/PublicationDecision';
+import { useNavigate } from 'react-router-dom';
 
 interface AdminDashboardProps {
   user: User | null;
   onRefresh?: () => void;
   activeSubTab?: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions';
   setActiveSubTab?: (tab: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions') => void;
+  overviewOnly?: boolean;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
   user, 
   onRefresh,
   activeSubTab: externalActiveSubTab,
-  setActiveSubTab: externalSetActiveSubTab
+  setActiveSubTab: externalSetActiveSubTab,
+  overviewOnly = false
 }) => {
+  const navigate = useNavigate();
   const { showToast } = useToast();
-  const [internalActiveSubTab, setInternalActiveSubTab] = useState<'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions'>('metrics');
+  const [internalActiveSubTab] = useState<'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions'>('metrics');
   
   const activeSubTab = externalActiveSubTab !== undefined ? externalActiveSubTab : internalActiveSubTab;
-  const setActiveSubTab = (tab: 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions') => {
-    if (externalSetActiveSubTab) {
-      externalSetActiveSubTab(tab);
-    } else {
-      setInternalActiveSubTab(tab);
-    }
-  };
-  
+
   // Data states
   const [profiles, setProfiles] = useState<User[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -54,10 +48,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [decisionStatusFilter, setDecisionStatusFilter] = useState<string>('all');
   const [isLoadingDecisions, setIsLoadingDecisions] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [deletionSearch, setDeletionSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const assignableRoles = [...Object.values(UserRole), 'TTO/IP'] as const;
   
   // Project Screener filter states
   const [projectSearch, setProjectSearch] = useState('');
@@ -77,20 +71,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [isExtractingDoc, setIsExtractingDoc] = useState(false);
   const [isScoutingNews, setIsScoutingNews] = useState(false);
-  const [newsStatus, setNewsStatus] = useState<'Draft' | 'Published'>('Published');
+  const [, setNewsStatus] = useState<'Draft' | 'Published'>('Published');
   const [newsReferenceLinks, setNewsReferenceLinks] = useState<string[]>(['', '', '', '']);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [aiKeywords, setAiKeywords] = useState('');
   const [aiTone, setAiTone] = useState<string>('Academic Press Release');
-  const [showAIWriteModal, setShowAIWriteModal] = useState(false);
+  const [, setShowAIWriteModal] = useState(false);
   const [newsTags, setNewsTags] = useState('');
   const [newsRelevanceScore, setNewsRelevanceScore] = useState<number>(0);
   const [newsSourceVerificationNotes, setNewsSourceVerificationNotes] = useState('');
 
   // Redesigned Administrative Hub states for news curator
   const [isWorkspaceOpen, setIsWorkspaceOpen] = useState<boolean>(true);
-  const [tagInput, setTagInput] = useState<string>('');
   const [activeTab, setActiveTab] = useState<number>(1);
   const [tagList, setTagList] = useState<string[]>([]);
   const [archivePage, setArchivePage] = useState<number>(1);
@@ -191,34 +184,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const handleApproveDisclosure = async (proj: Project) => {
-    if (!user) return;
-    setIsProcessingAction(true);
-    try {
-      const currentTimeline = Array.isArray(proj.disclosure_timeline) ? proj.disclosure_timeline : [];
-      const newEvent = {
-        event: 'Approved',
-        details: 'Administrative governance review completed. Research cleared for public disclosure.',
-        timestamp: new Date().toISOString(),
-        user_name: user.name
-      };
-      
-      const updated = {
-        ...proj,
-        disclosure_status: DisclosureStatus.Published,
-        visibility: Visibility.Public,
-        disclosure_timeline: [...currentTimeline, newEvent]
-      };
-      
-      await StorageService.saveProject(updated);
-      showToast(`Disclosure "${proj.title}" approved and published to the Hub!`, "success");
-      
-      await loadAdminData();
-      if (onRefresh) onRefresh();
-    } catch (err: any) {
-      showToast(err.message || "Failed to approve disclosure", "error");
-    } finally {
-      setIsProcessingAction(false);
-    }
+    showToast(`Continue "${proj.title}" in the controlled IP review workflow.`, 'info');
+    navigate('/dashboard/admin/disclosures');
   };
 
   const handleRequestEdits = async (proj: Project) => {
@@ -391,6 +358,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const loadAdminData = async () => {
     try {
       setLoading(true);
+      if (overviewOnly) {
+        const overview = await StorageService.getAdminOverview();
+        setProfiles(overview.profiles);
+        setProjects(overview.projects);
+        setEois(overview.eois);
+        setNews([]);
+        setAccountDeletions([]);
+        return;
+      }
       const [allProfiles, allProjects, allNews, allEOIs, deletionsData] = await Promise.all([
         StorageService.adminGetAllProfiles(),
         StorageService.getProjects(),
@@ -447,11 +423,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   }, [newsTags]);
 
   // Handler for role changes
-  const handleRoleChange = async (userId: string, newRole: UserRole) => {
+  const handleRoleChange = async (userId: string, newRole: UserRole | 'TTO/IP') => {
     try {
       await StorageService.adminUpdateProfileRole(userId, newRole);
       showToast(`User role elevated to ${newRole}`, "success");
-      setProfiles(prev => prev.map(p => p.id === userId ? { ...p, role: newRole } : p));
+       setProfiles(prev => prev.map(p => p.id === userId ? { ...p, role: newRole as UserRole } : p));
       if (onRefresh) onRefresh();
     } catch (err) {
       showToast("Failed to transition role", "error");
@@ -579,22 +555,6 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
     } finally {
       setIsGeneratingAI(false);
     }
-  };
-
-  // Handle tag additions & removal
-  const handleAddTag = (tagStr: string) => {
-    const trimmed = tagStr.trim();
-    if (!trimmed) return;
-    if (tagList.includes(trimmed)) return;
-    const newTagsList = [...tagList, trimmed];
-    setTagList(newTagsList);
-    setNewsTags(newTagsList.join(', '));
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    const newTagsList = tagList.filter(t => t !== tagToRemove);
-    setTagList(newTagsList);
-    setNewsTags(newTagsList.join(', '));
   };
 
   // Pre-populate news item for editing
@@ -832,11 +792,6 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
     }
   };
 
-  const handleSaveNews = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await handleActionSave(newsStatus);
-  };
-
   // Filter computations
   const filteredProfiles = profiles.filter(p => {
     const matchesSearch = p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -902,14 +857,10 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
   );
 
   // Compute stats metrics
-  const totalStudents = profiles.filter(p => p.role === UserRole.Student).length;
   const totalResearchers = profiles.filter(p => p.role === UserRole.Researcher).length;
   const totalInvestors = profiles.filter(p => p.role === UserRole.Investor).length;
-  const totalIndustry = profiles.filter(p => p.role === UserRole.IndustryPartner).length;
-  
-  const publicProjectsCount = projects.filter(p => p.visibility === Visibility.Public).length;
 
-  const totalExpressionsOfInterests = eois.length;
+  const publicProjectsCount = projects.filter(p => p.visibility === Visibility.Public).length;
 
   return (
     <div className="space-y-6 animate-fade-in text-gray-900 dark:text-gray-100">
@@ -979,8 +930,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                         ["Metric", "Value"],
                         ["Total Registrants", profiles.length],
                         ["Total Projects", projects.length],
-                        ["Total Disclosure Views", projects.reduce((acc, p) => acc + (p.views || 0), 0) || 1240],
-                        ["Total Expression of Interest Clicks", eois.length || 86],
+                         ["Total Disclosure Views", projects.reduce((acc, p) => acc + (p.views || 0), 0)],
+                         ["Total Expression of Interest Clicks", eois.length],
                         ["Public Projects Count", publicProjectsCount],
                         ["Researchers Count", totalResearchers],
                         ["Investors Count", totalInvestors]
@@ -1006,15 +957,15 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               {/* Core Analytics Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {(() => {
-                  const totalViewsCalculated = projects.reduce((acc, p) => acc + (p.views || 0), 0) || 1240;
-                  const totalEOICount = eois.length || 86;
+                   const totalViewsCalculated = projects.reduce((acc, p) => acc + (p.views || 0), 0);
+                   const totalEOICount = eois.length;
                   const convRate = ((totalEOICount / Math.max(totalViewsCalculated, 1)) * 100).toFixed(1);
 
                   return [
-                    { label: "Disclosure Views", value: totalViewsCalculated.toLocaleString(), sub: "Total research page visits", trend: "+24% mo/mo", color: "text-ug-navy" },
-                    { label: "EOI Inquiries & Clicks", value: totalEOICount, sub: "Expression of interest forms", trend: "+18% growth", color: "text-ug-teal" },
-                    { label: "Engagement Rate", value: `${convRate}%`, sub: "Views converted to EOIs", trend: "High Conversion", color: "text-blue-600" },
-                    { label: "Verified Registrants", value: profiles.length, sub: "Researchers, VCs & Partners", trend: "+12% network", color: "text-purple-600" }
+                     { label: "Disclosure Views", value: totalViewsCalculated.toLocaleString(), sub: "Recorded research page visits", color: "text-ug-navy" },
+                     { label: "EOI Inquiries & Clicks", value: totalEOICount, sub: "Recorded expressions of interest", color: "text-ug-teal" },
+                     { label: "Engagement Rate", value: `${convRate}%`, sub: "Views converted to EOIs", color: "text-blue-600" },
+                     { label: "Verified Registrants", value: profiles.length, sub: "Researchers, VCs & Partners", color: "text-purple-600" }
                   ].map((stat, idx) => (
                     <div key={idx} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-xs flex flex-col justify-between h-32 hover:border-ug-teal/30 transition">
                       <span className="text-[11px] font-semibold text-gray-400 tracking-wide">{stat.label}</span>
@@ -1022,7 +973,6 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                         <h3 className={`text-3xl font-bold ${stat.color} leading-none tracking-tight`}>{stat.value}</h3>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-[11px] text-gray-500 font-bold">{stat.sub}</span>
-                          <span className="text-[11px] font-semibold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md">{stat.trend}</span>
                         </div>
                       </div>
                     </div>
@@ -1036,54 +986,12 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-4 mb-6">
                     <div>
                       <h3 className="text-base font-bold text-ug-navy">Disclosure Views vs Expression of Interest (EOI) Clicks</h3>
-                      <p className="text-[11px] font-semibold text-ug-teal tracking-wide mt-0.5">6-Month Engagement Velocity</p>
-                    </div>
-                    <div className="flex items-center gap-4 text-xs font-bold">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-3 bg-ug-teal rounded-sm"></span>
-                        <span className="text-gray-600 text-[11px]">Disclosure Views</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-3 bg-ug-navy rounded-sm"></span>
-                        <span className="text-gray-600 text-[11px]">EOI Clicks</span>
-                      </div>
+                       <p className="text-[11px] font-semibold text-ug-teal tracking-wide mt-0.5">Recorded engagement data</p>
                     </div>
                   </div>
 
-                  {/* Visual Monthly Bar Graph */}
-                  <div className="space-y-5">
-                    {[
-                      { month: "Jan 2026", views: 240, eois: 18 },
-                      { month: "Feb 2026", views: 310, eois: 24 },
-                      { month: "Mar 2026", views: 420, eois: 35 },
-                      { month: "Apr 2026", views: 580, eois: 48 },
-                      { month: "May 2026", views: 720, eois: 62 },
-                      { month: "Jun 2026", views: 980, eois: 86 }
-                    ].map((item, idx) => {
-                      const maxViewVal = 1000;
-                      const viewPct = Math.min(100, Math.round((item.views / maxViewVal) * 100));
-                      const eoiPct = Math.min(100, Math.round((item.eois / 100) * 100));
-
-                      return (
-                        <div key={idx} className="space-y-1.5">
-                          <div className="flex justify-between items-center text-xs">
-                            <span className="font-bold text-ug-navy w-20">{item.month}</span>
-                            <div className="flex items-center gap-4 text-[11px] font-mono font-bold">
-                              <span className="text-ug-teal">{item.views} views</span>
-                              <span className="text-ug-navy">{item.eois} EOIs</span>
-                            </div>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-ug-teal rounded-full transition-all duration-1000" style={{ width: `${viewPct}%` }}></div>
-                            </div>
-                            <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                              <div className="h-full bg-ug-navy rounded-full transition-all duration-1000" style={{ width: `${eoiPct}%` }}></div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div className="flex min-h-40 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-6 text-center">
+                    <p className="max-w-sm text-xs font-medium leading-relaxed text-gray-400">Historical engagement data is not available yet. This chart will populate when dated view and EOI events are recorded.</p>
                   </div>
                 </div>
 
@@ -1094,34 +1002,12 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <Globe size={18} className="text-ug-teal animate-spin-slow" />
                       <h3 className="text-base font-bold text-ug-navy">Geographic Visitor Trends</h3>
                     </div>
-                    <p className="text-[11px] font-semibold text-ug-teal tracking-wide">Regional Ecosystem Distribution</p>
+                     <p className="text-[11px] font-semibold text-ug-teal tracking-wide">No visitor location data collected</p>
                   </div>
 
-                  <div className="space-y-4">
-                    {[
-                      { region: "Greater Accra & Legon Hub", count: "45%", color: "bg-ug-navy" },
-                      { region: "Ashanti & Kumasi Region", count: "22%", color: "bg-ug-teal" },
-                      { region: "West Africa (ECOWAS)", count: "15%", color: "bg-amber-500" },
-                      { region: "Europe & UK Consortia", count: "11%", color: "bg-purple-600" },
-                      { region: "North America & Asia VCs", count: "7%", color: "bg-pink-500" }
-                    ].map((geo, idx) => (
-                      <div key={idx} className="space-y-1.5">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="font-bold text-ug-navy text-xs">{geo.region}</span>
-                          <span className="font-mono font-bold text-ug-teal text-xs">{geo.count}</span>
-                        </div>
-                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div className={`h-full ${geo.color} rounded-full`} style={{ width: geo.count }}></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <p className="text-[11px] font-bold text-gray-500 leading-relaxed">
-                      <span className="text-ug-navy font-bold">Strategic Insight:</span> Regional engagement from international industry partners is up 38% this quarter.
-                    </p>
-                  </div>
+                   <div className="flex min-h-56 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-6 text-center">
+                     <p className="max-w-xs text-xs font-medium leading-relaxed text-gray-400">Geographic visitor analytics are unavailable because visitor location data is not currently collected.</p>
+                   </div>
                 </div>
               </div>
 
@@ -1137,31 +1023,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     <p className="text-[11px] font-semibold text-ug-teal tracking-wide">High-Demand Innovation Queries</p>
                   </div>
 
-                  <div className="space-y-3">
-                    {[
-                      { keyword: "Diagnostics & Cancer Systems", searches: 142, alerts: 28, pct: 85 },
-                      { keyword: "Vaccines & Immunotherapeutics", searches: 118, alerts: 24, pct: 72 },
-                      { keyword: "Pharmaceutical & Biosimilars", searches: 94, alerts: 19, pct: 60 },
-                      { keyword: "Agricultural Biotechnology", searches: 76, alerts: 14, pct: 48 },
-                      { keyword: "Commercialization Funding & Grants", searches: 62, alerts: 11, pct: 38 }
-                    ].map((q, idx) => (
-                      <div key={idx} className="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 space-y-2">
-                        <div className="flex justify-between items-center">
-                          <h4 className="font-bold text-xs text-ug-navy">"{q.keyword}"</h4>
-                          <span className="text-[11px] font-semibold text-ug-teal bg-ug-teal/10 px-2 py-0.5 rounded-md">
-                            {q.alerts} Active Alerts
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-[11px] text-gray-500">
-                          <span>{q.searches} user queries</span>
-                          <span className="font-mono font-bold text-gray-400">{q.pct}% interest weight</span>
-                        </div>
-                        <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                          <div className="h-full bg-ug-teal rounded-full" style={{ width: `${q.pct}%` }}></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                   <div className="flex min-h-40 items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 p-6 text-center">
+                     <p className="max-w-sm text-xs font-medium leading-relaxed text-gray-400">Search and alert analytics are not available yet. No query events are currently stored.</p>
+                   </div>
                 </div>
 
                 {/* Top Performing Disclosures & Projects */}
@@ -1175,7 +1039,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                   </div>
 
                   <div className="space-y-3">
-                    {projects.slice(0, 5).map((p, idx) => (
+                     {[...projects].sort((a, b) => (b.views ?? 0) - (a.views ?? 0) || (b.expressions_of_interest ?? 0) - (a.expressions_of_interest ?? 0)).slice(0, 5).map((p, idx) => (
                       <div key={p.id} className="p-3.5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between gap-3 hover:bg-gray-100/60 transition">
                         <div className="flex items-center gap-3 min-w-0">
                           <span className="w-6 h-6 rounded-lg bg-ug-navy text-white text-[11px] font-semibold flex items-center justify-center shrink-0">
@@ -1473,7 +1337,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     onChange={(e) => handleRoleChange(p.id, e.target.value as UserRole)}
                                     className="bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-xl px-2.5 py-1.5 text-[11px] font-semibold tracking-wider text-ug-navy transition outline-none cursor-pointer"
                                   >
-                                    {Object.values(UserRole).map(role => (
+                                     {assignableRoles.map(role => (
                                       <option key={role} value={role}>{role}</option>
                                     ))}
                                   </select>
@@ -1558,7 +1422,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                               onChange={(e) => handleRoleChange(p.id, e.target.value as UserRole)}
                               className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-[11px] font-semibold text-ug-navy cursor-pointer"
                             >
-                              {Object.values(UserRole).map(role => (
+                               {assignableRoles.map(role => (
                                 <option key={role} value={role}>{role}</option>
                               ))}
                             </select>
@@ -1620,7 +1484,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             }}
                             className="bg-white border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-bold  text-ug-navy outline-none cursor-pointer"
                           >
-                            {Object.values(UserRole).map(role => (
+                             {assignableRoles.map(role => (
                               <option key={role} value={role}>{role}</option>
                             ))}
                           </select>
@@ -1720,7 +1584,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
           )}
 
           {/* 2.5 DISCLOSURES SUBTAB */}
-          {activeSubTab === 'disclosures' && (
+          {false && activeSubTab === 'disclosures' && (
             <motion.div 
               key="disclosures"
               initial={{ opacity: 0, y: 10 }}
@@ -1728,6 +1592,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               exit={{ opacity: 0, y: -10 }}
               className="space-y-6 text-left"
             >
+              <DisclosureAdminReview />
+              <TtoQueue />
+              <PublicationDecision />
               {/* Header and filters */}
               <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -1863,7 +1730,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                 {/* Right side: Active disclosure screening interface */}
                 <div className="lg:col-span-8 bg-[#fafafa] rounded-2xl border border-gray-100 p-6 min-h-[680px] flex flex-col justify-between">
                   {(() => {
-                    const activeProj = projects.find(p => p.id === selectedDisclosureId);
+                     const activeProj = projects.find(p => p.id === selectedDisclosureId)!;
                     if (!activeProj) {
                       return (
                         <div className="h-[600px] flex flex-col items-center justify-center text-center text-gray-400 space-y-3 py-10 bg-white rounded-xl border border-dashed border-gray-200 w-full">
@@ -1877,8 +1744,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                     const ownerPr = profiles.find(pr => pr.id === activeProj.owner_id);
                     
-                    const timeline = Array.isArray(activeProj.disclosure_timeline) ? activeProj.disclosure_timeline : [];
-                    const reqDocs = Array.isArray(activeProj.requested_documents) ? activeProj.requested_documents : [];
+                     const timeline = (Array.isArray(activeProj.disclosure_timeline) ? activeProj.disclosure_timeline : []) || [];
+                     const reqDocs = (Array.isArray(activeProj.requested_documents) ? activeProj.requested_documents : []) || [];
 
                     // Filter messages (EOIs) that correspond specifically to this disclosure
                     const projectMessages = eois.filter((e: any) => e.project_id === activeProj.id)
@@ -1914,7 +1781,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 className="px-5 py-3 bg-ug-teal text-white rounded-lg text-xs font-bold   hover:bg-[#1a1a4b] transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
                                 <CheckCircle2 size={13} />
-                                APPROVE
+                                CONTINUE IP REVIEW
                               </button>
                               
                               <button
@@ -3427,7 +3294,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
       )}
 
       {/* DECISION LEDGER SUBTAB */}
-      {activeSubTab === 'decisions' && (
+      {false && activeSubTab === 'decisions' && (
         <motion.div
           key="decisions"
           initial={{ opacity: 0, y: 10 }}

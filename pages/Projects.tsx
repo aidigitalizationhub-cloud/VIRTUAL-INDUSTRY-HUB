@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, SlidersHorizontal, ArrowRight, Loader2, Bookmark, X, ChevronDown, RotateCcw, UserCheck, User } from 'lucide-react';
+import { Search, Filter, ArrowRight, Loader2, Bookmark, X, ChevronDown, RotateCcw, UserCheck, User } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { StorageService } from '../services/storageService';
 import { Project, ProjectStatus, ResearchArea } from '../types';
 import { getAuthUser } from '../lib/auth-client';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
 import { Tr } from '../components/Tr';
 import { useTranslatedText } from '../services/translationService';
 
 const Projects: React.FC = () => {
-  const { t } = useTranslation();
   const searchProjectsPlaceholder = useTranslatedText("Search projects, topics, or researcher names...");
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');

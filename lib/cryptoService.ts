@@ -50,15 +50,6 @@ export async function computeSHA256(text: string): Promise<string> {
 }
 
 /**
- * Converts ArrayBuffer to Hex String
- */
-function bufferToHex(buffer: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-/**
  * Converts Hex String to Uint8Array
  */
 function hexToBuffer(hex: string): Uint8Array {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateUpload } from './uploadGuard';
+import { validateStorageUpload, validateUpload } from './uploadGuard';
 
 describe('validateUpload', () => {
   it('accepts a valid .docx with a matching MIME type', () => {
@@ -39,5 +39,10 @@ describe('validateUpload', () => {
   it('rejects a mismatched MIME type', () => {
     const res = validateUpload({ name: 'a.txt', mimeType: 'application/x-msdownload', sizeBytes: 10 });
     expect(res.ok).toBe(false);
+  });
+
+  it('accepts JFIF evidence images', () => {
+    const res = validateStorageUpload({ name: 'evidence.jfif', mimeType: 'image/jpeg', sizeBytes: 1024 });
+    expect(res.ok).toBe(true);
   });
 });

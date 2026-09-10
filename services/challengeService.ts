@@ -54,12 +54,20 @@ const mapMatchRow = (m: any): ChallengeMatch => ({
   } : undefined
 });
 
+const loadProfiles = async (ids: string[]) => {
+  const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
+  if (!uniqueIds.length) return new Map<string, any>();
+  const { data, error } = await supabase.from('profiles').select('*').in('id', uniqueIds);
+  if (error) throw error;
+  return new Map((data || []).map((profile: any) => [profile.id, profile]));
+};
+
 export const ChallengeService = {
   getIndustryChallenges: async (): Promise<IndustryChallenge[]> => {
     try {
       const { data: challenges, error } = await supabase
         .from('industry_challenges')
-        .select('*, profiles(name, company)')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -67,6 +75,7 @@ export const ChallengeService = {
         return [];
       }
 
+      const partnerProfiles = await loadProfiles((challenges || []).map((challenge: any) => challenge.partner_id));
       return (challenges || []).map((ch: any) => ({
         id: ch.id,
         title: ch.title,
@@ -80,8 +89,8 @@ export const ChallengeService = {
         location: ch.location,
         status: ch.status || 'Open',
         partner_id: ch.partner_id,
-        partner_name: ch.profiles?.name || 'Industry Partner',
-        partner_company: ch.profiles?.company || 'Ecosystem Partner',
+         partner_name: partnerProfiles.get(ch.partner_id)?.name || 'Industry Partner',
+         partner_company: partnerProfiles.get(ch.partner_id)?.company || 'Ecosystem Partner',
         created_at: ch.created_at,
         updated_at: ch.updated_at
       }));
@@ -125,7 +134,7 @@ export const ChallengeService = {
 
   getChallengeMatches: async (userId: string, role: string, selectedChallengeId?: string): Promise<ChallengeMatch[]> => {
     try {
-      let query = supabase.from('challenge_matches').select('*, industry_challenges(*), profiles!candidate_user_id(*)');
+      let query = supabase.from('challenge_matches').select('*, industry_challenges(*)');
 
       if (role === 'Industry/Partner') {
         query = query.eq('partner_user_id', userId);
@@ -146,7 +155,8 @@ export const ChallengeService = {
         return [];
       }
 
-      return (data || []).map(mapMatchRow);
+      const profiles = await loadProfiles((data || []).map((match: any) => match.candidate_user_id));
+      return (data || []).map((match: any) => mapMatchRow({ ...match, profiles: profiles.get(match.candidate_user_id) }));
     } catch (e) {
       console.error("Error in getChallengeMatches:", e);
       return [];
@@ -158,7 +168,7 @@ export const ChallengeService = {
     try {
       const { data, error } = await supabase
         .from('challenge_matches')
-        .select('*, industry_challenges(*), profiles!candidate_user_id(*)')
+        .select('*, industry_challenges(*)')
         .order('total_score', { ascending: false });
 
       if (error) {
@@ -166,7 +176,8 @@ export const ChallengeService = {
         return [];
       }
 
-      return (data || []).map(mapMatchRow);
+      const profiles = await loadProfiles((data || []).map((match: any) => match.candidate_user_id));
+      return (data || []).map((match: any) => mapMatchRow({ ...match, profiles: profiles.get(match.candidate_user_id) }));
     } catch (e) {
       console.error("Error in getAllMatches:", e);
       return [];

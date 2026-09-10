@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, MailOpen, User as UserIcon, Search, Trash2, Check, Sparkles, ExternalLink, X } from 'lucide-react';
+import { Bell, MailOpen, User as UserIcon, Search, Trash2, Sparkles, X } from 'lucide-react';
 import { StorageService } from '../services/storageService';
 import { User, SavedSearch, AlertNotification } from '../types';
 import { Tr } from './Tr';

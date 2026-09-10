@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, User, LogIn, LogOut, Sparkles, LayoutDashboard, ChevronRight } from 'lucide-react';
+import { Menu, X, User, LogIn, LogOut, LayoutDashboard, ChevronRight } from 'lucide-react';
 import NotificationCenter from './NotificationCenter';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeSwitcher from './ThemeSwitcher';

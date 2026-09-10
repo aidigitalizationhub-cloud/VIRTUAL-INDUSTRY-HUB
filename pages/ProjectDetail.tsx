@@ -2,15 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, Calendar, DollarSign, Microscope, ShieldCheck, TrendingUp, 
-  Users, Bookmark, FileText, CheckCircle2, AlertCircle, Send, Check, Image as ImageIcon,
-  Handshake, Lock, Download, Loader2, User as UserIcon, Mail, Building2, ExternalLink, Share2, MessageSquare, X,
-  Briefcase, Heart, Lightbulb, FileCode, GraduationCap, Key, BookOpen, Clock, Edit, Trash2
+  ArrowLeft, DollarSign, TrendingUp, 
+  Users, Bookmark, FileText, CheckCircle2, AlertCircle, Send, Check, Image as ImageIcon, Lock, Download, Loader2, User as UserIcon, ExternalLink, Share2, MessageSquare, X,
+  Briefcase, Lightbulb, FileCode, GraduationCap, Key, Clock, Edit, Trash2
 } from 'lucide-react';
 import { StorageService } from '../services/storageService';
 import { Project, ProjectStatus, User, Visibility, ResearchArea, UserRole } from '../types';
 import { getAuthUser } from '../lib/auth-client';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
 import { Tr } from '../components/Tr';
 
 // --- CONTACT PI MODAL ---
@@ -242,7 +241,7 @@ const ProjectDetail: React.FC = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [submittingEOI, setSubmittingEOI] = useState<string | null>(null);
-  const [shareFeedback, setShareFeedback] = useState(false);
+  const [, setShareFeedback] = useState(false);
   
   // Dynamic Disclosure lock states
   const [pageLoading, setPageLoading] = useState(true);

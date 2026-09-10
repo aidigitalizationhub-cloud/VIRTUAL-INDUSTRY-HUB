@@ -27,5 +27,19 @@ dist-ssr
 # Migrated prompt history (contains internal prompts; must not be committed)
 migrated_prompt_history/
 
-# Local architecture and research documentation
-docs/
+# Build / typecheck artifacts
+coverage/
+*.tsbuildinfo
+
+# Local deploy / tooling state
+.vercel/
+
+# Local env variants (base .env already ignored above)
+.env*.local
+
+# Secret material that must never be committed
+*.pem
+service-account*.json
+
+# OS noise
+Thumbs.db

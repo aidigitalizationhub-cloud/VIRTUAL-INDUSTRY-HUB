@@ -5,8 +5,8 @@ import { ShieldCheck, ArrowRight, ArrowLeft, AlertCircle, Loader2, RefreshCw } f
 
 const VerifyOTP: React.FC = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [loading, setLoading] = useState(false);
-  const [resending, setResending] = useState(false);
+  const [loading] = useState(false);
+  const [resending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);

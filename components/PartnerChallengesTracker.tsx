@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Briefcase, Plus, Search, Filter, Calendar, MapPin, DollarSign, 
-  Trash2, Edit3, CheckCircle, Clock, AlertCircle, Users, ExternalLink, RefreshCw 
+  Briefcase, Plus, Search, Calendar, MapPin, DollarSign, 
+  Trash2, Users, RefreshCw 
 } from 'lucide-react';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
 import { ChallengeService } from '../services/challengeService';
 import { User, IndustryChallenge } from '../types';
 

@@ -2,14 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
-  ArrowLeft, User as UserIcon, Building2, Mail, Globe, 
-  Microscope, Award, TrendingUp, ChevronRight, Loader2,
+  ArrowLeft, User as UserIcon, Building2, Globe, Award, TrendingUp, Loader2,
   CheckCircle2, FileText, Share2, MessageSquare, X, Send, Check,
-  GraduationCap, Briefcase, UserPlus
+  GraduationCap, UserPlus
 } from 'lucide-react';
 import { StorageService } from '../services/storageService';
 import { User, Project } from '../types';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
 import { getAuthUser } from '../lib/auth-client';
 import { safeExternalUrl } from '../lib/urlSafety';
 

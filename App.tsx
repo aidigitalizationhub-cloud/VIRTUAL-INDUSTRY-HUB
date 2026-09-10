@@ -1,17 +1,19 @@
 
-import React, { useState, useEffect, createContext, useContext, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AIAssistant from './components/AIAssistant';
 import AuthModal from './components/AuthModal';
 import { UserRole, User } from './types';
-import { AlertCircle, X, CheckCircle2, BellRing, LogOut } from 'lucide-react';
+import { X, BellRing, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { authClient } from './lib/auth-client';
 import { getAuthUser } from './lib/auth-client';
 import { StorageService } from './services/storageService';
 import { useSystemTheme } from './hooks/useSystemTheme';
+import { ToastProvider, useToast } from './contexts/ToastContext';
+import { isAdministrativeRole } from './lib/dashboardRouting';
 
 const Home = lazy(() => import('./pages/Home'));
 const Projects = lazy(() => import('./pages/Projects'));
@@ -28,50 +30,9 @@ const VerifyOTP = lazy(() => import('./pages/VerifyOTP'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin').then((module) => ({ default: module.AdminLogin })));
 
-// --- TOAST SYSTEM ---
-interface Toast {
-  id: string;
-  message: string;
-  type: 'success' | 'error' | 'info' | 'warning';
-}
-
-const ToastContext = createContext<{
-  showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
-}>({ showToast: () => {} });
-
-export const useToast = () => useContext(ToastContext);
-
 const RouteFallback = () => (
   <div className="min-h-[50vh] flex items-center justify-center text-[11px] font-semibold tracking-[0.2em] text-ug-teal uppercase">
     Loading workspace...
-  </div>
-);
-
-const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => void }> = ({ toasts, removeToast }) => (
-  <div className="fixed top-24 right-6 z-[200] space-y-3 pointer-events-none">
-    {toasts.map((toast) => (
-      <div 
-        key={toast.id} 
-        className={`pointer-events-auto flex items-center gap-3 px-6 py-4 rounded-2xl shadow-xl border animate-fade-in-right max-w-sm ${
-          toast.type === 'success' ? 'bg-ug-navy border-ug-teal text-white' : 
-          toast.type === 'error' ? 'bg-red-50 border-red-100 text-red-600' : 
-          toast.type === 'warning' ? 'bg-amber-50 border-amber-200 text-amber-700' :
-          'bg-white border-gray-100 text-ug-navy'
-        }`}
-      >
-        {toast.type === 'success' ? (
-          <CheckCircle2 className="text-ug-teal shrink-0" size={20} />
-        ) : toast.type === 'warning' ? (
-          <AlertCircle className="text-amber-500 shrink-0" size={20} />
-        ) : (
-          <AlertCircle size={20} className="shrink-0" />
-        )}
-        <span className="text-sm font-medium">{toast.message}</span>
-        <button onClick={() => removeToast(toast.id)} className="ml-2 p-1 hover:bg-white/10 rounded-full transition">
-          <X size={14} />
-        </button>
-      </div>
-    ))}
   </div>
 );
 
@@ -84,7 +45,7 @@ const ProtectedRoute: React.FC<{
   const location = useLocation();
 
   useEffect(() => {
-    if (!isAuthenticated && location.pathname === '/dashboard') {
+    if (!isAuthenticated && location.pathname.startsWith('/dashboard')) {
       onUnauthorized();
     }
   }, [isAuthenticated, location.pathname, onUnauthorized]);
@@ -102,28 +63,18 @@ const ProtectedRoute: React.FC<{
 
 const AppContent: React.FC = () => {
   useSystemTheme();
+  const { showToast } = useToast();
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [toasts, setToasts] = useState<Toast[]>([]);
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   
   const navigate = useNavigate();
   const location = useLocation();
-
-  const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
-    const id = Math.random().toString(36).substr(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => removeToast(id), 5000);
-  };
-
-  const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
 
   useEffect(() => {
     (async () => {
@@ -209,12 +160,11 @@ const AppContent: React.FC = () => {
     navigate('/dashboard');
   };
 
-  const isDashboard = location.pathname === '/dashboard';
+  const isDashboard = location.pathname.startsWith('/dashboard');
   const isAdminLogin = location.pathname === '/admin/login';
   const hideLayout = isDashboard || isAdminLogin;
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
       <div className="flex flex-col min-h-screen font-sans text-gray-900">
         {!hideLayout && (
           <Navbar 
@@ -227,8 +177,6 @@ const AppContent: React.FC = () => {
           />
         )}
         
-        <ToastContainer toasts={toasts} removeToast={removeToast} />
-
         {showLoginPrompt && !isAuthenticated && (
           <div className="bg-ug-warning/90 backdrop-blur-sm text-ug-navy py-3 px-4 flex items-center justify-center gap-3 animate-fade-in shadow-xl relative z-40 border-b border-ug-warning">
             <BellRing size={20} className="shrink-0 animate-bounce" />
@@ -261,13 +209,13 @@ const AppContent: React.FC = () => {
                <Route path="/admin/login" element={<AdminLogin onAuthenticated={handleAuthenticated} />} />
               
               <Route 
-                  path="/dashboard" 
+                  path="/dashboard/*" 
                   element={
                     <ProtectedRoute 
                       isAuthenticated={isAuthenticated} 
                       onUnauthorized={handleUnauthorizedAccess}
                     >
-                      {userProfile?.role !== UserRole.Admin && !userProfile?.ai_profile && !localStorage.getItem(`onboarding_skipped_${userProfile?.id}`) ? (
+                      {!isAdministrativeRole(userProfile?.role) && !userProfile?.ai_profile && !localStorage.getItem(`onboarding_skipped_${userProfile?.id}`) ? (
                         <Onboarding 
                           user={userProfile} 
                           onComplete={() => userProfile && loadProfile(userProfile.id)} 
@@ -363,14 +311,15 @@ const AppContent: React.FC = () => {
         {!hideLayout && <AIAssistant />}
         {!hideLayout && <Footer />}
       </div>
-    </ToastContext.Provider>
   );
 };
 
 const App: React.FC = () => {
   return (
     <Router>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </Router>
   );
 };

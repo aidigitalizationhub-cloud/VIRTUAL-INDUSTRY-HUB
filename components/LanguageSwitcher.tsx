@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe, ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
 import { SUPPORTED_LANGUAGES, loadLanguageAsync, LanguageCode } from '../src/i18n';
 
 interface LanguageSwitcherProps {

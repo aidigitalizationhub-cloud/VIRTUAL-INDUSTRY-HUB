@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, CheckCircle, ExternalLink, Search, Filter, SlidersHorizontal, Loader2, Bookmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { StorageService } from '../services/storageService';
 import { Project, ProjectStatus, ResearchArea } from '../types';
 import { getAuthUser } from '../lib/auth-client';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
 import { Tr } from '../components/Tr';
 import { useTranslatedText } from '../services/translationService';
 
 const Products: React.FC = () => {
-  const { t } = useTranslation();
   const searchCatalogPlaceholder = useTranslatedText("Search catalog...");
   const [products, setProducts] = useState<Project[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,23 +53,6 @@ const Products: React.FC = () => {
     }
   };
 
-  const handleSaveSearchAlert = async () => {
-    if (!currentUser) {
-      showToast("Authentication Required. Please log in to subscribe to search alerts.", "error");
-      return;
-    }
-    const queryToSave = searchTerm.trim() || (selectedArea !== 'All' ? selectedArea : '');
-    if (!queryToSave) {
-      showToast("Please enter a keyword or select a research track first to subscribe to alerts.", "info");
-      return;
-    }
-    try {
-      await StorageService.saveSearch(currentUser.id, { query: queryToSave, category: selectedArea });
-      showToast(`Search alert saved for "${queryToSave}"! You will be notified when matching projects are posted.`, "success");
-    } catch (err: any) {
-      showToast(err.message || "Failed to save search alert.", "error");
-    }
-  };
 
   useEffect(() => {
     const fetchProducts = async () => {

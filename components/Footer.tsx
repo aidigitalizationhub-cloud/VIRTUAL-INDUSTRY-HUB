@@ -1,11 +1,8 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Mail, Phone, MapPin, Globe, ExternalLink, Linkedin, Twitter, Facebook } from 'lucide-react';
+import { Mail, MapPin, Globe, ExternalLink, Linkedin, Twitter, Facebook } from 'lucide-react';
 import { Tr } from './Tr';
 
 const Footer: React.FC = () => {
-  const { t } = useTranslation();
-
   return (
     <footer className="bg-ug-navy text-slate-300 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -71,6 +71,15 @@ export const StorageService = {
   signProjectUrls: async (projects: Project[], includeProtectedDocuments = true): Promise<Project[]> => {
     if (!projects || projects.length === 0) return [];
 
+    // Signing requires a session; guests get public URLs as-is without a
+    // doomed network call (previously a noisy 401 on every public page load).
+    try {
+      const viewer = await getAuthUser().catch(() => null);
+      if (!viewer?.id) return projects;
+    } catch {
+      return projects;
+    }
+
     try {
       const mutableProjects = JSON.parse(JSON.stringify(projects)) as Project[];
       const requests: { projectId: string; path: string; kind: 'image' | 'brief' | 'document'; projectIndex: number; docIndex?: number }[] = [];
@@ -360,18 +369,8 @@ export const StorageService = {
 
   getTrendingProjects: async (): Promise<Project[]> => {
     try {
-      const projects = await StorageService.getProjects();
-      const { data: eois } = await supabase.from('eois').select('project_id');
-      
-      if (!projects || projects.length === 0) return [];
-
-      return projects.map(p => {
-        const inquiryCount = eois?.filter(e => e.project_id === p.id).length || 0;
-        // Deterministic secondary signal (recency) so ordering is stable across loads
-        const ageDays = p.created_at ? Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000) : 0;
-        const recencyBoost = Math.max(0, 30 - ageDays);
-        return { ...p, trendScore: inquiryCount * 10 + recencyBoost };
-      }).sort((a: any, b: any) => b.trendScore - a.trendScore).slice(0, 5);
+      const { projects } = await getJson<{ projects: Project[] }>('/api/projects/trending');
+      return await StorageService.signProjectUrls(projects || [], false);
     } catch (e) {
       return [];
     }
@@ -1088,6 +1087,11 @@ export const StorageService = {
   },
 
   // --- ADMINISTRATIVE PORTAL OPERATIONS ---
+  getAdminOverview: async (): Promise<{ profiles: User[]; projects: Project[]; eois: any[] }> => {
+    const response = await getJson<{ overview: { profiles: User[]; projects: Project[]; eois: any[] } }>('/api/admin/overview');
+    return response.overview;
+  },
+
   verifyAdmin: async (): Promise<boolean> => {
     try {
       const user = await getAuthUser();
@@ -1147,7 +1151,7 @@ export const StorageService = {
     }
   },
 
-  adminUpdateProfileRole: async (userId: string, role: UserRole) => {
+  adminUpdateProfileRole: async (userId: string, role: UserRole | 'TTO/IP') => {
     try {
       const isAdmin = await StorageService.verifyAdmin();
       if (!isAdmin) throw new Error("Unauthorized access. Admin privileges required.");
@@ -1285,14 +1289,19 @@ export const StorageService = {
   },
 
   updateStudentProfile: async (userId: string, data: { education_level: string; availability: string; looking_for: string; program: string }) => {
-    const { error } = await supabase.from('student_profiles').upsert({
-      user_id: userId,
-      education_level: data.education_level,
-      availability: data.availability,
-      looking_for: data.looking_for,
-      program: data.program
+    await postJson('/api/profile/update', {
+      profile: {
+        education_level: data.education_level,
+        availability: data.availability,
+        looking_for: data.looking_for,
+        program: data.program,
+      },
+      answers: {
+        edu_level: data.education_level,
+        availability: data.availability,
+        looking_for: data.looking_for,
+      },
     });
-    if (error) throw error;
   },
 
   // --- SAVED SEARCHES & ALERTS ---

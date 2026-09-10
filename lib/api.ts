@@ -50,6 +50,24 @@ export const postJson = async <T = any>(url: string, body: any): Promise<T> => {
   return res.json();
 };
 
+export const patchJson = async <T = any>(url: string, body: any): Promise<T> => {
+  const res = await requestWithTimeout(url, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    credentials: 'include',
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    let message = `Request failed (${res.status})`;
+    try {
+      const errData = await res.json();
+      if (errData?.error) message = errData.error;
+    } catch {}
+    throw new Error(message);
+  }
+  return res.json();
+};
+
 export const putJson = async <T = any>(url: string, body: any): Promise<T> => {
   const res = await requestWithTimeout(url, {
     method: 'PUT',

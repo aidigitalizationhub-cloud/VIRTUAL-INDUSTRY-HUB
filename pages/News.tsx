@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { 
   Calendar, 
   Tag, 
@@ -12,19 +11,15 @@ import {
   ExternalLink, 
   Globe, 
   Zap, 
-  RefreshCw, 
   Microscope, 
   Clock, 
   Search, 
   Filter, 
   Settings,
-  Bell,
   ChevronDown,
   Link2,
   LayoutGrid,
   List,
-  Edit,
-  Trash2,
   Trash,
   Upload,
   X,
@@ -32,18 +27,13 @@ import {
   LayoutDashboard,
   FileText,
   Radio,
-  MoreVertical,
-  Plus,
-  Users,
-  ShieldCheck
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+  Plus } from 'lucide-react';
 import { StorageService } from '../services/storageService';
 import { AIScoutService } from '../services/aiScoutService';
 import { DocumentExtractionService } from '../services/documentExtractionService';
 import { NewsItem } from '../types';
 import { getAuthUser } from '../lib/auth-client';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import { getGeminiResponse } from '../services/geminiService';
 import { Tr } from '../components/Tr';
@@ -53,7 +43,6 @@ import { safeExternalUrl } from '../lib/urlSafety';
 
 const News: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { showToast } = useToast();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [selectedDetailedNews, setSelectedDetailedNews] = useState<NewsItem | null>(null);
@@ -68,7 +57,7 @@ const News: React.FC = () => {
   const filterReleaseLabel = useTranslatedText("Research Releases");
   const filterEcosystemLabel = useTranslatedText("Ecosystem Updates");
 
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     getAuthUser().then(user => {
@@ -77,24 +66,6 @@ const News: React.FC = () => {
       }
     });
   }, []);
-
-  const handleSaveNewsSearchAlert = async () => {
-    if (!currentUser) {
-      showToast("Authentication Required. Please log in to subscribe to search alerts.", "error");
-      return;
-    }
-    const queryToSave = searchTerm.trim() || (selectedCategory !== 'All' ? selectedCategory : '');
-    if (!queryToSave) {
-      showToast("Please enter a keyword or choose a category first to subscribe to alerts.", "info");
-      return;
-    }
-    try {
-      await StorageService.saveSearch(currentUser.id, { query: queryToSave, category: selectedCategory });
-      showToast(`Search alert saved for "${queryToSave}"! You will be notified of new matching news and grants.`, "success");
-    } catch (err: any) {
-      showToast(err.message || "Failed to save search alert.", "error");
-    }
-  };
 
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [debouncedArchiveSearch, setDebouncedArchiveSearch] = useState('');
@@ -120,7 +91,7 @@ const News: React.FC = () => {
   const [newsSummary, setNewsSummary] = useState('');
   const [newsImageUrl, setNewsImageUrl] = useState('');
   const [newsExternalUrl, setNewsExternalUrl] = useState('');
-  const [newsStatus, setNewsStatus] = useState<'Draft' | 'Published'>('Published');
+  const [, setNewsStatus] = useState<'Draft' | 'Published'>('Published');
   const [newsReferenceLinks, setNewsReferenceLinks] = useState<string[]>(['', '', '', '']);
   const [newsTags, setNewsTags] = useState('');
   const [newsRelevanceScore, setNewsRelevanceScore] = useState<number>(0);
@@ -140,7 +111,7 @@ const News: React.FC = () => {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [isExtractingDoc, setIsExtractingDoc] = useState(false);
-  const [showAIWriteModal, setShowAIWriteModal] = useState(false);
+  const [, setShowAIWriteModal] = useState(false);
   const [aiTopic, setAiTopic] = useState('');
   const [aiKeywords, setAiKeywords] = useState('');
 

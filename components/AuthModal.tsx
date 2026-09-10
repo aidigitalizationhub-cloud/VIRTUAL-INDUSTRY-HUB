@@ -328,7 +328,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthenticated 
 
                 <div className="relative">
                     <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
-                    <input required type="email" placeholder={t('auth.email')} value={email} onChange={(e) => setEmail(e.target.value)} className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-ug-teal/20 focus:border-ug-teal text-sm font-bold bg-gray-50" />
+                    <input required type="email" autoComplete="email" placeholder={t('auth.email')} value={email} onChange={(e) => setEmail(e.target.value)} className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-ug-teal/20 focus:border-ug-teal text-sm font-bold bg-gray-50" />
                 </div>
 
                 <div className="relative">
@@ -336,6 +336,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthenticated 
                     <input 
                       required 
                       type={showPassword ? "text" : "password"} 
+                      autoComplete={isLogin ? "current-password" : "new-password"}
                       placeholder={t('auth.password')} 
                       value={password} 
                       onChange={(e) => setPassword(e.target.value)} 
@@ -357,6 +358,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthenticated 
                     <input 
                       required 
                       type={showPassword ? "text" : "password"} 
+                      autoComplete="new-password"
                       placeholder={t('auth.password')} 
                       value={confirmPassword} 
                       onChange={(e) => setConfirmPassword(e.target.value)} 

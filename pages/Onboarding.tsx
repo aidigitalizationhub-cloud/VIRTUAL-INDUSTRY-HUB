@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 // @ts-expect-error - Vite ?url suffix resolves to a static string URL at build time
 import pdfjsWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
@@ -9,11 +9,9 @@ import { StorageService } from '../services/storageService';
 import { EmbeddingService } from '../services/embeddingService';
 import { 
   Users, GraduationCap, Building, Wallet, 
-  ChevronRight, ChevronLeft, Upload, 
-  FileText, Check, Loader2, Sparkles,
-  Search, Target, Zap, Rocket
+  ChevronRight, ChevronLeft, Upload, Check, Loader2, Sparkles, Target, Zap, Rocket
 } from 'lucide-react';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
 
 interface OnboardingProps {
@@ -92,7 +90,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
   const [isUploading, setIsUploading] = useState(false);
   const [extractedProfile, setExtractedProfile] = useState<AIProfile | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [, setIsProcessing] = useState(false);
   const { showToast } = useToast();
   const navigate = useNavigate();
 

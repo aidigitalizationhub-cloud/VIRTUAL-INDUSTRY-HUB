@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Sparkles, Target, Zap, Loader2, Award, ShieldCheck, DollarSign, Calendar, 
-  MapPin, UserCheck, X, Check, Briefcase, Plus, Search, FileText, ChevronRight,
+  Sparkles, Loader2, DollarSign, Calendar, 
+  MapPin, X, Check, Briefcase,
   Info, MessageSquare, Send as SendIcon, Rocket, Users, Bookmark, User as UserIcon,
   ChevronDown, ChevronUp, CheckCircle, AlertCircle
 } from 'lucide-react';
 import { User, IndustryChallenge, ChallengeMatch } from '../types';
-import { useToast } from '../App';
-import { supabase } from '../lib/supabase';
+import { useToast } from '../contexts/ToastContext';
 import { StorageService } from '../services/storageService';
 import { ChallengeService } from '../services/challengeService';
 
@@ -92,7 +91,7 @@ export const IndustryChallengesMatcher: React.FC<MatcherProps> = ({
   const { showToast } = useToast();
   const formRef = useRef<HTMLDivElement>(null);
   const generationCooldownRef = useRef<Record<string, number>>({});
-  const [challenges, setChallenges] = useState<IndustryChallenge[]>([]);
+  const [, setChallenges] = useState<IndustryChallenge[]>([]);
   const [challengeMatches, setChallengeMatches] = useState<ChallengeMatch[]>([]);
   const [partnerChallenges, setPartnerChallenges] = useState<IndustryChallenge[]>([]);
   const [selectedChallengeId, setSelectedChallengeId] = useState<string>('all');

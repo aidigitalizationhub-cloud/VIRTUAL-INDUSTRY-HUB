@@ -22,40 +22,165 @@ html {
 
 html.dark {
   color-scheme: dark;
-  background-color: #0b0f19;
+  background-color: #080d17;
   color: #f1f5f9;
 }
 
+/* Shared disclosure typography and surfaces. */
+.disclosure-page,
+.disclosure-page button,
+.disclosure-page input,
+.disclosure-page textarea {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+.disclosure-eyebrow {
+  color: #718096;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.disclosure-title {
+  color: #1a1a4b;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.disclosure-body {
+  color: #475569;
+  font-size: 0.875rem;
+  line-height: 1.75;
+}
+
+.disclosure-meta,
+.disclosure-note,
+.disclosure-empty {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.disclosure-label {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.answer-label {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.answer-value {
+  color: #1a1a4b;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.disclosure-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 0.75rem;
+  color: #334155;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  outline: none;
+}
+
+.disclosure-input:focus {
+  border-color: #0891b2;
+  box-shadow: 0 0 0 3px rgb(8 145 178 / 0.1);
+}
+
+.disclosure-section {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.8rem 0;
+}
+
+.disclosure-finding {
+  border-bottom-color: #e2e8f0;
+}
+
+html.dark .disclosure-title,
+html.dark .disclosure-body,
+html.dark .disclosure-finding h5,
+html.dark .answer-value {
+  color: #f8fafc;
+}
+
+html.dark .answer-label { color: #94a3b8; }
+html.dark .disclosure-input { border-color: #334155; background: #111827; color: #e2e8f0; }
+
+html.dark .disclosure-section,
+html.dark .disclosure-finding {
+  border-color: #25324a;
+}
+
 html.dark body {
-  background-color: #0b0f19;
+  background-color: #080d17;
   color: #f1f5f9;
+  background-image: radial-gradient(circle at 12% 0%, rgba(8, 145, 178, 0.08), transparent 28rem),
+    radial-gradient(circle at 88% 12%, rgba(99, 102, 241, 0.06), transparent 24rem);
 }
 
 /* Surface & Background Transformations */
 html.dark .bg-white {
-  background-color: #121827;
+  background-color: #111827;
 }
 
 html.dark .bg-white\/95,
 html.dark .bg-white\/90,
 html.dark .bg-white\/80,
 html.dark .bg-white\/70 {
-  background-color: rgba(18, 24, 39, 0.95);
+  background-color: rgba(17, 24, 39, 0.95);
+}
+
+html.dark .bg-white\/5,
+html.dark .bg-white\/10,
+html.dark .bg-white\/20 {
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 html.dark .bg-slate-50,
 html.dark .bg-gray-50 {
-  background-color: #0b0f19;
+  background-color: #0a101c;
 }
 
 html.dark .bg-slate-100,
 html.dark .bg-gray-100 {
-  background-color: #1a2234;
+  background-color: #151f31;
 }
 
 html.dark .bg-slate-200,
 html.dark .bg-gray-200 {
-  background-color: #2a364f;
+  background-color: #25324a;
+}
+
+html.dark .bg-gray-50\/50,
+html.dark .bg-slate-50\/50 {
+  background-color: rgba(10, 16, 28, 0.72);
+}
+
+html.dark .bg-ug-navy\/5 {
+  background-color: rgba(129, 140, 248, 0.1);
+}
+
+html.dark .border-gray-50,
+html.dark .border-slate-50 {
+  border-color: #172236;
 }
 
 html.dark .bg-slate-300,
@@ -149,6 +274,25 @@ html.dark textarea::placeholder {
   color: #64748b;
 }
 
+html.dark .bg-teal-50,
+html.dark .bg-teal-50\/50 {
+  background-color: rgba(13, 148, 136, 0.14);
+}
+
+html.dark .border-teal-100,
+html.dark .border-teal-200 {
+  border-color: rgba(45, 212, 191, 0.24);
+}
+
+html.dark .text-teal-800,
+html.dark .text-teal-900 {
+  color: #99f6e4;
+}
+
+html.dark .ring-teal-50 {
+  --tw-ring-color: rgba(45, 212, 191, 0.16);
+}
+
 /* Gradients in Dark Mode */
 html.dark .bg-gradient-to-b.from-gray-50.to-white,
 html.dark .bg-gradient-to-r.from-slate-50.to-gray-100,
@@ -162,7 +306,7 @@ html.dark .shadow-md,
 html.dark .shadow-lg,
 html.dark .shadow-xl,
 html.dark .shadow-2xl {
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 18px 45px -18px rgba(0, 0, 0, 0.85);
 }
 
 /* Badge & Alert Background Contrast in Dark Mode */

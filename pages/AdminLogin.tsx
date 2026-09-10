@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ShieldAlert, Mail, Lock, Sparkles, ArrowRight, CheckCircle, RefreshCw } from 'lucide-react';
 import { authClient, getAuthUser } from '../lib/auth-client';
 import { StorageService } from '../services/storageService';
-import { UserRole } from '../types';
-import { useToast } from '../App';
+import { useToast } from '../contexts/ToastContext';
+import { isAdministrativeRole } from '../lib/dashboardRouting';
 
 export const AdminLogin: React.FC<{ onAuthenticated: (user: { id: string }) => Promise<void> | void }> = ({ onAuthenticated }) => {
   const { showToast } = useToast();
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,7 +31,7 @@ export const AdminLogin: React.FC<{ onAuthenticated: (user: { id: string }) => P
         throw new Error("Could not retrieve administrative profile.");
       }
 
-      if (profile.role !== UserRole.Admin) {
+       if (!isAdministrativeRole(profile.role)) {
         // Log out immediately to prevent illegal session
         await (authClient as any).signOut?.();
         throw new Error("Access Denied: Your profile does not possess Administrative clearance.");
@@ -91,6 +90,7 @@ export const AdminLogin: React.FC<{ onAuthenticated: (user: { id: string }) => P
                 <input
                   required
                   type="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@ug.edu.gh"
@@ -109,6 +109,7 @@ export const AdminLogin: React.FC<{ onAuthenticated: (user: { id: string }) => P
                 <input
                   required
                   type="password"
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••••••"
@@ -135,6 +136,11 @@ export const AdminLogin: React.FC<{ onAuthenticated: (user: { id: string }) => P
                 </>
               )}
             </button>
+            <div className="text-center mt-4">
+              <Link to="/forgot-password" className="text-[11px] font-bold text-gray-500 hover:text-ug-teal transition tracking-wide">
+                Forgot your access phrase? Reset it
+              </Link>
+            </div>
           </form>
         </motion.div>
 

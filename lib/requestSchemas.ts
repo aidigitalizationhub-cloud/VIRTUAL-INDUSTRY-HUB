@@ -87,3 +87,79 @@ export const generateMatchesRequestSchema = z.object({
 export const updateMatchStatusRequestSchema = z.object({
   status: z.enum(['recommended', 'viewed', 'saved', 'invited', 'interested', 'shortlisted', 'dismissed', 'accepted']),
 });
+
+export const createIpDisclosureRequestSchema = z.object({
+  projectId: z.string().uuid(),
+  answers: z.record(z.string(), z.unknown()).default({}),
+  policyVersion: z.string().min(1).max(100).optional(),
+  submissionPolicyVersion: z.string().min(1).max(100).optional(),
+});
+
+export const submitIpDisclosureRequestSchema = z.object({
+  route: z.enum(['tto_review', 'tto_opt_out']),
+  policyVersion: z.string().min(1).max(100),
+  submissionPolicyVersion: z.string().min(1).max(100),
+  policyAccepted: z.literal(true),
+  submissionPolicyAccepted: z.literal(true),
+});
+
+export const listIpDisclosuresQuerySchema = z.object({
+  status: z.string().max(50).optional(),
+});
+
+export const patchIpDisclosureRequestSchema = z.object({
+  answers: z.record(z.string(), z.unknown()).optional(),
+  policyVersion: z.string().min(1).max(100).optional(),
+  submissionPolicyVersion: z.string().min(1).max(100).optional(),
+});
+
+export const adminReturnIpDisclosureRequestSchema = z.object({
+  message: z.string().min(1).max(5000),
+  findingTitle: z.string().max(200).optional(),
+});
+
+export const createIpFindingRequestSchema = z.object({
+  category: z.enum(['admin', 'ai', 'tto', 'authenticity', 'confidentiality', 'ownership', 'evidence', 'quality']),
+  title: z.string().min(1).max(200),
+  body: z.string().min(1).max(10000),
+  severity: z.enum(['info', 'low', 'medium', 'high', 'critical']).default('info'),
+  visibility: z.enum(['internal', 'shared_researcher', 'shared_super_admin']).default('internal'),
+  isPreliminary: z.boolean().default(true),
+});
+
+export const shareIpFindingRequestSchema = z.object({
+  findingId: z.string().uuid(),
+  visibility: z.enum(['shared_researcher', 'shared_super_admin']),
+});
+
+export const createIpLinkRequestSchema = z.object({
+  url: z.string().url().max(2000),
+  title: z.string().max(300).optional(),
+  sourceType: z.enum(['publication', 'patent', 'technology', 'supporting']).default('supporting'),
+  notes: z.string().max(5000).optional(),
+});
+
+export const publicationDecisionRequestSchema = z.object({
+  decision: z.enum(['publish', 'restrict', 'confidential_hold', 'request_information', 'reject']),
+  reason: z.string().min(1).max(5000),
+  publicProjection: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const registerIpFileRequestSchema = z.object({
+  objectKey: z.string().min(1).max(1000),
+  originalName: z.string().min(1).max(300),
+  mimeType: z.string().min(1).max(150),
+  sizeBytes: z.number().int().positive().max(100_000_000),
+  sha256: z.string().max(200).optional(),
+  classification: z.string().max(50).default('CONFIDENTIAL'),
+});
+
+export const createAccessRequestSchema = z.object({
+  disclosureId: z.string().uuid(),
+  purpose: z.string().min(1).max(5000),
+});
+
+export const decideAccessRequestSchema = z.object({
+  decision: z.enum(['approved', 'denied', 'revoked', 'expired']),
+  note: z.string().max(5000).optional(),
+});
