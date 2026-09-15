@@ -1,11 +1,11 @@
 # Better Auth Cutover
 
 This project uses Better Auth as its only application authentication provider.
-Supabase remains the database and storage provider.
+Supabase remains the database and storage provider. The complete ordered procedure, including setup, security patch, linkage, RLS cutover, hardening, and verification gates, is in `../PRODUCTION_REMEDIATION.md`.
 
 ## Forced Reset Procedure
 
-1. Back up the Supabase database.
+1. Back up the Supabase database and complete the core setup/security patch first; follow `../PRODUCTION_REMEDIATION.md` for the authoritative order.
 2. Run `supabase_better_auth_tables_manual.sql` in the Supabase SQL editor, or
    use the equivalent Better Auth CLI migration. Do not run both.
 3. Configure `DATABASE_URL` with the Supabase transaction pooler URI.
@@ -17,8 +17,8 @@ Supabase remains the database and storage provider.
 6. Send each existing user through Better Auth password recovery.
 7. Verify Better Auth login, reset, logout, and Google OAuth before disabling
    Supabase Auth access.
-8. Run the hardened Better Auth RLS migration only after the server-side
-   authorization path is deployed and tested.
+8. Run the Better Auth linkage migration, then deploy and test the server-side
+   authorization path, then run the hardened Better Auth RLS migration.
 9. Run `supabase_security_hardening.sql` after the cutover migration. Review
    legacy values before validating its `NOT VALID` constraints.
 

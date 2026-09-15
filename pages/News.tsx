@@ -40,6 +40,7 @@ import { Tr } from '../components/Tr';
 import { useTranslatedText } from '../services/translationService';
 import { formatDateMedium } from '../lib/format';
 import { safeExternalUrl } from '../lib/urlSafety';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 const News: React.FC = () => {
   const navigate = useNavigate();
@@ -96,6 +97,7 @@ const News: React.FC = () => {
   const [newsTags, setNewsTags] = useState('');
   const [newsRelevanceScore, setNewsRelevanceScore] = useState<number>(0);
   const [newsSourceVerificationNotes, setNewsSourceVerificationNotes] = useState('');
+  const [extractionNeedsReview, setExtractionNeedsReview] = useState(false);
 
   // Redesigned Administrative Hub states
   const [activeTab, setActiveTab] = useState<number>(1);
@@ -174,19 +176,6 @@ const News: React.FC = () => {
         setNews(data);
       }
 
-      // Notify saved-search owners about newly listed matches (deduped internally)
-      if (!append) {
-        data.forEach(n => {
-          StorageService.triggerSavedSearchMatchAlerts({
-            id: n.id,
-            title: n.title || 'Untitled',
-            summary: n.summary,
-            category: n.category,
-            type: 'news'
-          });
-        });
-      }
-
       setHasMore(data.length === limit);
 
       const syncTime = await AIScoutService.getLastSyncTime();
@@ -257,6 +246,12 @@ const News: React.FC = () => {
       return;
     }
 
+    if (status === 'Published' && extractionNeedsReview) {
+      setExtractionNeedsReview(false);
+      showToast("This extracted draft needs human review: verify the headline, summary, category, and source evidence, then publish again.", "error");
+      return;
+    }
+
     try {
       setIsSavingNews(true);
 
@@ -295,6 +290,7 @@ const News: React.FC = () => {
       setTagList([]);
       setNewsRelevanceScore(0);
       setNewsSourceVerificationNotes('');
+      setExtractionNeedsReview(false);
       setNewsPublishedAt(new Date().toISOString().substring(0, 16));
       setArchivePage(1);
       
@@ -448,7 +444,13 @@ const News: React.FC = () => {
           if (item.source_verification_notes) {
             setNewsSourceVerificationNotes(item.source_verification_notes);
           }
-          showToast("Document analyzed and fields auto-populated!", "success");
+          if ((resData as any).needs_review) {
+            setExtractionNeedsReview(true);
+            showToast("Document analyzed with degraded extraction — verify all fields and source evidence before publishing.", "warning");
+          } else {
+            setExtractionNeedsReview(false);
+            showToast("Document analyzed and fields auto-populated!", "success");
+          }
         } else {
           showToast("Failed to parse document content.", "error");
         }
@@ -867,7 +869,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                         }`}
                       >
                         <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-100 relative">
-                          <img 
+                             <ImageWithFallback
                             src={item.image_url} 
                             alt="" 
                             onError={handleImageError}
@@ -915,7 +917,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                           >
                             <Eye size={12} />
                           </button>
-                          <span className="text-[11px] font-mono text-gray-300 font-bold">
+                           <span className="type-label text-gray-300 font-bold">
                             {item.relevance_score || 0}%
                           </span>
                         </div>
@@ -1373,7 +1375,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                     <div className="space-y-4">
                       {newsReferenceLinks.map((link, idx) => (
                         <div key={idx} className="flex items-center gap-3">
-                          <span className="w-6 text-[11px] font-semibold text-purple-600 font-mono">#{idx + 1}</span>
+                           <span className="w-6 type-label text-purple-600">#{idx + 1}</span>
                           <div className="relative flex-1">
                             <input 
                               type="text" 
@@ -1496,7 +1498,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
             {/* Featured Image */}
             {selectedDetailedNews.image_url && (
               <div className="w-full aspect-[21/9] max-h-[380px] min-h-[180px] rounded-xl overflow-hidden border border-gray-100 bg-gray-50 relative mb-6 shadow-xs">
-                <img
+                <ImageWithFallback
                   src={selectedDetailedNews.image_url}
                   alt=""
                   onError={handleImageError}
@@ -1710,7 +1712,7 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
             >
               {/* Image thumbnail */}
               <div className={`overflow-hidden relative bg-gray-100 shrink-0 ${viewMode === 'grid' ? 'aspect-[16/10] w-full' : 'w-full sm:w-52 lg:w-60 h-44 sm:h-auto'}`}>
-                <img 
+                <ImageWithFallback
                   src={item.image_url} 
                   alt="" 
                   onError={handleImageError}
@@ -1756,11 +1758,18 @@ Do NOT include any extra text or markdown codeblock wrappers. Just return the ra
                     <span><Tr text="Read Briefing" /></span>
                     <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </span>
-                  {item.external_url && (
-                    <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                  {item.external_url && safeExternalUrl(item.external_url) && (
+                    <a
+                      href={safeExternalUrl(item.external_url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      title={safeExternalUrl(item.external_url)}
+                      className="text-[11px] text-gray-400 hover:text-ug-teal flex items-center gap-1"
+                    >
                       <ExternalLink size={10} />
                       <span><Tr text="Source" /></span>
-                    </span>
+                    </a>
                   )}
                 </div>
               </div>

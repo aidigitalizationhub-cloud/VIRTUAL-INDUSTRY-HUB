@@ -1,18 +1,11 @@
-import { supabase } from "../lib/supabase";
-import { postJson } from "../lib/api";
+import { getJson, postJson } from "../lib/api";
 import { getAuthUser } from "../lib/auth-client";
 
 export const AIScoutService = {
   getLastSyncTime: async (): Promise<Date | null> => {
     try {
-      const { data, error } = await supabase
-        .from('news')
-        .select('created_at')
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (error || !data || data.length === 0) return null;
-      return new Date(data[0].created_at);
+      const data = await getJson<{ lastSync?: string | null }>('/api/news/last-sync');
+      return data.lastSync ? new Date(data.lastSync) : null;
     } catch (e) {
       return null;
     }

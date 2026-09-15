@@ -16,6 +16,7 @@ IP disclosure is implemented in code + additive SQL migrations, not design-only.
 - `implementation.md` — single practical IP disclosure, Admin, TTO, access, and implementation design.
 - `ip_disclosure_workflow.md` — authoritative researcher, TTO/IP, opt-out Admin, AI, findings, and privacy workflow.
 - `audit_implementation.md` — implemented audit fixes, access model, persistence behavior, verification, and remaining non-goals.
+- `PRODUCTION_REMEDIATION.md` — required production migration order, environment/deployment gates, security limitations, and verification checklist.
 - `ip-workflow-simulator.html` — standalone browser simulation of the researcher, Admin, and TTO workflow.
 
 - `database/ip_disclosure_phase1.sql` — additive Phase 1 IP tables (disclosures, events, findings, links, decisions, files) + RLS; run manually first.
@@ -28,9 +29,8 @@ IP disclosure is implemented in code + additive SQL migrations, not design-only.
 
 ## Current Verification State
 
-- `npm run lint` passes (`strict` + `noUnusedLocals`).
-- `npm test -- --run` passes with 12 files / 68 Vitest tests (`lib/**` + `server/ip/**`).
-- `npm run build` passes (2640 modules, `dist/server.cjs` bundled; `Dashboards` chunk ~74 KB after route-level splitting).
+- Local verification run on 10 September 2026: `npm test -- --run` passed with 18 files / 100 Vitest tests; `npm run lint` and `npm run build` also pass on the modular server layout.
+- These are local source checks, not evidence of a deployed production migration, live Supabase RLS verification, or multi-instance rate-limit behavior.
 
 ## Dashboard Decomposition
 

@@ -70,5 +70,19 @@ Shared helpers: `lib/messageUtils.ts` (`isRevealRequestMessage`), `lib/constants
 
 ## Local verification
 
-- `npm run lint` (tsc `strict` + `noUnusedLocals`), `npm test -- --run` (12 files / 68 tests), `npm run build` (2640 modules).
+- Local test verification on 10 September 2026: `npm test -- --run` passed with 18 files / 100 tests; lint and build also pass on the modular server layout. Deployed/manual verification remains required.
 - Manual: researcher submit → automatic Gemini/rules advisory screen → TTO review or opt-out Admin authenticity review → shared findings in the expanded Disclosure project record; expired signed URLs denied; unauthorised case access `403`.
+## Translation conventions
+
+- Use `t()` for short labels, navigation items, button text, statuses, and accessible labels.
+- Use a translated component or `Trans` for sentences that contain markup or interpolation.
+- Use `translationService` only for dynamic or AI-generated text; never use it as a replacement for static UI keys.
+- English is the source key tree. The locale parity test prevents a locale from silently falling back because a key is missing.
+
+The locale bundles are loaded asynchronously for French, Twi, and Swahili. `LanguageGate` in `App.tsx` holds the initial route until the selected bundle is ready, preventing an English-first flash. The dashboard header/navigation and disclosure/access-request surfaces are currently wired to the shared `dashboard` namespace. `src/i18n/locales.test.ts` enforces leaf-key parity across all four bundles.
+
+`AppErrorBoundary` provides a localized recovery screen for render failures and logs the original error to the browser console for diagnosis.
+
+The role overview surfaces now use the namespace for their primary profile actions, statistics, section headings, and empty states (`PartnerOverviewPage`, `StudentOverviewPage`, `ResearcherOverviewPage`). The messages surface uses the active locale for its main navigation, composer, search, empty state, and send action; message body content remains user-authored and is not rewritten. The TTO queue and review fallback states use the same namespace for their queue controls and states; TTO finding content remains reviewer-authored and is not rewritten.
+
+Global `:focus-visible` styling provides a consistent keyboard focus indicator, and the dark theme remaps large navy surfaces and known disclosure metadata colors for readable contrast.

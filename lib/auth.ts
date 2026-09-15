@@ -39,6 +39,9 @@ if (isPlaceholderUrl) {
   console.warn(
     "[better-auth] DATABASE_URL is placeholder or not set — Better Auth will run in no-DB mode. Set DATABASE_URL to your Supabase pooler URI before running migrate."
   );
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("DATABASE_URL must be configured with the Supabase transaction pooler URI in production.");
+  }
 }
 
 // Isolate Better Auth tables to `better_auth` schema so they coexist with public.*

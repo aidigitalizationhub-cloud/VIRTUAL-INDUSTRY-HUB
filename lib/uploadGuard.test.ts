@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateStorageUpload, validateUpload } from './uploadGuard';
+import { getBase64DecodedByteLength, MAX_UPLOAD_BYTES, validateStorageUpload, validateUpload } from './uploadGuard';
 
 describe('validateUpload', () => {
   it('accepts a valid .docx with a matching MIME type', () => {
@@ -44,5 +44,11 @@ describe('validateUpload', () => {
   it('accepts JFIF evidence images', () => {
     const res = validateStorageUpload({ name: 'evidence.jfif', mimeType: 'image/jpeg', sizeBytes: 1024 });
     expect(res.ok).toBe(true);
+  });
+
+  it('calculates Base64 size without allowing a 15MB file to exceed the decoded limit', () => {
+    const encodedLength = Math.ceil(MAX_UPLOAD_BYTES / 3) * 4;
+    expect(getBase64DecodedByteLength('A'.repeat(encodedLength))).toBe(MAX_UPLOAD_BYTES);
+    expect(getBase64DecodedByteLength('not-base64')).toBe(null);
   });
 });

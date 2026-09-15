@@ -18,7 +18,7 @@ export const StatCard: React.FC<{ label: string; value: string | number; trend?:
 
 export const SectionTitle: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
   <div className="mb-6">
-    <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-ug-navy md:text-xl"><span className="h-5 w-1 rounded-full bg-ug-teal" /> {title}</h2>
-    {subtitle && <p className="ml-3 mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-500">{subtitle}</p>}
+    <h2 className="type-section-title flex items-center gap-2 text-ug-navy"><span className="h-5 w-1 rounded-full bg-ug-teal" /> {title}</h2>
+     {subtitle && <p className="type-body ml-3 mt-1.5 max-w-2xl text-slate-500">{subtitle}</p>}
   </div>
 );

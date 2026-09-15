@@ -139,7 +139,7 @@ Provide secure, multilingual, role-based tools that accelerate disclosure-to-par
 
 ## 8. User Roles and Permissions
 
-Authentication currently supports **Supabase Auth** and **Better Auth** co-existence. Supabase Auth remains supported for legacy JWT/RLS flows. Better Auth is the migration target; server middleware resolves Better Auth sessions to public `profiles` by id or email and uses server-side routes for profile saves and matching where a browser Supabase JWT is unavailable. Roles live on the `profiles` table and gate both UI and API access.
+Authentication uses **Better Auth** for application login and protected API sessions. Supabase remains the database/storage provider; Supabase Auth rows may remain during migration or rollback, but protected API routes do not accept Supabase bearer JWTs. Server middleware resolves Better Auth sessions to public `profiles` by id or email. Roles live on `profiles` and gate UI/API access.
 
 | Role | `profiles.role` | Capabilities |
 |---|---|---|
@@ -158,7 +158,7 @@ Authentication currently supports **Supabase Auth** and **Better Auth** co-exist
 
 ### 9.1 Authentication & Authorization
 
-- Supabase client-side auth (`lib/supabase.ts`) and Better Auth (`lib/auth.ts`, `lib/auth-client.ts`) currently co-exist; `AuthModal` handles login/register/reset during migration.
+- Better Auth (`lib/auth.ts`, `lib/auth-client.ts`) handles login/register/reset; the browser Supabase client is used for data/storage integration, not as the protected API identity provider.
 - `AdminLogin` page for admin access; admin gating additionally enforced on the server.
 - Better Auth tables live in the isolated `better_auth` schema; public application roles and profile metadata remain in `public.profiles`.
 
@@ -215,10 +215,10 @@ Authentication currently supports **Supabase Auth** and **Better Auth** co-exist
         │                              │
 ┌───────▼───────────┐        ┌─────────▼──────────────────────┐
 │ Supabase Postgres │        │ AI Providers                  │
-│  pgvector (768-d) │        │  • Groq (PRIMARY)             │
-│  RLS policies     │        │    openai/gpt-oss-120b        │
+│  pgvector (768-d) │        │  • Gemini (PRIMARY)           │
+│  RLS policies     │        │    gemini-3.6-flash family    │
 │  match_* RPCs     │        │  • Gemini (FALLBACK)          │
-│  ai_decisions     │        │    gemini-3.6-flash family    │
+│  ai_decisions     │        │    openai/gpt-oss-120b        │
 └───────────────────┘        │  • Gemini embeddings          │
                              │    gemini-embedding-2-preview │
                              └───────────────────────────────┘
@@ -389,7 +389,7 @@ Every AI interaction records:
 ### 15.5 Message/EOI Confidentiality
 
 - Legacy payloads are decrypted with AES-256-GCM envelope decryption (`lib/cryptoService.ts`, `inspectMessageEnvelope` reports `AES-256-GCM (legacy)`).
-- **KMS-backed server-side encryption replaces legacy client-side encryption in a later phase** — this is a declared design target, not a current capability.
+- **KMS-backed server-side encryption is not implemented.** New messages are stored plaintext; the legacy client-side AES-GCM helper is not a security boundary. Production remediation requires server-side encryption, key rotation, and migration of plaintext/legacy messages.
 
 ---
 
@@ -442,11 +442,11 @@ CORS_ORIGINS=
 
 | Check | Command | Status |
 |---|---|---|
-| Type check | `npm run lint` (`tsc --noEmit`) | Passing |
-| Unit tests | `npm run test` (`vitest run`) | 27 passing |
-| Build | `npm run build` | Passing without large-chunk or CJS `import.meta` warnings |
+| Type check | `npm run lint` (`tsc --noEmit`) | Passed locally |
+| Unit tests | `npm run test` (`vitest run`) | 100 passing in 18 files (local run, 10 September 2026) |
+| Build | `npm run build` | Passed locally |
 
-Test files: `lib/aiSchemas.test.ts`, `lib/rlsPolicies.test.ts`, `lib/scoring.test.ts`, `lib/uploadGuard.test.ts`.
+Test files cover `lib/**/*.test.ts`, `server/ip/**/*.test.ts`, `server/services/sourceVerification.test.ts` (syntactic + live-fetch verification), `server/newsCuration.test.ts` (universal publication evidence gate), and `server/app.test.ts`; the current run covered 18 files / 100 tests.
 
 ---
 
@@ -479,5 +479,5 @@ Test files: `lib/aiSchemas.test.ts`, `lib/rlsPolicies.test.ts`, `lib/scoring.tes
 | Industry challenges + matching | **Realized** |
 | Multilingual UI (EN/FR/Twi/Sw) | **Realized** |
 | pgvector 768-d hybrid matching | **Realized** |
-| KMS-backed server-side message encryption | **Planned** |
+| KMS-backed server-side message encryption | **Required production remediation; not implemented** |
 | Outbound email/SMS notifications | **Planned** |

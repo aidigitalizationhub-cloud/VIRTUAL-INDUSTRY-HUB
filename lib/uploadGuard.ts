@@ -9,7 +9,9 @@ export interface UploadValidationResult {
   error?: string;
 }
 
-const MAX_UPLOAD_BYTES = 15 * 1024 * 1024; // 15MB
+export const MAX_UPLOAD_BYTES = 15 * 1024 * 1024; // 15MB
+// JSON adds metadata and Base64 expands binary data by roughly 4/3.
+export const BASE64_JSON_BODY_LIMIT_BYTES = Math.ceil(MAX_UPLOAD_BYTES * 4 / 3) + 4096;
 
 const ALLOWED_EXTENSIONS = new Set(['txt', 'doc', 'docx']);
 
@@ -19,12 +21,18 @@ const ALLOWED_MIME_TYPES = new Set([
   'application/msword',
 ]);
 
-const STORAGE_MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
+const STORAGE_MAX_UPLOAD_BYTES = MAX_UPLOAD_BYTES;
 const STORAGE_ALLOWED_EXTENSIONS = new Set([
   'txt', 'doc', 'docx', 'pdf', 'png', 'jpg', 'jpeg', 'jfif', 'webp', 'gif', 'svg'
 ]);
 const STORAGE_ALLOWED_MIME_PREFIXES = ['image/'];
 const STORAGE_ALLOWED_MIME_TYPES = new Set([...ALLOWED_MIME_TYPES, 'application/pdf']);
+
+export const getBase64DecodedByteLength = (value: string): number | null => {
+  if (!value || value.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(value)) return null;
+  const padding = value.endsWith('==') ? 2 : value.endsWith('=') ? 1 : 0;
+  return (value.length * 3) / 4 - padding;
+};
 
 /**
  * Server-side upload validation (size + extension + MIME whitelist).

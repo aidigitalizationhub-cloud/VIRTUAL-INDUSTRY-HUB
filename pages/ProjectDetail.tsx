@@ -11,6 +11,7 @@ import { Project, ProjectStatus, User, Visibility, ResearchArea, UserRole } from
 import { getAuthUser } from '../lib/auth-client';
 import { useToast } from '../contexts/ToastContext';
 import { Tr } from '../components/Tr';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 // --- CONTACT PI MODAL ---
 const ContactPIModal: React.FC<{ 
@@ -33,13 +34,13 @@ const ContactPIModal: React.FC<{
       const user = await getAuthUser();
       
       if (!user) {
-        showToast("Authentication Required. Please log in to connect.", "error");
+         showToast("Please log in first to connect with the Principal Investigator. We'll be ready when you are.", "info");
         setSending(false);
         return;
       }
 
       let senderName = "Research Partner";
-      const profile = await StorageService.getProfile(user.id);
+      const profile = await StorageService.getCurrentProfile();
       if (profile?.name) senderName = profile.name;
 
       await StorageService.submitEOI(projectId, senderName, `[DIRECT MESSAGE] ${message}`);
@@ -118,14 +119,14 @@ const EditProjectModal: React.FC<{
         <div className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-2xl font-bold text-ug-navy">Manage Disclosure</h2>
-            <p className="text-[11px] font-mono text-gray-400 tracking-wide mt-0.5 font-semibold">Academic Record Administration</p>
+            <p className="type-label text-gray-400 mt-0.5">Academic Record Administration</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-105 rounded-full transition"><X size={20} /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 text-left">
           <div className="space-y-2">
-            <label className="text-[11px] font-semibold text-gray-400 tracking-wide block font-mono">Project Title</label>
+             <label className="type-label text-gray-400 block">Project Title</label>
             <input 
               required 
               type="text" 
@@ -137,7 +138,7 @@ const EditProjectModal: React.FC<{
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block font-mono">Research Area</label>
+               <label className="type-label text-gray-400 block">Research Area</label>
               <select 
                 value={formData.research_area || ''} 
                 onChange={e => setFormData({...formData, research_area: e.target.value as ResearchArea})} 
@@ -147,7 +148,7 @@ const EditProjectModal: React.FC<{
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block font-mono">Department</label>
+               <label className="type-label text-gray-400 block">Department</label>
               <input 
                 required 
                 type="text" 
@@ -159,7 +160,7 @@ const EditProjectModal: React.FC<{
           </div>
 
           <div className="space-y-2">
-            <label className="text-[11px] font-semibold text-gray-400 tracking-wide block font-mono">Executive Abstract</label>
+             <label className="type-label text-gray-400 block">Executive Abstract</label>
             <textarea 
               required 
               rows={4} 
@@ -171,7 +172,7 @@ const EditProjectModal: React.FC<{
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block font-mono font-semibold">Development Stage</label>
+               <label className="type-label text-gray-400 block">Development Stage</label>
               <select 
                 value={formData.status || ''} 
                 onChange={e => {
@@ -185,7 +186,7 @@ const EditProjectModal: React.FC<{
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block font-mono">Visibility Mode</label>
+             <label className="type-label text-gray-400 block">Visibility Mode</label>
               <select 
                 value={formData.visibility || ''} 
                 onChange={e => setFormData({...formData, visibility: e.target.value as Visibility})} 
@@ -198,7 +199,7 @@ const EditProjectModal: React.FC<{
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block font-mono">Estimated Budget</label>
+               <label className="type-label text-gray-400 block">Estimated Budget</label>
               <input 
                 type="text" 
                 value={formData.budget || ''} 
@@ -207,7 +208,7 @@ const EditProjectModal: React.FC<{
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-semibold text-gray-400 tracking-wide block font-mono">Collaboration Status</label>
+               <label className="type-label text-gray-400 block">Collaboration Status</label>
               <div className="flex h-14 items-center pl-4 bg-gray-50 border border-gray-200 rounded-2xl">
                 <input 
                   type="checkbox" 
@@ -271,7 +272,7 @@ const ProjectDetail: React.FC = () => {
       getAuthUser().then(user => {
         if (user) {
           StorageService.isBookmarked(user.id, id).then(setIsBookmarked);
-          StorageService.getProfile(user.id).then(profile => {
+          StorageService.getCurrentProfile().then(profile => {
             setCurrentUserProfile(profile);
             StorageService.getRevealApprovalDetails(user.id, id).then(details => {
               setRevealCleared(details.approved);
@@ -336,7 +337,7 @@ const ProjectDetail: React.FC = () => {
       }
 
       let senderName = "User in Hub";
-      const profile = await StorageService.getProfile(user.id);
+      const profile = await StorageService.getCurrentProfile();
       if (profile?.name) senderName = profile.name;
 
       let messageText = `[FORMAL EOI] Submission for ${type}. This partner wishes to engage in ${type.toLowerCase()} regarding this innovation.`;
@@ -487,7 +488,7 @@ const ProjectDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="relative min-h-[480px] md:h-[480px] w-full overflow-hidden flex items-end pb-8 md:pb-16 pt-24">
-        <img src={images[0]} alt={project.title} className="absolute inset-0 w-full h-full object-cover" />
+         <ImageWithFallback src={images[0]} alt={project.title} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ug-navy via-ug-navy/60 to-transparent"></div>
         <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -514,7 +515,7 @@ const ProjectDetail: React.FC = () => {
               <button 
                 onClick={() => {
                   if (!currentUserProfile) {
-                    showToast("Authentication Required. Please log in to connect with PI.", "error");
+                     showToast("Please log in first to connect with the Principal Investigator. We'll be ready when you are.", "info");
                   } else {
                     setIsContactModalOpen(true);
                   }
@@ -561,7 +562,7 @@ const ProjectDetail: React.FC = () => {
           {/* Executive Summary */}
           <section className="bg-white p-5 md:p-6 lg:p-8 rounded-2xl md:rounded-2xl lg:rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden">
             <h2 className="text-2xl font-bold text-ug-navy mb-6 flex items-center gap-3"><FileText className="text-ug-teal" /> <Tr text="Executive Summary" /></h2>
-            <p className="text-gray-600 leading-relaxed text-lg md:text-xl font-normal text-left sm:text-justify" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+             <p className="text-gray-600 leading-relaxed text-lg md:text-xl font-normal text-left sm:text-justify">
               <Tr text={project.description?.replace(/[\u00ad\u200b\u200c\u200d\ufeff]/g, '') || ''} />
             </p>
           </section>
@@ -569,7 +570,7 @@ const ProjectDetail: React.FC = () => {
           {images[1] && (
             <section className="bg-white p-5 md:p-8 rounded-2xl md:rounded-2xl lg:rounded-2xl border border-gray-100 shadow-sm">
               <h2 className="text-2xl font-bold text-ug-navy mb-6 flex items-center gap-3"><ImageIcon className="text-ug-teal" /> <Tr text="Visual Disclosure" /></h2>
-              <img src={images[1]} alt="Evidence" className="w-full rounded-xl md:rounded-2xl shadow-lg" />
+               <ImageWithFallback src={images[1]} alt="Evidence" className="w-full rounded-xl md:rounded-2xl shadow-lg" />
             </section>
           )}
 
@@ -603,7 +604,7 @@ const ProjectDetail: React.FC = () => {
             {ownerProfile ? (
               <div className="space-y-4 md:space-y-6">
                 <div className="flex items-center gap-3 md:gap-4">
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl overflow-hidden border-2 border-ug-teal/20 shadow-sm"><img src={ownerProfile.avatar_url} className="w-full h-full object-cover" /></div>
+                   <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl overflow-hidden border-2 border-ug-teal/20 shadow-sm"><ImageWithFallback src={ownerProfile.avatar_url} alt={ownerProfile.name} className="w-full h-full object-cover" /></div>
                   <div>
                     <h4 className="font-bold text-ug-navy text-base md:text-lg leading-tight">{ownerProfile.name}</h4>
                     <p className="text-[11px] md:text-[11px] font-semibold text-ug-teal tracking-wide mt-1"><Tr text={ownerProfile.role} /></p>

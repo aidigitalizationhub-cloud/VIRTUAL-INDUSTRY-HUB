@@ -7,6 +7,7 @@ import { ProjectStatus, Project, ResearchArea, NewsItem } from '../types';
 import { StorageService } from '../services/storageService';
 import { Tr } from '../components/Tr';
 import { safeExternalUrl } from '../lib/urlSafety';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 const Home: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -59,17 +60,20 @@ const Home: React.FC = () => {
       {/* HERO SECTION */}
       <div className="relative bg-ug-navy overflow-hidden h-[500px] sm:h-[650px] md:h-[750px] flex items-center">
         {HERO_IMAGES.map((img, index) => (
-           <div 
+           <ImageWithFallback
               key={index}
-              className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? 'opacity-65 scale-100' : 'opacity-0 scale-105'}`}
-              style={{ backgroundImage: `url('${img}')` }}
-           ></div>
+              className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-1000 ease-in-out ${index === currentImageIndex ? 'opacity-65 scale-100' : 'opacity-0 scale-105'}`}
+              src={img}
+              alt=""
+              aria-hidden="true"
+           />
         ))}
         <div className="absolute inset-0 bg-gradient-to-r from-ug-navy via-ug-navy/70 to-transparent"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col h-full justify-center">
           <div className="md:w-2/3 mt-6 sm:mt-10">
-            <div className="flex items-center gap-3 mb-4 sm:mb-6 animate-fade-in">
+             <div className="mb-3 text-[10px] font-bold tracking-[0.3em] text-ug-gold sm:text-xs">IAST</div>
+             <div className="flex items-center gap-3 mb-4 sm:mb-6 animate-fade-in">
                <span className="h-0.5 w-8 sm:w-12 bg-ug-teal"></span>
                <span className="text-[11px] sm:text-xs font-semibold text-ug-teal tracking-[0.3em] sm:tracking-[0.4em]"><Tr text="LIVE TRACK: Innovation Hub" /></span>
             </div>
@@ -103,10 +107,7 @@ const Home: React.FC = () => {
               onClick={() => handleCategoryClick(ResearchArea.Diagnostics)}
               className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer h-[320px] flex flex-col justify-end p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
             >
-              <div 
-                className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-out"
-                style={{ backgroundImage: "url('https://images.unsplash.com/photo-1579154204601-01588f351167?auto=format&fit=crop&w=800&q=80')" }}
-              />
+               <ImageWithFallback src="https://images.unsplash.com/photo-1579154204601-01588f351167?auto=format&fit=crop&w=800&q=80" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-ug-navy via-ug-navy/85 to-ug-navy/40 mix-blend-multiply group-hover:via-ug-navy/90 transition-all duration-500"></div>
               
               <div className="relative z-10 flex flex-col h-full justify-between text-white">
@@ -128,10 +129,7 @@ const Home: React.FC = () => {
               onClick={() => handleCategoryClick(ResearchArea.Pharmaceutical)}
               className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer h-[320px] flex flex-col justify-end p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
             >
-              <div 
-                className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-out"
-                style={{ backgroundImage: "url('https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=800&q=80')" }}
-              />
+               <ImageWithFallback src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=800&q=80" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-teal-950 via-teal-900/85 to-teal-800/40 mix-blend-multiply group-hover:via-teal-900/90 transition-all duration-500"></div>
               
               <div className="relative z-10 flex flex-col h-full justify-between text-white">
@@ -153,10 +151,7 @@ const Home: React.FC = () => {
               onClick={() => handleCategoryClick(ResearchArea.Vaccines)}
               className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer h-[320px] flex flex-col justify-end p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
             >
-              <div 
-                className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700 ease-out"
-                style={{ backgroundImage: "url('https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=800&q=80')" }}
-              />
+               <ImageWithFallback src="https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=800&q=80" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-cyan-950 via-cyan-950/85 to-cyan-900/40 mix-blend-multiply group-hover:via-cyan-950/90 transition-all duration-500"></div>
 
               <div className="relative z-10 flex flex-col h-full justify-between text-white">
@@ -192,7 +187,7 @@ const Home: React.FC = () => {
                {marketReadyProducts.map(product => (
                  <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row hover:shadow-xl transition group">
                    <div className="md:w-2/5 h-64 md:h-auto overflow-hidden">
-                      <img src={getThumbnail(product.image_url)} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
+                       <ImageWithFallback src={getThumbnail(product.image_url)} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
                    </div>
                    <div className="p-6 md:w-3/5 flex flex-col justify-center">
                       <h3 className="text-2xl font-bold text-gray-900 mb-3 leading-tight group-hover:text-ug-teal transition-colors"><Tr text={product.title} /></h3>
@@ -230,7 +225,7 @@ const Home: React.FC = () => {
                {showcaseProjects.map(project => (
                  <div key={project.id} className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col h-full group">
                    <div className="h-48 overflow-hidden relative shrink-0">
-                      <img src={getThumbnail(project.image_url)} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                       <ImageWithFallback src={getThumbnail(project.image_url)} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                       <div className="absolute top-4 left-4 bg-ug-teal text-white text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide">
                         <Tr text={project.status} />
                       </div>
@@ -276,7 +271,7 @@ const Home: React.FC = () => {
                {latestNews.map(item => (
                   <div key={item.id} onClick={() => { const url = safeExternalUrl(item.external_url); if (url) window.open(url, '_blank', 'noopener,noreferrer'); }} className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col h-full group cursor-pointer">
                    <div className="h-44 overflow-hidden shrink-0">
-                      <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                       <ImageWithFallback src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                    </div>
                    <div className="p-6 flex-1 flex flex-col justify-between">
                      <div>

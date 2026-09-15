@@ -14,6 +14,8 @@ import { StorageService } from './services/storageService';
 import { useSystemTheme } from './hooks/useSystemTheme';
 import { ToastProvider, useToast } from './contexts/ToastContext';
 import { isAdministrativeRole } from './lib/dashboardRouting';
+import i18n, { isLanguageLoaded, loadLanguageAsync, languageCode } from './src/i18n';
+import AppErrorBoundary from './components/AppErrorBoundary';
 
 const Home = lazy(() => import('./pages/Home'));
 const Projects = lazy(() => import('./pages/Projects'));
@@ -26,7 +28,6 @@ const News = lazy(() => import('./pages/News'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
-const VerifyOTP = lazy(() => import('./pages/VerifyOTP'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AdminLogin = lazy(() => import('./pages/AdminLogin').then((module) => ({ default: module.AdminLogin })));
 
@@ -35,6 +36,26 @@ const RouteFallback = () => (
     Loading workspace...
   </div>
 );
+
+const LanguageGate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [ready, setReady] = useState(() => isLanguageLoaded(i18n.language));
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        await loadLanguageAsync(languageCode(i18n.language));
+      } finally {
+        if (mounted) setReady(true);
+      }
+    };
+    void load();
+    return () => { mounted = false; };
+  }, []);
+
+  if (!ready) return <RouteFallback />;
+  return <>{children}</>;
+};
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ 
@@ -162,7 +183,8 @@ const AppContent: React.FC = () => {
 
   const isDashboard = location.pathname.startsWith('/dashboard');
   const isAdminLogin = location.pathname === '/admin/login';
-  const hideLayout = isDashboard || isAdminLogin;
+  const isAuthPage = ['/forgot-password', '/reset-password'].includes(location.pathname);
+  const hideLayout = isDashboard || isAdminLogin || isAuthPage;
 
   return (
       <div className="flex flex-col min-h-screen font-sans text-gray-900">
@@ -204,7 +226,7 @@ const AppContent: React.FC = () => {
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/verify-otp" element={<VerifyOTP />} />
+              <Route path="/verify-otp" element={<Navigate to="/forgot-password" replace />} />
               <Route path="/reset-password" element={<ResetPassword />} />
                <Route path="/admin/login" element={<AdminLogin onAuthenticated={handleAuthenticated} />} />
               
@@ -318,7 +340,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <ToastProvider>
-        <AppContent />
+        <LanguageGate><AppErrorBoundary><AppContent /></AppErrorBoundary></LanguageGate>
       </ToastProvider>
     </Router>
   );

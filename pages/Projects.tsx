@@ -6,6 +6,7 @@ import { Project, ProjectStatus, ResearchArea } from '../types';
 import { getAuthUser } from '../lib/auth-client';
 import { useToast } from '../contexts/ToastContext';
 import { Tr } from '../components/Tr';
+import ImageWithFallback from '../components/ImageWithFallback';
 import { useTranslatedText } from '../services/translationService';
 
 const Projects: React.FC = () => {
@@ -65,17 +66,6 @@ const Projects: React.FC = () => {
       try {
         const data = await StorageService.getProjects();
         setProjects(data);
-
-        // Notify saved-search owners about newly listed matches (deduped internally)
-        (data || []).forEach(p => {
-          StorageService.triggerSavedSearchMatchAlerts({
-            id: p.id,
-            title: p.title || 'Untitled Project',
-            description: p.description,
-            category: p.research_area,
-            type: 'project'
-          });
-        });
       } catch (err) {
         console.error("Projects Load Error:", err);
         showToast("Could not load projects. Please refresh to try again.", "error");
@@ -424,7 +414,7 @@ const Projects: React.FC = () => {
               {currentProjects.map((project) => (
                 <div key={project.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full border border-gray-100 group animate-fade-in-up">
                   <div className="h-64 relative overflow-hidden">
-                     <img 
+                      <ImageWithFallback
                         src={getThumbnail(project.image_url)} 
                         alt={project.title} 
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
@@ -459,7 +449,7 @@ const Projects: React.FC = () => {
                     {project.owner_name && (
                       <div className="mb-4 flex items-center gap-2">
                         {project.owner_avatar ? (
-                          <img 
+                           <ImageWithFallback
                             src={project.owner_avatar} 
                             alt={project.owner_name} 
                             className="w-6 h-6 rounded-full object-cover border border-ug-teal/30"

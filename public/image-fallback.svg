@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-label="UG Virtual Industry Hub">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#101a2d"/>
+      <stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <circle cx="950" cy="140" r="210" fill="#ffffff" opacity=".08"/>
+  <circle cx="180" cy="620" r="260" fill="#ffffff" opacity=".06"/>
+  <path d="M600 175v300M450 325h300M495 220l210 210M705 220L495 430" stroke="#fff" stroke-width="12" opacity=".16"/>
+  <text x="600" y="555" fill="#fff" opacity=".9" font-family="Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">UG VIRTUAL INDUSTRY HUB</text>
+</svg>

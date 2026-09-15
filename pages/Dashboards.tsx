@@ -404,7 +404,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                               <h3 className="text-sm font-bold tracking-wide  leading-tight text-white">AI Profile Sync</h3>
                             </div>
                             <p className="text-[11px] font-medium leading-relaxed text-white/70 italic font-sans">
-                              "Insights are compiled from your verified academic records. Re-indexing occurs automatically within 24 hours of profile edits."
+                               Insights are compiled from your verified academic records. Re-indexing occurs automatically within 24 hours of profile edits.
                             </p>
                             <div className="flex items-center gap-2 p-2.5 bg-white/5 rounded-xl border border-white/5">
                               <div className="w-6 h-6 bg-ug-teal/20 text-ug-teal rounded-lg flex items-center justify-center"><Zap size={12} className="animate-pulse" /></div>

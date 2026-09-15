@@ -17,6 +17,7 @@ import {
 import { User, UserRole } from '../../types';
 import type { DashboardTab } from '../../lib/dashboardRouting';
 import { canCreateDisclosure, isTtoRole } from '../../lib/dashboardRouting';
+import { useTranslation } from 'react-i18next';
 
 export type AdminSubTab = 'metrics' | 'users' | 'disclosures' | 'projects' | 'news' | 'logs' | 'decisions';
 
@@ -29,15 +30,16 @@ interface MobileNavProps {
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({ role, activeTab, setActiveTab, unreadCount, onNavigate }) => {
+  const { t } = useTranslation();
   const tabs: Array<{ id: DashboardTab; icon: typeof LayoutGrid; label: string; path?: string }> = isTtoRole(role) ? [
-    { id: 'overview', icon: LayoutGrid, label: 'Overview' },
-    { id: 'overview', icon: Scale, label: 'TTO / IP', path: '/dashboard/tto/disclosures' },
+    { id: 'overview', icon: LayoutGrid, label: t('dashboard.overview') },
+    { id: 'overview', icon: Scale, label: t('dashboard.ttoIpOffice'), path: '/dashboard/tto/disclosures' },
   ] : [
-    { id: 'overview' as const, icon: LayoutGrid, label: 'Overview' },
-    ...(canCreateDisclosure(role) ? [{ id: 'overview' as const, icon: ShieldCheck, label: 'Disclosures', path: '/dashboard/disclosures' }] : []),
-    { id: 'matches' as const, icon: Target, label: 'Matches' },
-    { id: 'messages' as const, icon: MessageSquare, label: 'Chat' },
-    { id: 'profile' as const, icon: UserIcon, label: 'Profile' },
+    { id: 'overview' as const, icon: LayoutGrid, label: t('dashboard.overview') },
+    ...(canCreateDisclosure(role) ? [{ id: 'overview' as const, icon: ShieldCheck, label: t('dashboard.disclosures'), path: '/dashboard/disclosures' }] : []),
+    { id: 'matches' as const, icon: Target, label: t('dashboard.matches') },
+    { id: 'messages' as const, icon: MessageSquare, label: t('dashboard.messages') },
+    { id: 'profile' as const, icon: UserIcon, label: t('dashboard.profile') },
   ];
 
   return (
@@ -83,28 +85,29 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   isCollapsed,
   setIsCollapsed,
 }) => {
+  const { t } = useTranslation();
   const userTabs = [
-    { id: 'overview' as const, icon: LayoutGrid, label: 'Overview' },
-    ...(canCreateDisclosure(role) ? [{ id: 'overview' as const, icon: ShieldCheck, label: 'Disclosures', path: '/dashboard/disclosures' }] : []),
-    { id: 'matches' as const, icon: Target, label: 'Matches' },
-    { id: 'messages' as const, icon: MessageSquare, label: 'Messages' },
-    { id: 'profile' as const, icon: UserIcon, label: 'Profile' },
+    { id: 'overview' as const, icon: LayoutGrid, label: t('dashboard.overview') },
+    ...(canCreateDisclosure(role) ? [{ id: 'overview' as const, icon: ShieldCheck, label: t('dashboard.disclosures'), path: '/dashboard/disclosures' }] : []),
+    { id: 'matches' as const, icon: Target, label: t('dashboard.matches') },
+    { id: 'messages' as const, icon: MessageSquare, label: t('dashboard.messages') },
+    { id: 'profile' as const, icon: UserIcon, label: t('dashboard.profile') },
   ];
   const adminTabs = [
-    { id: 'metrics' as const, icon: LayoutGrid, label: 'Overview' },
-    { id: 'users' as const, icon: Users, label: 'Users' },
-    { id: 'projects' as const, icon: ShieldCheck, label: 'Project Screener' },
+    { id: 'metrics' as const, icon: LayoutGrid, label: t('dashboard.overview') },
+    { id: 'users' as const, icon: Users, label: t('dashboard.users') },
+    { id: 'projects' as const, icon: ShieldCheck, label: t('dashboard.projectScreener') },
   ];
-    const governanceTabs = [
-    { path: '/dashboard/admin/disclosures', icon: ShieldCheck, label: 'Disclosures', adminOnly: true },
-    { path: '/dashboard/tto/disclosures', icon: Scale, label: 'TTO / IP Office' },
-    { path: '/dashboard/admin/news', icon: Globe, label: 'News Curator', adminOnly: true },
-    { path: '/dashboard/access-requests', icon: KeyRound, label: 'Access Requests' },
-    { path: '/dashboard/admin/audit', icon: Activity, label: 'Governance Audit', adminOnly: true },
+  const governanceTabs = [
+    { path: '/dashboard/admin/disclosures', icon: ShieldCheck, label: t('dashboard.disclosures'), adminOnly: true },
+    { path: '/dashboard/tto/disclosures', icon: Scale, label: t('dashboard.ttoIpOffice') },
+    { path: '/dashboard/admin/news', icon: Globe, label: t('dashboard.newsCurator'), adminOnly: true },
+    { path: '/dashboard/access-requests', icon: KeyRound, label: t('dashboard.accessRequests') },
+    { path: '/dashboard/admin/audit', icon: Activity, label: t('dashboard.governanceAudit'), adminOnly: true },
   ];
   const administrative = role === UserRole.Admin || role === 'Super Admin' || role === 'TTO' || role === 'TTO/IP' || role === 'IP Office';
   const ttoOnly = isTtoRole(role);
-  const title = role === UserRole.Admin || role === 'Super Admin' ? 'ADMIN' : administrative ? 'TTO / IP' : role === UserRole.Student ? 'STUDENT' : role === UserRole.Investor ? 'INVESTOR' : role === UserRole.IndustryPartner ? 'INDUSTRY' : 'RESEARCHER';
+  const title = role === UserRole.Admin || role === 'Super Admin' ? t('auth.roles.admin').toUpperCase() : administrative ? t('dashboard.ttoIpOffice') : role === UserRole.Student ? t('auth.roles.student').toUpperCase() : role === UserRole.Investor ? t('auth.roles.investor').toUpperCase() : role === UserRole.IndustryPartner ? t('auth.roles.partner').toUpperCase() : t('auth.roles.researcher').toUpperCase();
 
   return (
     <aside className={`hidden lg:flex h-full bg-white border-r border-gray-100 flex-col relative transition-all duration-300 ${isCollapsed ? 'w-20 p-4' : 'w-64 p-6'} shrink-0`}>

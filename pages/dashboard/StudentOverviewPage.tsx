@@ -7,8 +7,10 @@ import { StorageService } from '../../services/storageService';
 import { useToast } from '../../contexts/ToastContext';
 import { SectionTitle, StatCard } from '../../components/dashboard/DashboardPrimitives';
 import { HubStreamSidebar, UnifiedDashboardProfile } from '../../components/dashboard/DashboardWidgets';
+import { useTranslation } from 'react-i18next';
 
 export const StudentOverviewPage = ({ user }: { user: User | null }) => {
+  const { t } = useTranslation();
   const [projects, setProjects] = useState<Project[]>([]);
   const [applications, setApplications] = useState<any[]>([]);
   const [bookmarks, setBookmarks] = useState<Project[]>([]);
@@ -177,22 +179,22 @@ export const StudentOverviewPage = ({ user }: { user: User | null }) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <UnifiedDashboardProfile user={user} onAction={() => navigate('/projects')} actionLabel="Explore Research" />
+       <UnifiedDashboardProfile user={user} onAction={() => navigate('/projects')} actionLabel={t('dashboard.exploreResearch')} />
 
       <div className="grid grid-cols-3 gap-2 md:gap-4">
-        <StatCard label="Active Opportunities" value={openOpportunities.length.toString()} icon={BookOpen} />
-        <StatCard label="My Applications" value={applications.length.toString()} icon={Clock} />
-        <StatCard label="Saved Bookmarks" value={bookmarks.length.toString()} icon={Bookmark} />
+        <StatCard label={t('dashboard.activeOpportunities')} value={openOpportunities.length.toString()} icon={BookOpen} />
+        <StatCard label={t('dashboard.myApplications')} value={applications.length.toString()} icon={Clock} />
+        <StatCard label={t('dashboard.savedBookmarks')} value={bookmarks.length.toString()} icon={Bookmark} />
       </div>
 
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-12">
         <div className="space-y-6 md:col-span-2 lg:col-span-8">
           <section className="border border-slate-200/80 bg-white p-5 shadow-[0_8px_24px_-18px_rgba(26,26,75,0.35)] sm:p-6 md:p-7">
-            <SectionTitle title="Collaboration Calls" subtitle="Active Research Projects Seeking Talent" />
+            <SectionTitle title={t('dashboard.collaborationCalls')} subtitle={t('dashboard.collaborationCallsDescription')} />
             <div className="space-y-4 mt-6">
               {openOpportunities.length === 0 ? (
                 <div className="text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                  <p className="text-gray-400 text-xs font-bold">No active collaboration calls listed.</p>
+                  <p className="text-gray-400 text-xs font-bold">{t('dashboard.noCollaborationCalls')}</p>
                 </div>
               ) : openOpportunities.slice(0, 3).map(project => (
                 <div key={project.id} className="flex flex-col md:flex-row md:items-center justify-between p-6 border border-gray-100 rounded-2xl bg-white hover:shadow-lg transition gap-4">
@@ -225,16 +227,16 @@ export const StudentOverviewPage = ({ user }: { user: User | null }) => {
           </section>
 
           <section className="border border-slate-200/80 bg-white p-5 shadow-[0_8px_24px_-18px_rgba(26,26,75,0.35)] sm:p-6 md:p-7">
-            <SectionTitle title="Scholarships & Research Fellowships" subtitle="Academically Funded Pathways to Support Innovation" />
+            <SectionTitle title={t('dashboard.scholarships')} subtitle={t('dashboard.scholarshipsDescription')} />
             <div className="mt-6 text-center py-8 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-              <p className="text-gray-400 text-xs font-bold">No funded opportunities listed right now.</p>
+              <p className="text-gray-400 text-xs font-bold">{t('dashboard.noFundedOpportunities')}</p>
               <p className="text-gray-400 text-[11px] font-medium mt-1">Check back soon or ask your department about open calls.</p>
             </div>
           </section>
 
           {recommendations.length > 0 && (
             <section className="border border-teal-100 bg-gradient-to-br from-teal-50/70 to-white p-5 shadow-[0_8px_24px_-18px_rgba(26,26,75,0.35)] sm:p-6 md:p-7">
-              <SectionTitle title="Recommended for You" subtitle="Personalized research matches based on your program and profile keywords" />
+              <SectionTitle title={t('dashboard.recommendedForYou')} subtitle={t('dashboard.collaborationCallsDescription')} />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 {recommendations.map(({ project, reason }) => (
                   <div key={project.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">

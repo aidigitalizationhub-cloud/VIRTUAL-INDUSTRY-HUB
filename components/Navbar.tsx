@@ -30,6 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, user, onUserIconClick,
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  const isHomepage = location.pathname === '/';
 
   return (
     <nav className="bg-ug-navy/95 backdrop-blur-md text-white sticky top-0 z-50 border-b border-white/10 shadow-xl shadow-black/10 transition-all duration-300">
@@ -50,9 +51,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, user, onUserIconClick,
                  <span className="font-bold text-sm sm:text-base md:text-lg tracking-tight text-white group-hover:text-ug-teal transition-colors">
                    {t('nav.brand')}
                  </span>
-                 <span className="hidden sm:inline-block text-[11px] font-extrabold tracking-wide px-1.5 py-0.5 rounded bg-ug-gold/20 text-ug-gold border border-ug-gold/30">
-                   IAST
-                 </span>
+                  {isHomepage && <span className="hidden sm:inline-block text-[11px] font-extrabold tracking-wide px-1.5 py-0.5 rounded bg-ug-gold/20 text-ug-gold border border-ug-gold/30">IAST</span>}
                </div>
                <span className="text-[11px] text-gray-300 font-bold tracking-wider hidden sm:block -mt-0.5">
                  University of Ghana

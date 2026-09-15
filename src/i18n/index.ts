@@ -16,9 +16,16 @@ export type LanguageCode = typeof SUPPORTED_LANGUAGES[number]['code'];
 
 const loadedLanguages = new Set<string>(['en']);
 
+export const languageCode = (lng: string): LanguageCode => {
+  const code = lng.split('-')[0].toLowerCase();
+  return (SUPPORTED_LANGUAGES.some((language) => language.code === code) ? code : 'en') as LanguageCode;
+};
+
+export const isLanguageLoaded = (lng: string): boolean => loadedLanguages.has(languageCode(lng));
+
 // Dynamic async loader for non-English bundles to optimize performance & bundle size
 export const loadLanguageAsync = async (lng: string): Promise<void> => {
-  const code = lng.split('-')[0].toLowerCase();
+  const code = languageCode(lng);
   const isValidCode = SUPPORTED_LANGUAGES.some(l => l.code === code);
   
   if (!isValidCode || loadedLanguages.has(code)) {
@@ -74,13 +81,12 @@ i18n
 // Automatically trigger dynamic load when language changes
 i18n.on('languageChanged', (lng) => {
   if (lng) {
-    const code = lng.split('-')[0].toLowerCase();
-    loadLanguageAsync(code);
+    loadLanguageAsync(languageCode(lng));
   }
 });
 
 // Load initially detected language if it's not English
-const initialLng = i18n.language ? i18n.language.split('-')[0].toLowerCase() : 'en';
+const initialLng = i18n.language ? languageCode(i18n.language) : 'en';
 if (initialLng && initialLng !== 'en') {
   loadLanguageAsync(initialLng);
 }

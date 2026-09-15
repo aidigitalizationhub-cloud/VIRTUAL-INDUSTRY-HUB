@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_UPLOAD_BYTES } from './uploadGuard';
 
 // --- Server request-body schemas (size-capped, unknown fields stripped) ---
 
@@ -22,7 +23,7 @@ export const embedRequestSchema = z.object({
 });
 
 export const extractDocumentRequestSchema = z.object({
-  fileBase64: z.string().min(1).max(20_000_000),
+  fileBase64: z.string().min(1).max(Math.ceil(MAX_UPLOAD_BYTES * 4 / 3)),
   fileName: z.string().min(1).max(255),
   mimeType: z.string().max(100).optional(),
 });
@@ -47,6 +48,23 @@ export const matchesRequestSchema = z.object({
 export const aiScoutSyncRequestSchema = z.object({
   force: z.boolean().optional(),
 });
+
+export const adminNewsRequestSchema = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().max(200).optional(),
+  category: z.string().max(100).optional(),
+  summary: z.string().max(10000).optional(),
+  image_url: z.string().max(2000).optional(),
+  published_at: z.string().max(100).optional(),
+  external_url: z.string().max(2000).optional(),
+  is_ai_generated: z.boolean().optional(),
+  source_name: z.string().max(300).optional(),
+  status: z.enum(['Draft', 'Published']).optional(),
+  reference_links: z.array(z.string().max(2000)).max(20).optional(),
+  tags: z.array(z.string().max(100)).max(50).optional(),
+  relevance_score: z.number().min(0).max(100).optional(),
+  source_verification_notes: z.string().max(5000).optional(),
+}).passthrough();
 
 export const aiDecisionRecordSchema = z.object({
   decision_type: z.string().min(1).max(100),

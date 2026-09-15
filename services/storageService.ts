@@ -1,5 +1,5 @@
 
-import { Project, NewsItem, User, UserRole, SavedSearch, AlertNotification, AccountDeletionRecord, AiDecision } from '../types';
+import { Project, NewsItem, User, UserRole, AccountDeletionRecord, AiDecision } from '../types';
 import { supabase } from '../lib/supabase';
 import { EmbeddingService } from './embeddingService';
 import { decryptMessage } from '../lib/cryptoService';
@@ -39,6 +39,11 @@ const isStorageUrl = (url: string, bucket = 'projects'): boolean => {
   return url.includes(`/object/public/${bucket}/`) || url.includes(`/object/sign/${bucket}/`);
 };
 
+const normalizePublicImageUrl = (value: string): string => {
+  if (!value || value.startsWith('http://') || value.startsWith('https://') || value.startsWith('data:') || value.startsWith('/')) return value;
+  return supabase.storage.from('projects').getPublicUrl(value).data.publicUrl || value;
+};
+
 export const StorageService = {
   // Initialization
   init: async () => {
@@ -71,17 +76,22 @@ export const StorageService = {
   signProjectUrls: async (projects: Project[], includeProtectedDocuments = true): Promise<Project[]> => {
     if (!projects || projects.length === 0) return [];
 
+    const publicImageProjects = projects.map((project) => ({
+      ...project,
+      image_url: project.image_url?.split('|').map(normalizePublicImageUrl).join('|') || project.image_url,
+    }));
+
     // Signing requires a session; guests get public URLs as-is without a
     // doomed network call (previously a noisy 401 on every public page load).
     try {
       const viewer = await getAuthUser().catch(() => null);
-      if (!viewer?.id) return projects;
+      if (!viewer?.id) return publicImageProjects;
     } catch {
-      return projects;
+      return publicImageProjects;
     }
 
     try {
-      const mutableProjects = JSON.parse(JSON.stringify(projects)) as Project[];
+      const mutableProjects = JSON.parse(JSON.stringify(publicImageProjects)) as Project[];
       const requests: { projectId: string; path: string; kind: 'image' | 'brief' | 'document'; projectIndex: number; docIndex?: number }[] = [];
       mutableProjects.forEach((project, projectIndex) => {
         project.image_url?.split('|').forEach((part, partIndex) => {
@@ -120,7 +130,7 @@ export const StorageService = {
       return mutableProjects;
     } catch (err) {
       console.warn("Error in signProjectUrls, returning unmodified projects:", err);
-      return projects;
+      return publicImageProjects;
     }
   },
 
@@ -502,7 +512,9 @@ export const StorageService = {
 
       for (let idx = 0; idx < mutableNews.length; idx++) {
         const item = mutableNews[idx];
-        if (item.image_url && isStorageUrl(item.image_url, 'projects')) {
+        if (item.image_url && !item.image_url.startsWith('http://') && !item.image_url.startsWith('https://') && !item.image_url.startsWith('/') && !item.image_url.startsWith('data:')) {
+          item.image_url = normalizePublicImageUrl(item.image_url);
+        } else if (item.image_url && isStorageUrl(item.image_url, 'projects')) {
           const filePath = getStorageFilePath(item.image_url, 'projects');
           if (filePath) {
             // Since we configured public.can_access_project_file to allow public access to news images,
@@ -553,70 +565,19 @@ export const StorageService = {
     const limit = options?.limit ?? 20;
     const search = options?.search ?? '';
     const category = options?.category ?? '';
-
-    const fromRange = (page - 1) * limit;
-    const toRange = fromRange + limit - 1;
-
     try {
-      // 1. Specific field selection rather than '*'
-      const selectFields = 'id, title, category, published_at, image_url, summary, external_url, is_ai_generated, source_name, status, reference_links, tags, relevance_score, source_verification_notes';
-      let query = supabase.from('news').select(selectFields);
-
-      // 2. Draft filtering using status + published_at index
-      if (!includeDrafts) {
-        query = query.eq('status', 'Published');
-      }
-
-      // 3. Category filtering using category index
-      if (category && category !== 'All') {
-        query = query.eq('category', category);
-      }
-
-      // 4. Server-side Full-Text Search using 'fts_doc' index
-      if (search && search.trim() !== '') {
-        const sanitizedSearch = search.trim().split(/\s+/).filter(Boolean).map(word => `${word}:*`).join(' & ');
-        if (sanitizedSearch) {
-          query = query.textSearch('fts_doc', sanitizedSearch);
-        }
-      }
-
-      // 5. Paginated ordering & range selection
-      const { data, error } = await query
-        .order('published_at', { ascending: false })
-        .range(fromRange, toRange);
-
-      if (error) {
-        // Keep fallback basic query, but log the failed filter parameters.
-        console.warn("getNews filtered query failed, falling back to basic query. Failed parameters:", {
-          includeDrafts,
-          page,
-          limit,
-          search,
-          category,
-          error
-        });
-        const { data: basicData } = await supabase
-          .from('news')
-          .select('id, title, category, published_at, image_url, summary')
-          .eq('status', 'Published')
-          .order('published_at', { ascending: false })
-          .range(0, 19);
-        return await StorageService.signNewsUrls((basicData || []) as NewsItem[]);
-      }
-      return await StorageService.signNewsUrls((data || []) as NewsItem[]);
+      const params = new URLSearchParams({
+        includeDrafts: String(includeDrafts),
+        page: String(page),
+        limit: String(limit),
+      });
+      if (search) params.set('search', search);
+      if (category) params.set('category', category);
+      const response = await getJson<{ news: NewsItem[] }>(`/api/news?${params.toString()}`);
+      return await StorageService.signNewsUrls(response.news || []);
     } catch (err) {
       console.error("Failed to retrieve news:", err, { includeDrafts, page, limit, search, category });
-      // Last resort fallback
-      try {
-        const { data } = await supabase
-          .from('news')
-          .select('id, title, category, published_at, image_url, summary')
-          .eq('status', 'Published')
-          .limit(20);
-        return await StorageService.signNewsUrls((data || []) as NewsItem[]);
-      } catch (innerErr) {
-        return [];
-      }
+      return [];
     }
   },
 
@@ -829,8 +790,7 @@ export const StorageService = {
 
   testConnection: async () => {
     try {
-      const { error } = await supabase.from('news').select('id').limit(1);
-      if (error) throw error;
+      await getJson('/api/news?limit=1');
       return true;
     } catch (error) {
       console.error('Supabase Connection Test Failed:', error);
@@ -1094,14 +1054,8 @@ export const StorageService = {
 
   verifyAdmin: async (): Promise<boolean> => {
     try {
-      const user = await getAuthUser();
-      if (!user?.id) return false;
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .maybeSingle();
-      return profile?.role === 'Admin';
+      const response = await getJson<{ isAdmin: boolean }>('/api/admin/verify');
+      return response.isAdmin === true;
     } catch (e) {
       return false;
     }
@@ -1172,88 +1126,7 @@ export const StorageService = {
 
   adminSaveNewsItem: async (newsItem: Partial<NewsItem>) => {
     try {
-      const isAdmin = await StorageService.verifyAdmin();
-      if (!isAdmin) throw new Error("Unauthorized access. Admin privileges required.");
-
-      const formattedDate = newsItem.published_at 
-        ? (newsItem.published_at.includes('T') ? newsItem.published_at.split('T')[0] : newsItem.published_at) 
-        : new Date().toISOString().split('T')[0];
-
-      const payload: any = {
-        title: newsItem.title,
-        category: newsItem.category,
-        summary: newsItem.summary,
-        image_url: newsItem.image_url || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600&auto=format&fit=crop',
-        published_at: formattedDate,
-        external_url: newsItem.external_url || '',
-        is_ai_generated: newsItem.is_ai_generated || false,
-        source_name: newsItem.source_name || 'UG ORID Directorates',
-        status: newsItem.status || 'Published',
-        reference_links: newsItem.reference_links || [],
-        tags: newsItem.tags || [],
-        relevance_score: newsItem.relevance_score || 0,
-        source_verification_notes: newsItem.source_verification_notes || ''
-      };
-
-      if (newsItem.id) {
-        const { data, error } = await supabase
-          .from('news')
-          .update(payload)
-          .eq('id', newsItem.id)
-          .select()
-          .single();
-        if (error) {
-          console.warn("Update news item failed, retrying with core columns:", error.message);
-          const corePayload = {
-            title: payload.title,
-            category: payload.category,
-            summary: payload.summary,
-            image_url: payload.image_url,
-            published_at: payload.published_at,
-            external_url: payload.external_url,
-            status: payload.status,
-            is_ai_generated: payload.is_ai_generated,
-            source_name: payload.source_name
-          };
-          const { data: retryData, error: retryError } = await supabase
-            .from('news')
-            .update(corePayload)
-            .eq('id', newsItem.id)
-            .select()
-            .single();
-          if (retryError) throw retryError;
-          return retryData;
-        }
-        return data;
-      } else {
-        const { data, error } = await supabase
-          .from('news')
-          .insert([payload])
-          .select()
-          .single();
-        if (error) {
-          console.warn("Insert news item failed, retrying with core columns:", error.message);
-          const corePayload = {
-            title: payload.title,
-            category: payload.category,
-            summary: payload.summary,
-            image_url: payload.image_url,
-            published_at: payload.published_at,
-            external_url: payload.external_url,
-            status: payload.status,
-            is_ai_generated: payload.is_ai_generated,
-            source_name: payload.source_name
-          };
-          const { data: retryData, error: retryError } = await supabase
-            .from('news')
-            .insert([corePayload])
-            .select()
-            .single();
-          if (retryError) throw retryError;
-          return retryData;
-        }
-        return data;
-      }
+      return (await postJson<{ news: NewsItem }>('/api/admin/news', newsItem)).news;
     } catch (err) {
       console.error('Error saving news item:', err);
       throw err;
@@ -1262,14 +1135,7 @@ export const StorageService = {
 
   adminDeleteNewsItem: async (newsId: string) => {
     try {
-      const isAdmin = await StorageService.verifyAdmin();
-      if (!isAdmin) throw new Error("Unauthorized access. Admin privileges required.");
-
-      const { error } = await supabase
-        .from('news')
-        .delete()
-        .eq('id', newsId);
-      if (error) throw error;
+      await deleteJson(`/api/admin/news/${encodeURIComponent(newsId)}`);
       return true;
     } catch (err) {
       console.error('Error deleting news item:', err);
@@ -1302,129 +1168,6 @@ export const StorageService = {
         looking_for: data.looking_for,
       },
     });
-  },
-
-  // --- SAVED SEARCHES & ALERTS ---
-  getSavedSearches: async (userId: string): Promise<SavedSearch[]> => {
-    if (!userId) return [];
-    try {
-      const raw = localStorage.getItem(`saved_searches_${userId}`);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {
-      console.error("Error reading saved searches:", e);
-    }
-    return [];
-  },
-
-  getAllSavedSearches: async (): Promise<SavedSearch[]> => {
-    try {
-      const allSearches: SavedSearch[] = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('saved_searches_')) {
-          const raw = localStorage.getItem(key);
-          if (raw) {
-            const list: SavedSearch[] = JSON.parse(raw);
-            allSearches.push(...list);
-          }
-        }
-      }
-      return allSearches;
-    } catch (e) {
-      return [];
-    }
-  },
-
-  saveSearch: async (userId: string, searchData: { query: string; category?: string }): Promise<SavedSearch> => {
-    if (!userId) throw new Error("User must be logged in to save search queries.");
-    const searches = await StorageService.getSavedSearches(userId);
-    
-    // Check duplicate
-    const existing = searches.find(s => s.query.toLowerCase().trim() === searchData.query.toLowerCase().trim() && (s.category || 'All') === (searchData.category || 'All'));
-    if (existing) {
-      return existing;
-    }
-
-    const newSearch: SavedSearch = {
-      id: `search_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-      user_id: userId,
-      query: searchData.query.trim(),
-      category: searchData.category || 'All',
-      notify_email: true,
-      notify_in_app: true,
-      created_at: new Date().toISOString()
-    };
-
-    const updated = [newSearch, ...searches];
-    localStorage.setItem(`saved_searches_${userId}`, JSON.stringify(updated));
-    return newSearch;
-  },
-
-  deleteSavedSearch: async (userId: string, searchId: string): Promise<void> => {
-    if (!userId) return;
-    const searches = await StorageService.getSavedSearches(userId);
-    const updated = searches.filter(s => s.id !== searchId);
-    localStorage.setItem(`saved_searches_${userId}`, JSON.stringify(updated));
-  },
-
-  getAlertNotifications: async (userId: string): Promise<AlertNotification[]> => {
-    if (!userId) return [];
-    try {
-      const raw = localStorage.getItem(`alerts_${userId}`);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {
-      console.error("Error reading alert notifications:", e);
-    }
-    return [];
-  },
-
-  markAlertAsRead: async (userId: string, alertId: string): Promise<void> => {
-    if (!userId) return;
-    const alerts = await StorageService.getAlertNotifications(userId);
-    const updated = alerts.map(a => a.id === alertId ? { ...a, read: true } : a);
-    localStorage.setItem(`alerts_${userId}`, JSON.stringify(updated));
-  },
-
-  clearAllAlerts: async (userId: string): Promise<void> => {
-    if (!userId) return;
-    localStorage.setItem(`alerts_${userId}`, JSON.stringify([]));
-  },
-
-  triggerSavedSearchMatchAlerts: async (item: { id: string; title: string; description?: string; summary?: string; category?: string; type: 'project' | 'news' }) => {
-    try {
-      const allSearches = await StorageService.getAllSavedSearches();
-      if (!allSearches.length) return;
-
-      const fullText = `${item.title} ${item.description || ''} ${item.summary || ''} ${item.category || ''}`.toLowerCase();
-
-      for (const s of allSearches) {
-        if (!s.query || s.query.trim().length < 2) continue;
-        const q = s.query.toLowerCase().trim();
-
-        if (fullText.includes(q)) {
-          const existingAlerts = await StorageService.getAlertNotifications(s.user_id);
-          if (existingAlerts.some(a => a.item_id === item.id && a.query_matched === s.query)) continue;
-
-          const alertObj: AlertNotification = {
-            id: `alert_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-            user_id: s.user_id,
-            title: `Match for Saved Search "${s.query}"`,
-            message: `New ${item.type === 'project' ? 'Research Project' : 'Discovery / Grant'}: "${item.title}"`,
-            type: 'saved_search_match',
-            item_type: item.type,
-            item_id: item.id,
-            query_matched: s.query,
-            read: false,
-            created_at: new Date().toISOString()
-          };
-
-          const updated = [alertObj, ...existingAlerts];
-          localStorage.setItem(`alerts_${s.user_id}`, JSON.stringify(updated));
-        }
-      }
-    } catch (e) {
-      console.error("Error triggering search match alerts:", e);
-    }
   },
 
   // --- ACCOUNT DELETION LOGS & OFFBOARDING ---

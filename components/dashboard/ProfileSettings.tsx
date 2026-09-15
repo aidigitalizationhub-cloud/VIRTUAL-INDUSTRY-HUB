@@ -6,6 +6,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { authClient } from '../../lib/auth-client';
 import { safeExternalUrl } from '../../lib/urlSafety';
 import { StorageService } from '../../services/storageService';
+import ImageWithFallback from '../ImageWithFallback';
 
 export const ProfileSettings: React.FC<{ 
   user: User | null; 
@@ -250,18 +251,18 @@ export const ProfileSettings: React.FC<{
   };
 
   return (
-    <div className="animate-fade-in space-y-7 pb-20">
+    <div className="animate-fade-in space-y-5 pb-8">
       {/* Identity Card */}
-      <div className="relative overflow-hidden rounded-[1.5rem] border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm md:p-8 dark:from-slate-900 dark:to-slate-950">
+       <div className="relative overflow-hidden rounded-[1.5rem] border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-5 shadow-sm md:p-6 dark:from-slate-900 dark:to-slate-950">
         <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-ug-teal/10 blur-3xl" />
-        <div className="relative flex flex-col items-center gap-6 sm:flex-row md:gap-8">
+         <div className="relative flex flex-col items-center gap-5 sm:flex-row md:gap-6">
         <div>
           <div 
             className="relative h-24 w-24 cursor-pointer overflow-hidden rounded-2xl border-4 border-white bg-gray-50 shadow-lg group/avatar md:h-32 md:w-32 dark:border-slate-700"
             onClick={openEditModal}
           >
             {avatarPreview ? (
-              <img src={avatarPreview} className="w-full h-full object-cover" alt="Avatar" />
+              <ImageWithFallback src={avatarPreview} className="w-full h-full object-cover" alt="Avatar" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-200 bg-ug-navy/5"><UserIcon size={40} strokeWidth={1} /></div>
             )}
@@ -272,7 +273,7 @@ export const ProfileSettings: React.FC<{
           </div>
         </div>
         
-        <div className="flex-1 space-y-4 text-center sm:text-left">
+         <div className="flex-1 space-y-3 text-center sm:text-left">
           <div className="space-y-0.5">
             <h3 className="text-2xl font-bold tracking-tight text-ug-navy md:text-3xl">{name || 'New Member'}</h3>
             <div className="flex flex-wrap justify-center sm:justify-start gap-2.5 items-center">
@@ -307,12 +308,12 @@ export const ProfileSettings: React.FC<{
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
-        <div className="lg:col-span-8 space-y-6 md:space-y-8">
-          <div className="space-y-7 rounded-[1.5rem] border border-gray-100 bg-white p-5 shadow-sm md:space-y-9 md:p-8">
+       <form onSubmit={handleSave} className="grid grid-cols-1 gap-5 lg:grid-cols-12 md:gap-6">
+         <div className="space-y-5 lg:col-span-8 md:space-y-6">
+           <div className="space-y-5 rounded-[1.5rem] border border-gray-100 bg-white p-5 shadow-sm md:space-y-6 md:p-6">
             {/* Biography Section */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-gray-100 pb-5">
+             <div className="space-y-4">
+               <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                 <div className="w-10 h-10 bg-ug-teal/10 text-ug-teal rounded-xl flex items-center justify-center shrink-0"><FileText size={18} /></div>
                 <div>
                   <h4 className="text-lg font-bold text-ug-navy tracking-tight ">My Information</h4>
@@ -320,7 +321,7 @@ export const ProfileSettings: React.FC<{
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-[11px] font-semibold text-gray-500 tracking-wide ml-1">Full Name / Display Name</label>
                   <input 
@@ -354,7 +355,7 @@ export const ProfileSettings: React.FC<{
             </div>
 
             {user?.user_type === 'entity' && (
-                <div className="space-y-6 rounded-2xl border border-gray-100 bg-slate-50/50 p-5 md:p-8">
+                 <div className="space-y-4 rounded-2xl border border-gray-100 bg-slate-50/50 p-5 md:p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-ug-teal/10 text-ug-teal rounded-xl flex items-center justify-center shrink-0">
                     <Target size={18} />
@@ -417,8 +418,8 @@ export const ProfileSettings: React.FC<{
             )}
 
             {/* Portfolio Links */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-gray-100 pb-5">
+             <div className="space-y-4">
+               <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                 <div className="w-10 h-10 bg-ug-navy text-white rounded-xl flex items-center justify-center shadow-md shrink-0"><LinkIcon size={18} /></div>
                 <div>
                   <h4 className="text-lg font-bold text-ug-navy tracking-tight ">Portfolio Slots</h4>
@@ -426,7 +427,7 @@ export const ProfileSettings: React.FC<{
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {[
                   { label: "Main Portfolio Website", val: website, setter: setWebsite, placeholder: "https://yourwebsite.com" },
                   { label: "LinkedIn Profile", val: website2, setter: setWebsite2, placeholder: "https://linkedin.com/in/..." },
@@ -465,7 +466,7 @@ export const ProfileSettings: React.FC<{
           </div>
         </div>
 
-        <div className="space-y-6 lg:sticky lg:top-6 lg:col-span-4 lg:self-start">
+         <div className="space-y-4 lg:sticky lg:top-6 lg:col-span-4 lg:self-start">
           <div className="space-y-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
             <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide px-1">Account Management</h4>
             <div className="space-y-1">
@@ -559,9 +560,9 @@ export const ProfileSettings: React.FC<{
       </form>
 
       {/* Privacy Disclaimer */}
-      <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+       <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-100 pt-4 text-center sm:flex-row sm:text-left">
         <p className="text-[11px] md:text-xs text-gray-400 font-medium leading-relaxed max-w-2xl">
-          "Your data is used specifically for matchmaking and is never shared with third-party advertisers."
+           Your data is used specifically for matchmaking and is never shared with third-party advertisers.
         </p>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-ug-teal/5 rounded-full border border-ug-teal/10 shrink-0">
           <span className="w-1.5 h-1.5 bg-ug-teal rounded-full animate-pulse"></span>
@@ -596,7 +597,7 @@ export const ProfileSettings: React.FC<{
                   className="w-32 h-32 rounded-2xl overflow-hidden bg-gray-50 border-4 border-gray-100 shadow-lg cursor-pointer relative group/avatar"
                 >
                   {editAvatarPreview ? (
-                    <img src={editAvatarPreview} className="w-full h-full object-cover group-hover/avatar:scale-110 transition duration-500" alt="New Avatar" />
+                    <ImageWithFallback src={editAvatarPreview} className="w-full h-full object-cover group-hover/avatar:scale-110 transition duration-500" alt="New Avatar" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300 bg-ug-navy/5">
                       <UserIcon size={48} strokeWidth={1} />

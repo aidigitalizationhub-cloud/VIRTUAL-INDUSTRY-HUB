@@ -43,7 +43,7 @@ It bridges scientific discovery at the **Legon Campus** with real-world market a
 - **Frontend**: React 19 + TypeScript (strict), Vite 6, Tailwind CSS 4, `motion`, `lucide-react`, React Router (HashRouter), i18next.
 - **Frontend delivery**: Route-level lazy loading plus targeted Vite manual chunks for React, UI, Supabase, PDF/reporting, and i18n assets.
 - **Backend**: Node.js + Express 5 (single-file `server.ts`; production bundle via esbuild).
-- **Database / Auth**: Supabase (PostgreSQL + `pgvector` + Row-Level Security) with Better Auth co-existing during migration. Better Auth sessions are resolved to public `profiles` by id/email; server-backed profile and matching endpoints support Better Auth users without relying on browser Supabase JWTs.
+- **Database / Auth**: Supabase (PostgreSQL + `pgvector` + Row-Level Security) with Better Auth as the application identity provider. Protected API requests accept Better Auth sessions; Supabase remains the database/storage provider and legacy Auth rows may remain only for migration/rollback.
 - **AI Orchestration**: `@google/genai` is the **primary** provider for generative AI; `groq-sdk` remains the fallback provider (`openai/gpt-oss-120b` by default). Server-side embeddings use Gemini `gemini-embedding-2-preview` (768-d) — **Groq has no embeddings endpoint**.
 
 ### NPM Scripts
@@ -55,7 +55,7 @@ It bridges scientific discovery at the **Legon Campus** with real-world market a
 | `start` | `node dist/server.cjs` | Run production bundle |
 | `preview` | `vite preview` | Preview static build |
 | `lint` | `tsc --noEmit` | Type check |
- | `test` | `vitest run` | Unit tests (12 files / 68 passing: `lib/**` + `server/ip/**`) |
+ | `test` | `vitest run` | Unit tests (currently 18 files / 100 passing: `lib/**`, `server/ip/**`, `server/services/**`, `server/app`) |
 
 ---
 
@@ -98,12 +98,14 @@ CORS_ORIGINS=http://localhost:3000
 3. **Run locally** — `npm run dev` → server binds to `0.0.0.0:3000`
 4. **Production build** — `npm run build` then `npm start`
 
+For an existing Supabase Auth installation, do not use the short setup sequence as a cutover plan. Follow [`PRODUCTION_REMEDIATION.md`](PRODUCTION_REMEDIATION.md), including backup, Better Auth table creation, forced reset, identity linkage, RLS cutover, hardening, and live verification.
+
 ---
 
 ## Security
 
 - **Row-Level Security**: public select on approved public projects/news; self-write on own profiles; admin-only scopes; `ai_decisions` read/write restricted to admins; `SECURITY DEFINER` matching functions enforce visibility server-side.
-- **Server-side secret handling**: service-role and Groq keys are never exposed to the browser; the browser uses anon key + `VITE_`-prefixed keys only.
+- **Server-side secret handling**: service-role, Better Auth, database, SMTP, reviewer, Gemini, and Groq secrets are never exposed to the browser; only intended `VITE_` values are client-visible.
 - **HTTP hardening**: CORS allowlist, `X-Content-Type-Options`, `X-Frame-Options: DENY`, HSTS, CSP, and Permissions-Policy headers on all responses.
 - **Upload validation**: extension + MIME + size whitelist enforced on the server.
 - **Assistant reviewer**: disclosure screening runs server-side with `ASSISTANT_REVIEWER_KEY` when configured. OpenAI-compatible providers use `ASSISTANT_REVIEWER_BASE_URL` and `ASSISTANT_REVIEWER_MODEL`; Gemini keys can use the same key with a Gemini model. Screening remains advisory and falls back to deterministic rules plus the configured general AI gateway.
@@ -122,9 +124,8 @@ CORS_ORIGINS=http://localhost:3000
 
 ## Current Verification
 
-- `npm run lint` passes.
-- `npm test -- --run` passes with 12 files / 68 Vitest tests.
-- `npm run build` passes (2640 modules, `dist/server.cjs` bundled).
+- `npm test -- --run` was run locally on 10 September 2026: 18 files / 100 tests passed.
+- `npm run lint` and `npm run build` pass on the modular server (`server.ts` thin bootstrap + `server/app`, `server/routes/*`, `server/middleware/*`, `server/services/*`, `server/db/*`); production deployment and live database verification remain outstanding.
 
 ---
 

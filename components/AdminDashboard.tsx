@@ -1050,7 +1050,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             <span className="text-[11px] font-bold text-gray-400 block truncate">{p.research_area}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 text-[11px] font-mono font-semibold shrink-0">
+                        <div className="type-label flex items-center gap-3 shrink-0">
                           <span className="text-gray-500 bg-white px-2 py-1 rounded-lg border border-gray-200">{p.views ?? 0} views</span>
                           <span className="text-ug-teal bg-ug-teal/10 px-2 py-1 rounded-lg border border-ug-teal/20">{p.expressions_of_interest ?? 0} EOIs</span>
                         </div>
@@ -1277,7 +1277,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     <h4 className="font-extrabold text-ug-navy text-sm leading-tight flex items-center gap-1.5">
                                       {p.name || 'Anonymous User'}
                                     </h4>
-                                    <span className="text-[11px] text-gray-400 font-mono mt-0.5 block">{p.email}</span>
+                                     <span className="type-caption mt-0.5 block">{p.email}</span>
                                     {(p.company || p.department) && (
                                       <span className="text-[11px] text-ug-teal font-extrabold block mt-0.5">
                                         {p.company || p.department}
@@ -1384,7 +1384,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             </div>
                             <div className="min-w-0">
                               <h4 className="font-extrabold text-ug-navy text-sm truncate">{p.name || 'Anonymous User'}</h4>
-                              <p className="text-[11px] text-gray-400 font-mono truncate">{p.email}</p>
+                               <p className="type-caption truncate">{p.email}</p>
                             </div>
                           </div>
                           
@@ -1450,7 +1450,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                         </div>
                         <div>
                           <h3 className="text-xl font-bold text-white">{inspectingUser.name || 'Anonymous User'}</h3>
-                          <p className="text-xs text-ug-teal font-mono mt-0.5">{inspectingUser.email}</p>
+                           <p className="type-caption text-ug-teal mt-0.5">{inspectingUser.email}</p>
                           <span className="text-[11px] font-semibold tracking-wide text-white/50 block mt-1">
                             User ID: {inspectingUser.id}
                           </span>
@@ -1706,7 +1706,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                       </span>
                                     </div>
                                     
-                                    <h5 className="font-semibold text-xs text-gray-650 leading-snug line-clamp-2 pr-4">{p.title}</h5>
+                                     <h5 className="font-semibold text-xs text-gray-600 leading-snug line-clamp-2 pr-4">{p.title}</h5>
                                   </div>
                                   
                                   <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-100/40">
@@ -1752,7 +1752,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
                     return (
-                      <div className="space-y-6 text-left flex-1 flex flex-col justify-between font-serif">
+                       <div className="space-y-6 text-left flex-1 flex flex-col justify-between">
                         <div className="space-y-6">
                           
                           {/* Top Detail Header Block containing metrics, title, & actions styled like the second design mockup */}
@@ -1766,7 +1766,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-gray-400 mt-1">
                                   <span>Researcher: <span className="text-[#1a1a4b] font-bold">{ownerPr?.name || 'Academic Faculty'}</span></span>
                                   <span className="hidden md:inline text-gray-300">|</span>
-                                  <span>Division: <span className="text-gray-650 font-bold">{activeProj.department}</span></span>
+                                   <span>Division: <span className="text-gray-600 font-bold">{activeProj.department}</span></span>
                                   <span className="hidden md:inline text-[#5eead4]">|</span>
                                   <span>Status: <span className="text-ug-teal font-extrabold ">{activeProj.disclosure_status || 'Submitted'}</span></span>
                                 </div>
@@ -1807,7 +1807,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     <FileText size={16} />
                                   </div>
                                   <div className="truncate">
-                                    <p className="text-xs md:text-sm font-bold text-gray-750 truncate">Research_Brief_Draft.pdf</p>
+                                     <p className="text-xs md:text-sm font-bold text-gray-700 truncate">Research_Brief_Draft.pdf</p>
                                     <p className="text-[11px] md:text-xs text-gray-400 font-semibold">Technical Brief</p>
                                   </div>
                                 </div>
@@ -1833,7 +1833,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     <FileText size={16} />
                                   </div>
                                   <div className="truncate">
-                                    <p className="text-xs md:text-sm font-bold text-gray-750 truncate">Academic_CV_Record.pdf</p>
+                                     <p className="text-xs md:text-sm font-bold text-gray-700 truncate">Academic_CV_Record.pdf</p>
                                     <p className="text-[11px] md:text-xs text-gray-400 font-semibold">Creds Verification</p>
                                   </div>
                                 </div>
@@ -1848,11 +1848,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             
                             {/* Column 1: FROM: ADMINISTRATOR feedback terminal */}
-                            <div className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col justify-between gap-4 font-serif max-w-full">
+                             <div className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col justify-between gap-4 max-w-full">
                               <div className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <span className="text-[11px] md:text-xs font-bold text-[#1a1a4b] tracking-wide">FROM: ADMINISTRATOR</span>
-                                  <span className="text-[11px] text-gray-400 font-bold font-mono">MARKDOWN Verified</span>
+                                   <span className="type-caption font-bold">MARKDOWN Verified</span>
                                 </div>
                                 
                                 <textarea
@@ -1870,7 +1870,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     value={adminInternalNotes}
                                     onChange={e => setAdminInternalNotes(e.target.value)}
                                     placeholder="Private working notes..."
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-1.5 text-xs md:text-sm font-medium text-gray-650 outline-none focus:bg-white"
+                                      className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-1.5 text-xs md:text-sm font-medium text-gray-600 outline-none focus:bg-white"
                                   />
                                 </div>
 
@@ -1881,7 +1881,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     value={adminRequestedDocsText}
                                     onChange={e => setAdminRequestedDocsText(e.target.value)}
                                     placeholder="e.g. Bio-Ethics Clearance Letter"
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-1.5 text-xs md:text-sm font-medium text-gray-650 outline-none focus:bg-white font-mono"
+                                     className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-1.5 text-xs md:text-sm font-medium text-gray-600 outline-none focus:bg-white"
                                   />
                                 </div>
                               </div>
@@ -1896,7 +1896,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             </div>
 
                             {/* Column 2: Researcher Reply Channel terminal */}
-                            <div className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col justify-between gap-4 font-serif">
+                             <div className="bg-white p-5 rounded-xl border border-gray-100 flex flex-col justify-between gap-4">
                               <div className="space-y-3 flex-1 flex flex-col">
                                 <span className="text-[11px] md:text-xs font-bold text-gray-400 tracking-wide block">REVISION CHANNEL & MESSAGES</span>
                                 
@@ -1911,7 +1911,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     </p>
                                   </div>
                                 ) : (
-                                  <div className="border border-gray-100 bg-gray-50/50 rounded-xl p-3 flex-grow max-h-[180px] overflow-y-auto space-y-2.5 custom-scrollbar text-left font-serif">
+                                   <div className="border border-gray-100 bg-gray-50/50 rounded-xl p-3 flex-grow max-h-[180px] overflow-y-auto space-y-2.5 custom-scrollbar text-left">
                                     {projectMessages.map((msg: any, mIdx: number) => {
                                       // Simple sender classification
                                       const isAdminMsg = msg.sender_id === user?.id || msg.user_name.toLowerCase().includes('admin') || msg.user_name.toLowerCase().includes('board');
@@ -1937,7 +1937,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   <div className="space-y-1.5 max-h-24 overflow-y-auto pt-1 pr-1 custom-scrollbar w-full">
                                     <p className="text-[11px] md:text-[11px] font-semibold text-[#1a1a4b]/65 tracking-wide mb-1">Uploaded Slots Status</p>
                                     {reqDocs.map((doc: any, dIdx: number) => (
-                                      <div key={dIdx} className="flex justify-between items-center bg-gray-50 p-2 border border-gray-100 rounded-lg text-xs font-semibold text-gray-650">
+                                       <div key={dIdx} className="flex justify-between items-center bg-gray-50 p-2 border border-gray-100 rounded-lg text-xs font-semibold text-gray-600">
                                         <div className="truncate flex items-center gap-1.5">
                                           <FileText size={11} className="text-gray-400" />
                                           {doc.url ? (
@@ -1968,7 +1968,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                 )}
                               </div>
 
-                              <div className="w-full py-3.5 bg-gray-100 text-gray-400 rounded-lg text-xs font-bold   text-center select-none font-mono">
+                               <div className="w-full py-3.5 bg-gray-100 text-gray-400 rounded-lg text-xs font-bold text-center select-none">
                                 {activeProj.disclosure_status === 'Documents Requested' ? 'AWAITING REVISIONS' : 'STATION IDLE'}
                               </div>
                             </div>
@@ -1977,7 +1977,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                           {/* Historical audit trail log ledger */}
                           {timeline.length > 0 && (
-                            <div className="bg-white p-5 rounded-xl border border-gray-100 space-y-2 font-serif">
+                             <div className="bg-white p-5 rounded-xl border border-gray-100 space-y-2">
                               <p className="text-[11px] md:text-xs font-bold text-[#1a1a4b] tracking-wide">Permanent Audit Trail</p>
                               <div className="space-y-2 max-h-28 overflow-y-auto pl-1 pr-1 border-l border-gray-100 ml-1">
                                 {timeline.map((item: any, idx: number) => (
@@ -2036,7 +2036,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     </p>
                   </div>
                   <div className="flex items-center gap-2 self-start sm:self-auto">
-                    <span className="text-[11px] font-semibold text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl font-mono">
+                     <span className="type-label text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl">
                       Showing {screenerProjects.length} of {projects.length} Innovations
                     </span>
                     {(projectSearch || projectAreaFilter !== 'all' || projectVisibilityFilter !== 'all' || projectStatusFilter !== 'all' || projectSort !== 'newest') && (
@@ -2221,7 +2221,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                             {p.budget && (
                               <>
                                 <span className="text-gray-300">•</span>
-                                <span className="text-[11px] font-semibold text-gray-400 font-mono">
+                                 <span className="type-label text-gray-400">
                                   {p.budget}
                                 </span>
                               </>
@@ -2242,7 +2242,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-gray-100 justify-end">
                         {/* Visibility Selector */}
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[11px] font-semibold text-gray-400 tracking-wide font-mono">
+                           <span className="type-label text-gray-400">
                             Visibility
                           </span>
                           <select 
@@ -2258,7 +2258,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                         {/* Readiness Status Selector */}
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[11px] font-semibold text-gray-400 tracking-wide font-mono">
+                           <span className="type-label text-gray-400">
                             Readiness Status
                           </span>
                           <select 
@@ -2274,7 +2274,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
 
                         {/* Delete / Withdraw Button */}
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-[11px] font-semibold text-transparent tracking-wide font-mono">
+                           <span className="type-label text-transparent">
                             Action
                           </span>
                           <button 

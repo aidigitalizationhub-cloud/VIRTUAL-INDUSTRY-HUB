@@ -215,6 +215,46 @@ CREATE POLICY "Users can file own deletion record" ON public.account_deletions F
 DROP POLICY IF EXISTS "Admins can audit deletion records" ON public.account_deletions;
 CREATE POLICY "Admins can audit deletion records" ON public.account_deletions FOR SELECT TO authenticated USING (public.current_is_admin());
 
+-- IP disclosure tables (created by ip_disclosure_phase1.sql)
+-- Phase 1 is written for Supabase Auth; replace those policies during the
+-- Better Auth cutover so the same researcher identity rules apply.
+DROP POLICY IF EXISTS "Researchers can view own IP disclosures" ON public.ip_disclosures;
+CREATE POLICY "Researchers can view own IP disclosures" ON public.ip_disclosures FOR SELECT TO authenticated
+  USING (researcher_id = public.current_user_id() OR public.current_is_admin());
+DROP POLICY IF EXISTS "Researchers can create own IP disclosures" ON public.ip_disclosures;
+CREATE POLICY "Researchers can create own IP disclosures" ON public.ip_disclosures FOR INSERT TO authenticated
+  WITH CHECK (researcher_id = public.current_user_id());
+DROP POLICY IF EXISTS "Researchers can view own IP files" ON public.ip_disclosure_files;
+CREATE POLICY "Researchers can view own IP files" ON public.ip_disclosure_files FOR SELECT TO authenticated
+  USING (uploaded_by = public.current_user_id() OR public.current_is_admin() OR EXISTS (
+    SELECT 1 FROM public.ip_disclosures d
+    WHERE d.id = disclosure_id AND d.researcher_id = public.current_user_id()
+  ));
+DROP POLICY IF EXISTS "Researchers can view own IP events" ON public.ip_disclosure_events;
+CREATE POLICY "Researchers can view own IP events" ON public.ip_disclosure_events FOR SELECT TO authenticated
+  USING (actor_id = public.current_user_id() OR public.current_is_admin() OR EXISTS (
+    SELECT 1 FROM public.ip_disclosures d
+    WHERE d.id = disclosure_id AND d.researcher_id = public.current_user_id()
+  ));
+DROP POLICY IF EXISTS "Researchers can view shared IP findings" ON public.ip_disclosure_findings;
+CREATE POLICY "Researchers can view shared IP findings" ON public.ip_disclosure_findings FOR SELECT TO authenticated
+  USING (public.current_is_admin() OR (visibility = 'shared_researcher' AND EXISTS (
+    SELECT 1 FROM public.ip_disclosures d
+    WHERE d.id = disclosure_id AND d.researcher_id = public.current_user_id()
+  )));
+DROP POLICY IF EXISTS "Researchers can view IP links" ON public.ip_disclosure_links;
+CREATE POLICY "Researchers can view IP links" ON public.ip_disclosure_links FOR SELECT TO authenticated
+  USING (public.current_is_admin() OR EXISTS (
+    SELECT 1 FROM public.ip_disclosures d
+    WHERE d.id = disclosure_id AND d.researcher_id = public.current_user_id()
+  ));
+DROP POLICY IF EXISTS "Researchers can view IP decisions" ON public.ip_disclosure_decisions;
+CREATE POLICY "Researchers can view IP decisions" ON public.ip_disclosure_decisions FOR SELECT TO authenticated
+  USING (public.current_is_admin() OR EXISTS (
+    SELECT 1 FROM public.ip_disclosures d
+    WHERE d.id = disclosure_id AND d.researcher_id = public.current_user_id()
+  ));
+
 -- storage.objects (projects private, avatars public)
 DROP POLICY IF EXISTS "Secured Project Access" ON storage.objects;
 CREATE POLICY "Secured Project Access" ON storage.objects FOR SELECT USING (bucket_id='projects' AND (public.current_is_admin() OR public.current_user_id() = owner::uuid OR public.can_access_project_file(public.current_user_id(), name)));

@@ -1,6 +1,6 @@
 # Admin UI Polish
 
-Status: planned (audit done 2026-09-04, implementation deferred).
+Status: completed for the current production UI typography pass.
 Scope: `components/AdminDashboard.tsx` sections, `DisclosureAdminReview`, `TtoQueue`/`TtoReviewPanel`, `PublicationDecision`, `DisclosurePages` frames + access requests, shared shell (`DashboardHeader`, `DashboardNavigation`, `DashboardWidgets`, `DashboardPrimitives`).
 Locked decisions: decorative-only icon removal · Inter everywhere · admin + shared shell.
 
@@ -13,7 +13,9 @@ Create canonical class strings (new `components/dashboard/adminUi.ts` or extend 
 - Z-index: header/sidebar 40 · dropdowns 50 · modals 60 (replaces `z-[1000…10000]`).
 
 ## 1. Typography (Inter everywhere)
-- Remove `font-serif` blocks (`AdminDashboard.tsx:1830,1926,1974,1989,2055`).
+- Implemented centralized `.type-*` typography tokens and legacy-size normalization in `index.css`; ordinary 10–13px UI copy now renders at the `text-xs` scale and non-display `font-extrabold` is reduced to bold.
+- Added global `:focus-visible` treatment and dark-theme readability remaps alongside the typography foundation.
+- Removed the legacy `font-serif` blocks from the Admin workflow and the inline serif presentation from project detail/profile copy.
 - Strip `font-mono` from non-code content (emails `:1355,1462,1528`; labels/pills `:1010,1128,2114,2299,2320,2336`); keep in audit/digest views.
 - Replace dead `text-gray-650`/`text-gray-750` (`:1784,1844,1885,1911,1948,1959,2015`) with `text-gray-600`/`700`.
 - `font-extrabold` → `font-bold` except the page title; body copy to `text-sm`.
@@ -31,5 +33,7 @@ Overview/metrics, users, disclosures review, projects screener, news curator, au
 
 ## 4. Verify
 `npm run lint` (icon removals must drop imports under `noUnusedLocals`), `npm test -- --run`, `npm run build`; visual check per admin route at desktop + mobile; grep for leftovers (`font-serif`, `blur-3xl`, non-skeleton `animate-pulse`, `gray-650`).
+
+The remaining `font-mono` usage is intentionally limited to audit, UID, hash, digest, ciphertext, provider, and provenance values. Report/PDF font sizes remain scoped to generated output rather than normal UI typography.
 
 Out of scope: `server.ts` split, Admin section extraction, nested routes, dark-mode completion, i18n consolidation.

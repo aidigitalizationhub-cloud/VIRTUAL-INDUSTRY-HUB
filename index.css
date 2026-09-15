@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-ug-navy: #1a1a4b;
@@ -14,6 +14,12 @@
 
 html {
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Keep keyboard navigation visible across the utility-class-heavy UI. */
+:where(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid #0891b2;
+  outline-offset: 2px;
 }
 
 /* ==========================================================================
@@ -124,6 +130,11 @@ html.dark .answer-value {
 html.dark .answer-label { color: #94a3b8; }
 html.dark .disclosure-input { border-color: #334155; background: #111827; color: #e2e8f0; }
 
+html.dark .disclosure-eyebrow,
+html.dark .disclosure-meta,
+html.dark .disclosure-note,
+html.dark .disclosure-empty { color: #a8b5c7; }
+
 html.dark .disclosure-section,
 html.dark .disclosure-finding {
   border-color: #25324a;
@@ -176,6 +187,28 @@ html.dark .bg-slate-50\/50 {
 
 html.dark .bg-ug-navy\/5 {
   background-color: rgba(129, 140, 248, 0.1);
+}
+
+html.dark .bg-ug-navy {
+  background-color: #101a2d;
+}
+
+html.dark .from-\[\#1a1a4b\] {
+  --tw-gradient-from: #101a2d var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(16 26 45 / 0) var(--tw-gradient-to-position);
+}
+
+html.dark .to-\[\#1a1a4b\] {
+  --tw-gradient-to: #18233a var(--tw-gradient-to-position);
+}
+
+html.dark .from-ug-navy {
+  --tw-gradient-from: #101a2d var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(16 26 45 / 0) var(--tw-gradient-to-position);
+}
+
+html.dark .to-\[\#1a1a4b\] {
+  --tw-gradient-to: #18233a var(--tw-gradient-to-position);
 }
 
 html.dark .border-gray-50,
@@ -506,3 +539,29 @@ html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
 
+/* ==========================================================================
+   TYPOGRAPHY SYSTEM
+   Keep application UI readable and consistent. Deliberately dense report
+   output can opt out with a scoped class when it needs smaller text.
+   ========================================================================== */
+.type-page-title { font-size: 1.5rem; line-height: 1.25; font-weight: 700; letter-spacing: -0.025em; }
+.type-section-title { font-size: 1.125rem; line-height: 1.4; font-weight: 700; letter-spacing: -0.015em; }
+.type-card-title { font-size: 0.875rem; line-height: 1.5; font-weight: 700; }
+.type-body { font-size: 0.875rem; line-height: 1.5rem; }
+.type-label { font-size: 0.75rem; line-height: 1.25rem; font-weight: 600; letter-spacing: 0.025em; }
+.type-eyebrow { font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.type-caption { font-size: 0.75rem; line-height: 1.25rem; color: #64748b; }
+.type-technical { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.75rem; line-height: 1.25rem; }
+/* Older screens used arbitrary microcopy sizes for ordinary UI labels. */
+:where(.text-\[10px\], .text-\[11px\], .text-\[13px\]):not(.report-output *) {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+
+/* Keep emphasis hierarchy to bold/semibold; reserve extrabold for display text. */
+:where(.font-extrabold):not(.display-emphasis) { font-weight: 700; }
+
+/* Wide tracking is reserved for short eyebrows, not normal controls. */
+:where([class*="tracking-[0.25em]"], [class*="tracking-[0.3em]"], [class*="tracking-[0.35em]"], [class*="tracking-[0.4em]"]):not(.type-eyebrow) {
+  letter-spacing: 0.08em;
+}

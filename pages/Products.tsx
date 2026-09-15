@@ -6,6 +6,7 @@ import { Project, ProjectStatus, ResearchArea } from '../types';
 import { getAuthUser } from '../lib/auth-client';
 import { useToast } from '../contexts/ToastContext';
 import { Tr } from '../components/Tr';
+import ImageWithFallback from '../components/ImageWithFallback';
 import { useTranslatedText } from '../services/translationService';
 
 const Products: React.FC = () => {
@@ -187,7 +188,7 @@ const Products: React.FC = () => {
               {currentProducts.map(product => (
                 <div key={product.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden border border-gray-100 group flex flex-col">
                   <div className="h-64 relative overflow-hidden">
-                    <img src={getThumbnail(product.image_url)} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
+                    <ImageWithFallback src={getThumbnail(product.image_url)} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700" />
                     {currentUser && (
                       <button 
                         onClick={(e) => {

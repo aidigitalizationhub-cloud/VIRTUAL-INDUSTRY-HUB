@@ -3,6 +3,7 @@ import { ChevronRight, Loader2 } from 'lucide-react';
 import { IpDisclosureService, type IpDisclosure } from '../../services/ipDisclosureService';
 import { TtoReviewPanel } from './TtoReviewPanel';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const TtoQueue: React.FC = () => {
   const [items, setItems] = useState<IpDisclosure[]>([]);
@@ -11,6 +12,7 @@ export const TtoQueue: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const detailId = location.pathname.match(/^\/dashboard\/tto\/disclosures\/([^/]+)$/)?.[1];
 
   const load = async () => {
@@ -35,16 +37,16 @@ export const TtoQueue: React.FC = () => {
   useEffect(() => { if (!detailId) void load(); }, [detailId]);
 
   if (detailId) return <section className="disclosure-page space-y-5">
-    <button onClick={() => navigate('/dashboard/tto/disclosures')} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-ug-teal hover:text-ug-navy">← Back to TTO/IP queue</button>
+     <button onClick={() => navigate('/dashboard/tto/disclosures')} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-ug-teal hover:text-ug-navy">← {t('dashboard.backToTtoQueue')}</button>
     <TtoReviewPanel disclosureId={decodeURIComponent(detailId)} onCompleted={() => navigate('/dashboard/tto/disclosures')} />
   </section>;
 
-  if (loading) return <p className="flex items-center gap-2 text-xs text-slate-400"><Loader2 size={14} className="animate-spin" /> Loading TTO queue...</p>;
+   if (loading) return <p className="flex items-center gap-2 text-xs text-slate-400"><Loader2 size={14} className="animate-spin" /> {t('dashboard.loadingTtoQueue')}</p>;
 
   return <section className="disclosure-page space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-    <div><h3 className="disclosure-title text-lg">TTO / IP Office queue</h3><p className="disclosure-note mt-1">Open a project below to review its complete disclosure record, findings, files, and timeline.</p></div>
+     <div><h3 className="disclosure-title text-lg">{t('dashboard.ttoQueue')}</h3><p className="disclosure-note mt-1">{t('dashboard.ttoQueueDescription')}</p></div>
     {error && <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-xs font-medium text-red-700">{error}</div>}
-    {!error && items.length === 0 && <p className="disclosure-empty">No TTO cases yet.</p>}
+     {!error && items.length === 0 && <p className="disclosure-empty">{t('dashboard.noTtoCases')}</p>}
     <div className="space-y-2">
       {items.map((disclosure) => {
         return <button key={disclosure.id} onClick={() => navigate(`/dashboard/tto/disclosures/${encodeURIComponent(disclosure.id)}`)} className="flex w-full items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 text-left transition hover:border-ug-teal/50 hover:bg-slate-50">

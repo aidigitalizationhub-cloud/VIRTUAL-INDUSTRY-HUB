@@ -16,6 +16,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ImageWithFallback from '../../components/ImageWithFallback';
 import { IndustryChallengesMatcher } from '../../components/IndustryChallengesMatcher';
 import { useToast } from '../../contexts/ToastContext';
 import { supabase } from '../../lib/supabase';
@@ -366,7 +367,7 @@ ${senderName}`
         setLoading(true);
         try {
           // Re-fetch user profile once to see if it was updated in background
-          const updatedUser = await StorageService.getProfile(user.id);
+          const updatedUser = await StorageService.getCurrentProfile();
           if (updatedUser?.embedding) {
             // This will trigger the fetchMatches effect below
             setLoading(false);
@@ -481,7 +482,7 @@ ${senderName}`
               <div className="flex items-start gap-3">
                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-ug-navy/5 text-ug-navy">
                   {proj.image_url && proj.image_url.trim() !== '' ?
-                    <img src={proj.image_url.split('|')[0] || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" /> :
+                    <ImageWithFallback src={proj.image_url.split('|')[0] || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" /> :
                     <Globe size={20} />
                   }
                 </div>
@@ -557,7 +558,7 @@ ${senderName}`
                <div className="flex items-start gap-3">
                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg overflow-hidden bg-ug-navy shrink-0">
                    {collab.avatar_url || collab.image_url ?
-                     <img src={collab.avatar_url || collab.image_url} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt="" /> :
+                     <ImageWithFallback src={collab.avatar_url || collab.image_url} referrerPolicy="no-referrer" className="w-full h-full object-cover" alt="" /> :
                      <UserIcon className="w-full h-full p-3.5 text-white/20" />
                    }
                  </div>

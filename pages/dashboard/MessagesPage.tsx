@@ -5,6 +5,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { StorageService } from '../../services/storageService';
 import type { User } from '../../types';
 import { isRevealRequestMessage } from '../../lib/messageUtils';
+import { useTranslation } from 'react-i18next';
 
 export { isRevealRequestMessage };
 
@@ -46,6 +47,7 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
   const [selectedRecipient, setSelectedRecipient] = useState<User | null>(null);
   const [isMobileListOpen, setIsMobileListOpen] = useState(true);
   const { showToast } = useToast();
+  const { t } = useTranslation();
 
   // Attachment states for compose and reply views
   const [replyAttachments, setReplyAttachments] = useState<{name: string, url: string, type: 'file' | 'image'}[]>([]);
@@ -120,7 +122,7 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
               const partnerProfile = await StorageService.getProfile(initialThreadId);
               if (partnerProfile) {
                 setSelectedRecipient(partnerProfile);
-                setComposeRecipient(partnerProfile.name || partnerProfile.email);
+                setComposeRecipient(partnerProfile.name || 'Research Partner');
                 setComposeSubject(`Strategic Inquiry from ${user.name}`);
                 setComposeMessage(`Hello ${partnerProfile.name},\n\nI found your profile in the Academic Hub Matchmaker with high alignment, and would love to connect to discuss potential collaboration opportunities.`);
                 setIsComposing(true);
@@ -305,7 +307,7 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
         {!selectedThread ? (
           <div className="flex flex-col">
             <div className="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
-              <h2 className="text-sm font-bold text-ug-navy  tracking-wide">Communications</h2>
+              <h2 className="text-sm font-bold text-ug-navy tracking-wide">{t('dashboard.communications')}</h2>
               <button 
                 onClick={() => setIsComposing(true)}
                 className="p-2 bg-ug-teal text-white rounded-xl shadow-lg"
@@ -316,8 +318,8 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
 
             <div className="flex-1">
               {[
-                { id: 'inbox', icon: Inbox, label: 'Inbox', count: unreadCount },
-                { id: 'sent', icon: SendIcon, label: 'Sent' },
+                { id: 'inbox', icon: Inbox, label: t('dashboard.inbox'), count: unreadCount },
+                { id: 'sent', icon: SendIcon, label: t('dashboard.sent') },
               ].map((cat) => (
                 <div key={cat.id} className="border-b border-gray-50 last:border-none">
                   <button
@@ -536,7 +538,7 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
                   <textarea 
                     value={reply}
                     onChange={(e) => setReply(e.target.value)}
-                    placeholder="Type message..."
+                    placeholder={t('dashboard.typeMessage')}
                     className="w-full bg-transparent p-2 text-xs focus:outline-none resize-none min-h-[40px] max-h-[120px]"
                     rows={1}
                   />
@@ -621,14 +623,14 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
             className="flex items-center gap-4 bg-white hover:shadow-lg transition-all px-6 py-3 md:py-4 rounded-2xl text-sm font-bold text-gray-700 border border-gray-100 w-full shadow-sm"
           >
             <Pencil size={20} className="text-ug-teal" />
-            <span className="tracking-wide">Compose</span>
+            <span className="tracking-wide">{t('dashboard.compose')}</span>
           </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto px-2 md:px-0">
           {[
-            { id: 'inbox', icon: Inbox, label: 'Inbox', count: unreadCount },
-            { id: 'sent', icon: SendIcon, label: 'Sent' },
+            { id: 'inbox', icon: Inbox, label: t('dashboard.inbox'), count: unreadCount },
+            { id: 'sent', icon: SendIcon, label: t('dashboard.sent') },
           ].map((cat) => (
             <button
               key={cat.id}
@@ -665,7 +667,7 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input 
                 type="text" 
-                placeholder="Search messages"
+                placeholder={t('dashboard.searchMessages')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-gray-100 border-none rounded-xl py-2.5 pl-12 pr-4 focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all text-sm"
@@ -885,7 +887,7 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
                     disabled={sending || (uploadingReply) || (!reply.trim() && replyAttachments.length === 0)}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-5 md:px-6 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition-all disabled:opacity-50"
                   >
-                    {sending ? <Loader2 size={16} className="animate-spin" /> : <><SendIcon size={16} /> Send</>}
+                     {sending ? <Loader2 size={16} className="animate-spin" /> : <><SendIcon size={16} /> {t('dashboard.send')}</>}
                   </button>
                 </div>
               </div>
@@ -899,7 +901,7 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                   <MailOpen size={40} className="opacity-20" />
                 </div>
-                <p className="text-sm font-bold  tracking-wide">No messages found</p>
+                <p className="text-sm font-bold tracking-wide">{t('dashboard.noMessagesFound')}</p>
                 <p className="text-xs mt-2 text-gray-400">Your conversations in {activeCategory} will appear here.</p>
               </div>
             ) : (

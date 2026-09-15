@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FileText, Download, ChevronDown, ChevronUp, Lock, Check, Award, GraduationCap, Eye, Inbox, Briefcase, Handshake, Upload, User as UserIcon, Pencil, Trash2, FileUp, MessageSquare, Clock, File, Activity } from 'lucide-react';
 import { Project, User, DisclosureStatus, ProjectStatus } from '../../types';
 import { StorageService } from '../../services/storageService';
@@ -7,6 +8,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { SectionTitle, StatCard } from '../../components/dashboard/DashboardPrimitives';
 import { ActiveProjectHero, BookmarkedProjectsList, HubStreamSidebar, UnifiedDashboardProfile } from '../../components/dashboard/DashboardWidgets';
 import { isRevealRequestMessage } from '../../lib/messageUtils';
+import ImageWithFallback from '../../components/ImageWithFallback';
 
 export const ResearcherOverviewPage = ({ 
   user, 
@@ -23,6 +25,7 @@ export const ResearcherOverviewPage = ({
   setActiveTab?: (tab: 'overview' | 'matches' | 'messages' | 'profile') => void;
   setLocalInitialThreadId?: (id: string | null) => void;
 }) => {
+  const { t } = useTranslation();
   const [projects, setProjects] = useState<Project[]>([]);
   const [eois, setEois] = useState<any[]>([]);
   const [, setLoading] = useState(true);
@@ -234,12 +237,12 @@ export const ResearcherOverviewPage = ({
       <div className="space-y-5 md:col-span-2 lg:col-start-1 lg:col-span-8">
         <UnifiedDashboardProfile user={user} onAction={() => {
            onOpenModal(null);
-        }} actionLabel="New Project Disclosure" />
+         }} actionLabel={t('dashboard.newDisclosure')} />
         
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-          <StatCard label="Live Disclosures" value={projects.length} icon={FileText} />
-          <StatCard label="Total Hub Views" value={totalViews >= 1000 ? `${(totalViews/1000).toFixed(1)}k` : totalViews} icon={Eye} />
-          <StatCard label="Interactions" value={totalInteractions} icon={Handshake} />
+           <StatCard label={t('dashboard.liveDisclosures')} value={projects.length} icon={FileText} />
+           <StatCard label={t('dashboard.totalHubViews')} value={totalViews >= 1000 ? `${(totalViews/1000).toFixed(1)}k` : totalViews} icon={Eye} />
+           <StatCard label={t('dashboard.interactions')} value={totalInteractions} icon={Handshake} />
         </div>
 
         {activeProject && (
@@ -248,12 +251,12 @@ export const ResearcherOverviewPage = ({
 
         <section className="border border-slate-200/80 bg-white p-5 shadow-[0_8px_24px_-18px_rgba(26,26,75,0.35)] sm:p-6 md:p-7">
           <div className="flex justify-between items-center mb-6 md:mb-8">
-            <SectionTitle title="My Disclosures" subtitle="Secure Research Record Management" />
+             <SectionTitle title={t('dashboard.researcherDisclosures')} subtitle={t('dashboard.researcherDisclosuresDescription')} />
           </div>
           <div className="space-y-4">
             {projects.length === 0 ? (
               <div className="py-10 md:py-12 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                <p className="text-gray-400 font-bold text-[11px] md:text-[11px] tracking-wide px-4">No assets disclosed yet.</p>
+                 <p className="text-gray-400 font-bold text-[11px] md:text-[11px] tracking-wide px-4">{t('dashboard.noAssetsDisclosed')}</p>
               </div>
             ) : projects.map(p => {
               const isExpanded = expandedProjectId === p.id;
@@ -280,7 +283,7 @@ export const ResearcherOverviewPage = ({
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between p-5 md:p-6 gap-4">
                     <div className="flex items-start gap-4 cursor-pointer flex-1 min-w-0" onClick={() => navigate(`/projects/${p.id}`)}>
                       <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl overflow-hidden shadow-sm bg-gray-100 shrink-0">
-                        <img src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" />
+                        <ImageWithFallback src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">

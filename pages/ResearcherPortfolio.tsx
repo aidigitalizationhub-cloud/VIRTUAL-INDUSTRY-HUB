@@ -11,6 +11,7 @@ import { User, Project } from '../types';
 import { useToast } from '../contexts/ToastContext';
 import { getAuthUser } from '../lib/auth-client';
 import { safeExternalUrl } from '../lib/urlSafety';
+import ImageWithFallback from '../components/ImageWithFallback';
 
 // --- CONTACT PI MODAL ---
 const ContactPIModal: React.FC<{ 
@@ -33,7 +34,7 @@ const ContactPIModal: React.FC<{
       const user = await getAuthUser();
       let senderName = "External Contact";
       if (user?.id) {
-        const profile = await StorageService.getProfile(user.id);
+        const profile = await StorageService.getCurrentProfile();
         if (profile?.name) senderName = profile.name;
       }
 
@@ -119,7 +120,7 @@ const ResearcherPortfolio: React.FC = () => {
           <button onClick={() => navigate(-1)} className="text-white/60 hover:text-white flex items-center gap-2 mb-10 transition-colors text-[11px] font-semibold tracking-[0.3em]"><ArrowLeft size={16} /> Exit Portfolio</button>
           <div className="flex flex-col md:flex-row gap-6 items-center md:items-end">
              <div className="w-56 h-56 rounded-[4rem] overflow-hidden border-8 border-white shadow-xl bg-white shrink-0 group relative">
-                {profile.avatar_url ? <img src={profile.avatar_url} className="w-full h-full object-cover group-hover:scale-110 transition duration-1000" /> : <div className="w-full h-full flex items-center justify-center text-ug-navy/10"><UserIcon size={80} /></div>}
+                {profile.avatar_url ? <ImageWithFallback src={profile.avatar_url} alt={profile.name} className="w-full h-full object-cover group-hover:scale-110 transition duration-1000" /> : <div className="w-full h-full flex items-center justify-center text-ug-navy/10"><UserIcon size={80} /></div>}
              </div>
              <div className="flex-1 text-center md:text-left pb-4">
                 <div className="flex flex-col md:flex-row md:items-center gap-5 mb-6">
@@ -141,7 +142,7 @@ const ResearcherPortfolio: React.FC = () => {
         <div className="lg:col-span-8 space-y-20">
           <section className="bg-white p-8 rounded-[4rem] border border-gray-100 shadow-sm relative overflow-hidden">
              <h2 className="text-2xl font-bold text-ug-navy mb-8 flex items-center gap-4 uppercase tracking-[0.2em]"><FileText className="text-ug-teal" size={28} /> Narrative Biography</h2>
-             <p className="prose prose-2xl text-gray-600 font-normal leading-relaxed" style={{ fontFamily: "'Times New Roman', Times, serif" }}>"{profile.bio || "Academic identity verified."}"</p>
+             <p className="type-body text-gray-600 font-normal leading-relaxed">"{profile.bio || "Academic identity verified."}"</p>
           </section>
 
           {(() => {
@@ -171,7 +172,7 @@ const ResearcherPortfolio: React.FC = () => {
 
           {/* Open Student Opportunities Card */}
           {(() => {
-            const needsStudents = profile.needs_students || profile.ai_profile?.needs_students || profile.answers?.needs_students;
+            const needsStudents = false;
 
             return (
               <section className="bg-gradient-to-br from-ug-navy via-slate-900 to-ug-navy text-white p-8 md:p-8 rounded-2xl shadow-xl relative overflow-hidden">
@@ -228,7 +229,7 @@ const ResearcherPortfolio: React.FC = () => {
               {projects.length === 0 ? <div className="col-span-2 py-10 text-center font-bold text-gray-300">No public disclosures currently listed.</div> : projects.map(p => (
                 <Link key={p.id} to={`/projects/${p.id}`} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-700 group flex flex-col h-full">
                   <div className="h-56 overflow-hidden relative">
-                    <img 
+                    <ImageWithFallback
                       src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} 
                       className="w-full h-full object-cover group-hover:scale-110 transition duration-1000" 
                       alt=""

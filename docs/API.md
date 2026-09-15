@@ -7,7 +7,7 @@ Base URL is same-origin. All `/api/*` routes are served by Express (`server.ts:2
 - Auth: Better Auth session cookie, `credentials: "include"` on every client call (`lib/api.ts:5`, `lib/auth-client.ts:1`).
 - `GET /api/health` is public (`server.ts:428`). All other `/api/*` require auth unless noted.
 - Request validation: `validateBody(schema)` strips unknown fields, returns `400` with flattened Zod details (`server.ts:169`).
-- Rate limiting: `throttleLimit(max, windowMs)` per user ID or IP (`server.ts:553`), used on AI, translate, AI screen, and match generation.
+- Rate limiting is per endpoint and per user ID (or IP before authentication), in process memory: AI screen 10/min, translate 30/min, chat 30/min, embeddings 100/min, document extraction 15/min, AI profile 10/min, scout sync 5/min, AI match 20/min, and challenge-match generation 12/min. It is not shared across replicas.
 - Errors: `{ error: string }` with status `400 invalid input`, `401 unauthenticated`, `403 forbidden`, `404 not found`, `409 version/state conflict`, `429 rate limited`, `500 server error`, `503 missing service key or IP tables not migrated`.
 - IP versioning: `ip_disclosures.version` increments on every mutation; stale writes return `409`.
 - Tx scope: each IP transition updates `ip_disclosures` then inserts `ip_disclosure_events`; publication also inserts `ip_disclosure_decisions`.

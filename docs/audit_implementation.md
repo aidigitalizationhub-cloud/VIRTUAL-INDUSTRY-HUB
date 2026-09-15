@@ -52,7 +52,7 @@ This document records the user-scenario fixes implemented after the senior devel
 ## Verification
 
 - `npm run lint`
-- `npm test -- --run`: 68 tests passing across 12 files
+- `npm test -- --run`: 100 tests passing across 18 files in the local 10 September 2026 run (includes live source-verification and news gate tests)
 - `npm run build`
 
 ## Explicit Non-Goals
