@@ -15,6 +15,7 @@ const connectionString =
   process.env.DATABASE_URL ||
   process.env.SUPABASE_DATABASE_URL ||
   "";
+const betterAuthSecret = process.env.BETTER_AUTH_SECRET?.trim() || "";
 
 const isPlaceholderUrl =
   !connectionString ||
@@ -44,6 +45,10 @@ if (isPlaceholderUrl) {
   }
 }
 
+if (process.env.NODE_ENV === "production" && betterAuthSecret.length < 32) {
+  throw new Error("BETTER_AUTH_SECRET must be configured with at least 32 characters in production.");
+}
+
 // Isolate Better Auth tables to `better_auth` schema so they coexist with public.*
 let pool: Pool | undefined;
 if (!isPlaceholderUrl) {
@@ -65,6 +70,10 @@ if (!isPlaceholderUrl) {
     connectionString: "postgresql://postgres:password@localhost:5432/better_auth_dummy",
   });
   // Prevent actual connection attempts from crashing dev — pool will ECONNREFUSED only on query, not on init
+}
+
+if (process.env.NODE_ENV === "production" && !pool) {
+  throw new Error("DATABASE_URL must be a valid PostgreSQL connection string in production.");
 }
 
 export const markPasswordResetComplete = async (userId: string): Promise<void> => {
@@ -130,7 +139,7 @@ const smtpTransport = smtpConfigured
 
 export const auth = betterAuth({
   database: pool as any,
-  secret: process.env.BETTER_AUTH_SECRET,
+  secret: betterAuthSecret || undefined,
   baseURL: betterAuthBaseURL,
   trustedOrigins: betterAuthTrustedOrigins,
   advanced: {
