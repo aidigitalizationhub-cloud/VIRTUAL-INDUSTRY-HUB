@@ -137,7 +137,7 @@ export const StorageService = {
   // Projects CRUD
   getProjects: async (): Promise<Project[]> => {
     try {
-      const { projects } = await getJson<{ projects: Project[] }>('/api/projects');
+      const { projects } = await getJson<{ projects: Project[] }>('/api/public-projects');
       return await StorageService.signProjectUrls(projects || [], false);
     } catch (e) {
       return [];

@@ -4,7 +4,7 @@ import { authenticateUser, PROJECT_MUTABLE_FIELDS, Roles } from '../middleware/a
 import { protectProjectPublication } from '../../lib/projectPublication';
 
 export const registerProjectsRoutes = (app: Express) => {
-  app.get('/api/projects', async (_req, res) => {
+  app.get('/api/public-projects', async (_req, res) => {
     try {
       const db = getServiceClient();
       if (!db) return res.status(503).json({ error: serviceClientConfigError() });
