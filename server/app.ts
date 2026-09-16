@@ -1,6 +1,5 @@
 import express from 'express';
 import path from 'path';
-import { createServer as createViteServer } from 'vite';
 import { PORT } from './config/env';
 import { applyCoreMiddleware } from './middleware/security';
 import { registerHealthRoutes } from './routes/health';
@@ -39,6 +38,7 @@ export const createApp = () => {
 
 export const startServer = async (app: ReturnType<typeof createApp>) => {
   if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
