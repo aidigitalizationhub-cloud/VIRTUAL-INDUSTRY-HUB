@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Lock, Sparkles, ArrowRight, CheckCircle, Loader2, Eye, EyeOff } from 'lucide-react';
-import { authClient, getAuthUser } from '../lib/auth-client';
+import { authClient, getAuthUser, signInWithEmail } from '../lib/auth-client';
 import { StorageService } from '../services/storageService';
 import { useToast } from '../contexts/ToastContext';
 import { isAdministrativeRole } from '../lib/dashboardRouting';
@@ -21,7 +21,7 @@ export const AdminLogin: React.FC<{ onAuthenticated: (user: { id: string }) => P
     setError(null);
 
     try {
-      const result: any = await (authClient as any).signIn.email({ email: email.trim(), password });
+      const result: any = await signInWithEmail(email.trim(), password);
       if (result?.error) throw result.error;
       const authUserId = (await getAuthUser())?.id;
       if (!authUserId) throw new Error("Could not resolve authorization token.");
