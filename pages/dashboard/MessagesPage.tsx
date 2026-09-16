@@ -138,6 +138,31 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
     }
   }, [user?.id, initialThreadId]);
 
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const refreshConversations = async () => {
+      try {
+        const updated = await StorageService.getConversations(user.id);
+        setThreads(updated);
+        if (selectedThread?.[0]) {
+          const current = selectedThread[0];
+          const partnerId = current.sender_id === user.id ? current.recipient_id : current.sender_id;
+          const refreshedThread = updated.find(thread =>
+            thread[0].project_id === current.project_id &&
+            (thread[0].sender_id === partnerId || thread[0].recipient_id === partnerId),
+          );
+          if (refreshedThread) setSelectedThread(refreshedThread);
+        }
+      } catch (error) {
+        console.warn('Could not refresh conversations:', error);
+      }
+    };
+
+    const intervalId = window.setInterval(refreshConversations, 7_000);
+    return () => window.clearInterval(intervalId);
+  }, [user?.id, selectedThread]);
+
   const handleSendReply = async () => {
     if ((!reply.trim() && replyAttachments.length === 0) || !selectedThread || !user) return;
     setSending(true);
@@ -301,7 +326,11 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
   };
 
   return (
-    <div className="bg-white md:rounded-2xl border-x md:border border-gray-200 shadow-sm overflow-hidden h-[calc(100vh-180px)] md:h-[750px] flex flex-col md:flex-row animate-fade-in font-sans relative">
+    <div className="relative">
+      <div role="note" className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium leading-relaxed text-amber-900">
+        Messages are stored securely by the platform but are not end-to-end encrypted. Do not include passwords, private keys, or highly confidential information.
+      </div>
+      <div className="bg-white md:rounded-2xl border-x md:border border-gray-200 shadow-sm overflow-hidden h-[calc(100vh-180px)] md:h-[750px] flex flex-col md:flex-row animate-fade-in font-sans relative">
       {/* Mobile Messages UI (Accordion Style) */}
       <div className="md:hidden flex-1 flex flex-col overflow-y-auto custom-scrollbar bg-white">
         {!selectedThread ? (
@@ -1094,6 +1123,7 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
