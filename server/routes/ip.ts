@@ -259,7 +259,7 @@ export const registerIpRoutes = (app: Express) => {
 
       const reviewer = canAdminReview(role) || canTtoReview(role);
       const [projectResult, findingsResult, linksResult, filesResult, eventsResult] = await Promise.all([
-        db.from('projects').select('id, title, description, department, research_area').eq('id', d.data.project_id).maybeSingle(),
+        db.from('projects').select('id, title, description, department, research_area, image_url, technical_details_url, trl, visibility, disclosure_status, achievements, needs').eq('id', d.data.project_id).maybeSingle(),
         db.from('ip_disclosure_findings').select('*').eq('disclosure_id', disclosureId).order('created_at', { ascending: false }),
         db.from('ip_disclosure_links').select('*').eq('disclosure_id', disclosureId).order('created_at', { ascending: false }),
         db.from('ip_disclosure_files').select('id, disclosure_id, uploaded_by, original_name, mime_type, size_bytes, classification, scan_status, created_at').eq('disclosure_id', disclosureId).order('created_at', { ascending: false }),

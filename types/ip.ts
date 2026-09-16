@@ -116,6 +116,13 @@ export interface IpDisclosureWorkspaceCase {
     description?: string | null;
     department?: string | null;
     research_area?: string | null;
+    image_url?: string | null;
+    technical_details_url?: string | null;
+    trl?: number | null;
+    visibility?: string | null;
+    disclosure_status?: string | null;
+    achievements?: string | null;
+    needs?: string | null;
   } | null;
   findings: IpFinding[];
   links: IpLink[];

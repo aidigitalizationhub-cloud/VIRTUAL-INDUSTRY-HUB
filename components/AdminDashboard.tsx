@@ -1752,8 +1752,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           {/* Top Detail Header Block containing metrics, title, & actions styled like the second design mockup */}
                           <div className="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             <div className="flex items-center gap-3.5">
-                              <div className="p-3.5 bg-gray-50 border border-gray-100 text-[#1a1a4b] rounded-xl shrink-0">
-                                <ShieldCheck size={26} className="stroke-[1.5]" />
+                               <div className="h-16 w-20 overflow-hidden rounded-xl border border-gray-100 bg-gray-50 shrink-0">
+                                 {activeProj.image_url ? <img src={activeProj.image_url.split('|')[0]} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-[#1a1a4b]"><ShieldCheck size={26} className="stroke-[1.5]" /></div>}
                               </div>
                               <div>
                                 <h4 className="text-base md:text-lg font-bold text-[#1a1a4b] leading-snug">{activeProj.title}</h4>
@@ -1762,8 +1762,9 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                   <span className="hidden md:inline text-gray-300">|</span>
                                    <span>Division: <span className="text-gray-600 font-bold">{activeProj.department}</span></span>
                                   <span className="hidden md:inline text-[#5eead4]">|</span>
-                                  <span>Status: <span className="text-ug-teal font-extrabold ">{activeProj.disclosure_status || 'Submitted'}</span></span>
-                                </div>
+                                   <span>Status: <span className="text-ug-teal font-extrabold ">{activeProj.disclosure_status || 'Submitted'}</span></span>
+                                 </div>
+                                 <p className="mt-3 max-w-2xl text-xs leading-5 text-gray-500 line-clamp-3">{activeProj.description || 'No project description has been provided.'}</p>
                               </div>
                             </div>
 
@@ -1801,8 +1802,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     <FileText size={16} />
                                   </div>
                                   <div className="truncate">
-                                     <p className="text-xs md:text-sm font-bold text-gray-700 truncate">Research_Brief_Draft.pdf</p>
-                                    <p className="text-[11px] md:text-xs text-gray-400 font-semibold">Technical Brief</p>
+                                      <p className="text-xs md:text-sm font-bold text-gray-700 truncate">{activeProj.technical_details_url ? 'Technical brief' : 'Technical brief unavailable'}</p>
+                                     <p className="text-[11px] md:text-xs text-gray-400 font-semibold">Project evidence</p>
                                   </div>
                                 </div>
                                 {activeProj.technical_details_url ? (
@@ -1827,13 +1828,11 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                                     <FileText size={16} />
                                   </div>
                                   <div className="truncate">
-                                     <p className="text-xs md:text-sm font-bold text-gray-700 truncate">Academic_CV_Record.pdf</p>
-                                    <p className="text-[11px] md:text-xs text-gray-400 font-semibold">Creds Verification</p>
+                                      <p className="text-xs md:text-sm font-bold text-gray-700 truncate">Project record</p>
+                                     <p className="text-[11px] md:text-xs text-gray-400 font-semibold">{activeProj.research_area || 'Research metadata'}</p>
                                   </div>
                                 </div>
-                                <span className="p-1.5 bg-gray-105 text-gray-300 rounded-lg">
-                                  <Download size={14} />
-                                </span>
+                                 <span className="text-[10px] font-bold uppercase tracking-wide text-gray-400">Captured</span>
                               </div>
                             </div>
                           </div>

@@ -57,7 +57,7 @@
     "profile": "Profile",
     "settings": "Settings",
     "challenges": "Industry Challenges",
-    "disclosures": "IP Disclosures",
+    "disclosures": "Disclosure",
     "analytics": "Analytics & Metrics",
     "metrics": "Metrics",
     "users": "Users",
@@ -205,7 +205,7 @@
     "portal": "Admin Control Panel",
     "systemMetrics": "Platform Telemetry",
     "userManagement": "User Directory",
-    "disclosureLedger": "IP Disclosures Ledger",
+    "disclosureLedger": "Disclosure Ledger",
     "systemLogs": "Activity Logs",
     "approve": "Approve",
     "reject": "Reject"
