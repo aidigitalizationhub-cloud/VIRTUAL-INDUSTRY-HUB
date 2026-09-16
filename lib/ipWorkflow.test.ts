@@ -13,6 +13,17 @@ describe('IP workflow transitions', () => {
     });
   });
 
+  it('sends an IP-protection opt-out straight to Super Admin review', () => {
+    expect(transitionIpWorkflow('draft', 'submit_to_super_admin')).toEqual({
+      status: 'super_admin_review',
+      route: 'tto_opt_out',
+    });
+    expect(transitionIpWorkflow('researcher_action_required', 'resubmit_to_super_admin')).toEqual({
+      status: 'super_admin_review',
+      route: 'tto_opt_out',
+    });
+  });
+
   it('supports the TTO review route', () => {
     expect(transitionIpWorkflow('admin_review', 'send_to_tto')).toEqual({
       status: 'tto_review',

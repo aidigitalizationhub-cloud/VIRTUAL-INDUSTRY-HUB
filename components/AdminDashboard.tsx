@@ -12,9 +12,6 @@ import { getGeminiResponse } from '../services/geminiService';
 import { DocumentExtractionService } from '../services/documentExtractionService';
 import { inspectMessageEnvelope, isMessageEncrypted, computeSHA256 } from '../lib/cryptoService';
 import { ReportCenter } from './ReportCenter';
-import { DisclosureAdminReview } from './admin/DisclosureAdminReview';
-import { TtoQueue } from './tto/TtoQueue';
-import { PublicationDecision } from './superadmin/PublicationDecision';
 import { useNavigate } from 'react-router-dom';
 
 interface AdminDashboardProps {
@@ -1592,9 +1589,6 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
               exit={{ opacity: 0, y: -10 }}
               className="space-y-6 text-left"
             >
-              <DisclosureAdminReview />
-              <TtoQueue />
-              <PublicationDecision />
               {/* Header and filters */}
               <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>

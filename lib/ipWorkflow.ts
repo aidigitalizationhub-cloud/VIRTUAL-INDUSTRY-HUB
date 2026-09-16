@@ -21,12 +21,14 @@ export type IpWorkflowRoute = 'tto_review' | 'tto_opt_out';
 export type IpWorkflowAction =
   | 'submit'
   | 'submit_to_tto'
+  | 'submit_to_super_admin'
   | 'accept_completeness'
   | 'start_ai_screening'
   | 'send_to_tto'
   | 'opt_out_tto'
   | 'request_researcher_action'
   | 'resubmit'
+  | 'resubmit_to_super_admin'
   | 'share_findings'
   | 'complete_tto_review'
   | 'send_to_super_admin'
@@ -45,6 +47,7 @@ const transitions: Record<IpWorkflowStatus, Partial<Record<IpWorkflowAction, IpW
   draft: {
     submit: { status: 'submitted' },
     submit_to_tto: { status: 'tto_review', route: 'tto_review' },
+    submit_to_super_admin: { status: 'super_admin_review', route: 'tto_opt_out' },
   },
   submitted: {
     accept_completeness: { status: 'admin_review' },
@@ -61,6 +64,7 @@ const transitions: Record<IpWorkflowStatus, Partial<Record<IpWorkflowAction, IpW
   },
   ai_screening: {
     send_to_tto: { status: 'tto_review', route: 'tto_review' },
+    send_to_super_admin: { status: 'super_admin_review' },
     share_findings: { status: 'super_admin_review' },
     request_researcher_action: { status: 'researcher_action_required' },
     reject: { status: 'rejected' },
@@ -74,6 +78,7 @@ const transitions: Record<IpWorkflowStatus, Partial<Record<IpWorkflowAction, IpW
   },
   researcher_action_required: {
     resubmit: { status: 'submitted' },
+    resubmit_to_super_admin: { status: 'super_admin_review', route: 'tto_opt_out' },
   },
   tto_completed: {
     send_to_super_admin: { status: 'super_admin_review' },

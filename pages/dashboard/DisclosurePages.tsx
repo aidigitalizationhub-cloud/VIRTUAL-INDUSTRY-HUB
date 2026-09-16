@@ -3,7 +3,6 @@ import { FileSearch, KeyRound, Loader2, LockKeyhole, Scale } from 'lucide-react'
 import { ResearcherDisclosureWorkspace } from '../../components/disclosure/ResearcherDisclosureWorkspace';
 import { ProjectDisclosureWizard } from '../../components/disclosure/ProjectDisclosureWizard';
 import { TtoQueue } from '../../components/tto/TtoQueue';
-import { PublicationDecision } from '../../components/superadmin/PublicationDecision';
 import { hasDashboardCapability, type DashboardCapability } from '../../lib/dashboardRouting';
 import { IpDisclosureService, type IpAccessRequest } from '../../services/ipDisclosureService';
 import { useToast } from '../../contexts/ToastContext';
@@ -43,8 +42,7 @@ export const AdminDisclosuresPage: React.FC<{ role: unknown }> = ({ role }) => {
   return (
   <GuardedPage role={role} capability="reviewDisclosure">
     <PageFrame title={t('dashboard.disclosure')} description={t('dashboard.disclosureDescription')} icon={FileSearch}>
-      <ResearcherDisclosureWorkspace adminMode />
-      {hasDashboardCapability(role, 'decidePublication') && <PublicationDecision />}
+       <ResearcherDisclosureWorkspace adminMode />
     </PageFrame>
   </GuardedPage>
   );

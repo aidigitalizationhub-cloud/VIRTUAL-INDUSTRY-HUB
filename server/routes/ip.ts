@@ -130,11 +130,11 @@ export const registerIpRoutes = (app: Express) => {
         imageUrl: projectResult.data?.image_url,
         technicalDetailsUrl: projectResult.data?.technical_details_url,
       });
-      // TTO-routed drafts go straight to the IP Office; opt-outs stay in
-      // `submitted` for Admin triage. Resubmissions always return to triage.
+      // TTO-routed drafts go straight to the IP Office; opt-outs go directly
+      // to Super Admin final review. Resubmissions preserve that routing.
       const action = cur.data.status === 'draft'
-        ? (input.route === 'tto_review' ? 'submit_to_tto' : 'submit')
-        : 'resubmit';
+        ? (input.route === 'tto_review' ? 'submit_to_tto' : 'submit_to_super_admin')
+        : (input.route === 'tto_review' ? 'resubmit' : 'resubmit_to_super_admin');
       const next = transitionIpWorkflow(cur.data.status, action as any);
       const now = new Date().toISOString();
       const updated = await db.from('ip_disclosures').update({
@@ -211,7 +211,7 @@ export const registerIpRoutes = (app: Express) => {
       let query = db.from('ip_disclosures').select('id, project_id, researcher_id, status, route, updated_at, submitted_at, version').order('updated_at', { ascending: false }).limit(200);
       const isReviewer = role === 'Admin' || role === 'Super Admin' || role === 'TTO' || role === 'TTO/IP' || role === 'IP Office';
       if (!isReviewer) query = query.eq('researcher_id', userId);
-      else if (isTtoRole(role) && !isAdminRole(role)) query = query.in('status', ['tto_review', 'tto_completed', 'super_admin_review']);
+      else if (isTtoRole(role) && !isAdminRole(role)) query = query.in('status', ['tto_review', 'tto_completed']);
       if (parsedQuery.data.status) query = query.eq('status', parsedQuery.data.status);
       const { data, error } = await query;
       if (error) throw error;
@@ -768,7 +768,7 @@ export const registerIpRoutes = (app: Express) => {
       const role = (req as any).userRole;
       const disclosureId = typeof req.params.id === 'string' ? req.params.id : '';
       if (!db || !actorId) return res.status(503).json({ error: serviceClientConfigError() });
-      if (!canTtoReview(role)) return res.status(403).json({ error: 'Forbidden: TTO/IP Office role required.' });
+      if (!canTtoReview(role) && !canAdminReview(role)) return res.status(403).json({ error: 'Forbidden: reviewer role required.' });
       if (!isUuid(disclosureId)) return res.status(400).json({ error: 'Invalid disclosure ID.' });
       const { disclosure } = await applyTransition({
         db,
