@@ -283,6 +283,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
                 <PartnerOverviewPage 
                   user={localUser} 
                   setActiveTab={setActiveTab} 
+                  isInvestor={role === UserRole.Investor}
                 />
               )}
               {(role === UserRole.Admin || isTtoRole(role)) && (

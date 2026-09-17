@@ -4,6 +4,9 @@ import { dashboardLandingPath, hasDashboardCapability, isAdministrativeRole, isD
 describe('dashboard routing and capabilities', () => {
   it('routes each role to its workspace', () => {
     expect(dashboardLandingPath('Researcher')).toBe('/dashboard/overview');
+    expect(dashboardLandingPath('Student')).toBe('/dashboard/overview');
+    expect(dashboardLandingPath('Investor')).toBe('/dashboard/overview');
+    expect(dashboardLandingPath('Industry/Partner')).toBe('/dashboard/overview');
     expect(dashboardLandingPath('Admin')).toBe('/dashboard/admin/overview');
     expect(dashboardLandingPath('TTO/IP')).toBe('/dashboard/overview');
   });
@@ -25,6 +28,15 @@ describe('dashboard routing and capabilities', () => {
   it('grants no capability to missing or unsupported roles', () => {
     expect(hasDashboardCapability(undefined, 'useWorkspace')).toBe(false);
     expect(hasDashboardCapability('Guest', 'useWorkspace')).toBe(false);
+  });
+
+  it('allows standard user roles into the shared workspace without admin capabilities', () => {
+    for (const role of ['Student', 'Investor', 'Industry/Partner']) {
+      expect(hasDashboardCapability(role, 'useWorkspace')).toBe(true);
+      expect(hasDashboardCapability(role, 'administerPlatform')).toBe(false);
+      expect(isDashboardPathAllowed(role, '/dashboard/overview')).toBe(true);
+      expect(isDashboardPathAllowed(role, '/dashboard/admin/overview')).toBe(false);
+    }
   });
 
   it('recognizes administrative roles for onboarding and workspace access', () => {

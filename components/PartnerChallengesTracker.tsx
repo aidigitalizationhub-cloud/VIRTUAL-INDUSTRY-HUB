@@ -32,11 +32,11 @@ export const PartnerChallengesTracker: React.FC<PartnerChallengesTrackerProps> =
     try {
       const allChallenges = await ChallengeService.getIndustryChallenges();
       // Filter for current partner if user exists, otherwise display all
-      const myChallenges = user?.id 
-        ? allChallenges.filter(c => c.partner_id === user.id || !c.partner_id || c.partner_name === user.name)
-        : allChallenges;
+       const myChallenges = user?.id
+         ? allChallenges.filter(c => c.partner_id === user.id)
+         : [];
 
-      setChallenges(myChallenges.length > 0 ? myChallenges : allChallenges);
+      setChallenges(myChallenges);
     } catch (err) {
       console.error("Error loading partner challenges:", err);
     } finally {

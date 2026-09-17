@@ -101,16 +101,20 @@ export const StudentOverviewPage = ({ user }: { user: User | null }) => {
   const openApplicationDrawer = (project: Project, defaultType: typeof appType = 'Research Assistantship') => {
     setSelectedProjectForApp(project);
     setAppType(defaultType);
+    setMessage(getApplicationTemplate(project, defaultType));
+    setDrawerOpen(true);
+  };
+
+  const getApplicationTemplate = (project: Project, type: typeof appType) => {
     let template = '';
-    if (defaultType === 'Research Assistantship') {
+    if (type === 'Research Assistantship') {
       template = `Dear Professor,\n\nI am writing to express my strong interest in joining your research team for the project "${project.title}". My academic background and goals align perfectly with this research, and I am eager to contribute to your goals.`;
-    } else if (defaultType === 'Scholarship Application') {
+    } else if (type === 'Scholarship Application') {
       template = `To the Selection Committee,\n\nI am writing to submit my formal inquiry regarding scholarships, funding, or fellowship opportunities for the project "${project.title}". I would appreciate the chance to discuss potential pathways to support my research contribution.`;
-    } else if (defaultType === 'Lab Workspace Access') {
+    } else {
       template = `Dear Lab Coordinator,\n\nI am requesting authorized workspace or laboratory access in connection with "${project.title}". I require access to conduct research, run analysis, or collaborate with team members.`;
     }
-    setMessage(template);
-    setDrawerOpen(true);
+    return template;
   };
 
   const handleSubmitApplication = async (event: React.FormEvent) => {
@@ -351,7 +355,7 @@ export const StudentOverviewPage = ({ user }: { user: User | null }) => {
                       { id: 'Scholarship Application', label: 'Scholarship / Fellowship', desc: 'Inquire about available funding or stipends.' },
                       { id: 'Lab Workspace Access', label: 'Lab Workspace Access', desc: 'Request secure physical/digital authorization to access resources.' },
                     ].map(type => (
-                      <div key={type.id} onClick={() => setAppType(type.id as typeof appType)} className={`p-3 sm:p-4 border rounded-2xl cursor-pointer transition text-left select-none ${appType === type.id ? 'border-ug-teal bg-ug-teal/5 text-ug-navy' : 'border-gray-100 hover:border-gray-200 text-gray-600'}`}>
+                      <div key={type.id} onClick={() => { const nextType = type.id as typeof appType; setAppType(nextType); setMessage(getApplicationTemplate(selectedProjectForApp, nextType)); }} className={`p-3 sm:p-4 border rounded-2xl cursor-pointer transition text-left select-none ${appType === type.id ? 'border-ug-teal bg-ug-teal/5 text-ug-navy' : 'border-gray-100 hover:border-gray-200 text-gray-600'}`}>
                         <h5 className="font-bold text-xs">{type.label}</h5><p className="text-[11px] text-gray-400 mt-1">{type.desc}</p>
                       </div>
                     ))}

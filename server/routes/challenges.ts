@@ -63,7 +63,7 @@ export const registerChallengesRoutes = (app: Express) => {
       
       // Check if user is Partner or Admin
       const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', partner_id).single();
-      if (profile?.role !== 'Industry/Partner' && profile?.role !== 'Admin') {
+      if (profile?.role !== 'Industry/Partner' && profile?.role !== 'Admin' && profile?.role !== 'Super Admin') {
         return res.status(403).json({ error: 'Only Industry Partners or Administrators can post challenges.' });
       }
   
@@ -112,7 +112,7 @@ export const registerChallengesRoutes = (app: Express) => {
       }
   
       const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', userId).single();
-      const isAdmin = profile?.role === 'Admin';
+      const isAdmin = profile?.role === 'Admin' || profile?.role === 'Super Admin';
   
       if (challenge.partner_id !== userId && !isAdmin) {
         return res.status(403).json({ error: 'Unauthorized to modify this challenge.' });
