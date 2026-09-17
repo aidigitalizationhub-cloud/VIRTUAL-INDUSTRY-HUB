@@ -109,9 +109,9 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
     }
     if (genericTab === 'admin') {
       const adminPage = location.pathname.split('/')[3] || 'overview';
-       const mapped: Record<string, typeof adminSubTab> = {
-         overview: 'metrics', users: 'users', disclosures: 'metrics', projects: 'projects',
-         news: 'news', audit: 'logs', decisions: 'metrics',
+      const mapped: Record<string, typeof adminSubTab> = {
+        overview: 'metrics', users: 'users', disclosures: 'disclosures', projects: 'projects',
+        news: 'news', audit: 'logs', decisions: 'decisions',
       };
       setActiveTabState('overview');
       setAdminSubTabState(mapped[adminPage] || 'metrics');
@@ -219,8 +219,8 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
             ? <AdminNewsPage user={localUser} onRefresh={refreshProfile} />
             : adminPath === 'audit'
               ? <AdminAuditPage user={localUser} onRefresh={refreshProfile} />
-              : adminPath === 'decisions'
-                ? <AdminDecisionsPage user={localUser} onRefresh={refreshProfile} />
+            : adminPath === 'decisions'
+              ? <AdminDecisionsPage />
                     : location.pathname.startsWith('/dashboard/disclosures/')
                       ? <IpQuestionsPage role={role} />
                     : location.pathname.startsWith('/dashboard/disclosures')

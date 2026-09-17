@@ -1104,13 +1104,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         <ChevronLeft size={16} /> Back
       </button>
 
-      <div className="mb-10">
-        <span className="text-xs font-bold text-ug-teal tracking-[0.2em] mb-2 block">Step 2 of 4</span>
-        <h2 className="text-3xl font-bold text-ug-navy tracking-tight">Your Intentions</h2>
-        <p className="text-gray-400 text-sm font-medium mt-2">Tell us what you want to achieve today. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
+       <div className="mb-6 sm:mb-10">
+         <span className="text-[10px] sm:text-xs font-bold text-ug-teal tracking-[0.16em] sm:tracking-[0.2em] mb-2 block">Step 2 of 4</span>
+         <h2 className="text-2xl sm:text-3xl font-bold text-ug-navy tracking-tight">Your Intentions</h2>
+         <p className="text-gray-400 text-xs sm:text-sm font-medium mt-2 leading-relaxed">Tell us what you want to achieve today. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
       </div>
 
-      <div className="space-y-8 max-h-none overflow-y-visible pr-0 md:max-h-[60vh] md:overflow-y-auto md:pr-4 scroll-smooth">
+       <div className="space-y-6 sm:space-y-8 max-h-none overflow-y-visible pr-0 md:max-h-[60vh] md:overflow-y-auto md:pr-4 scroll-smooth">
         {/* COMMON QUESTIONS */}
         <div>
           {renderFieldLabel("Primary Focus / Area of Expertise", "expertise")}
@@ -1122,13 +1122,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               setAnswers({...answers, expertise: e.target.value});
               clearFieldError("expertise");
             }}
-            className={`w-full bg-gray-50 border-2 rounded-2xl py-4 px-8 outline-none focus:bg-white focus:border-ug-teal text-sm font-bold ${getFieldInputStyle("expertise", "border-gray-100")}`}
+             className={`w-full bg-gray-50 border-2 rounded-2xl py-3.5 px-4 sm:py-4 sm:px-8 outline-none focus:bg-white focus:border-ug-teal text-sm font-bold ${getFieldInputStyle("expertise", "border-gray-100")}`}
           />
         </div>
 
         <div className={`p-4 rounded-2xl transition-all ${fieldErrors.looking_for ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
           {renderFieldLabel("What are you currently looking for? (Select at least one)", "looking_for")}
-          <div className="grid grid-cols-2 gap-3">
+           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {(selectedRole === UserRole.Researcher 
               ? ['Funding', 'Industry Partner', 'Student Assistants', 'Commercialization'] 
               : selectedRole === UserRole.Student 
@@ -1590,9 +1590,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         {/* Simplified Header for Embedded status monitoring */}
          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-100 pb-5 sm:pb-6 mb-6 sm:mb-8 relative z-10 gap-3 sm:gap-4">
           <div className="flex flex-col">
-            <span className="text-[11px] font-semibold text-ug-teal tracking-[0.2em] mb-1">Interactive Match Setup</span>
+             <span className="text-[10px] sm:text-[11px] font-semibold text-ug-teal tracking-[0.12em] sm:tracking-[0.2em] mb-1">Interactive Match Setup</span>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-ug-navy uppercase tracking-tight">AI Matching Portal</span>
+               <span className="text-base sm:text-lg font-bold text-ug-navy uppercase tracking-tight">AI Matching Portal</span>
             </div>
           </div>
            <div className="flex w-full flex-col items-start gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-6">
@@ -1606,7 +1606,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             {onSkip && (
               <button 
                 onClick={onSkip} 
-                 className="self-end text-gray-400 hover:text-ug-navy font-semibold text-[11px] tracking-wide transition-colors border border-gray-200 hover:border-gray-300 px-3.5 py-2 rounded-xl active:scale-95 duration-150 shrink-0"
+                 className="self-end text-gray-400 hover:text-ug-navy font-semibold text-[10px] tracking-wide transition-colors border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-xl active:scale-95 duration-150 shrink-0"
               >
                 Close Portal
               </button>

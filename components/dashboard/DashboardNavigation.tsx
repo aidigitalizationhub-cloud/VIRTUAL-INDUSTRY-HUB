@@ -100,6 +100,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   ];
   const governanceTabs = [
     { path: '/dashboard/admin/disclosures', icon: ShieldCheck, label: t('dashboard.disclosures'), adminOnly: true },
+    { path: '/dashboard/admin/decisions', icon: ShieldCheck, label: t('dashboard.publicationDecisions'), adminOnly: true },
     { path: '/dashboard/tto/disclosures', icon: Scale, label: t('dashboard.ttoIpOffice') },
     { path: '/dashboard/admin/news', icon: Globe, label: t('dashboard.newsCurator'), adminOnly: true },
     { path: '/dashboard/access-requests', icon: KeyRound, label: t('dashboard.accessRequests') },

@@ -208,7 +208,7 @@ export const registerAiRoutes = (app: Express) => {
   
   // 3.5 secure admin document extraction endpoint for News Curation
 
-  app.post('/api/admin/extract-document', validateBody(extractDocumentRequestSchema), authenticateUser, requireRole(Roles.Admin), throttleLimit(15, 60 * 1000), async (req: express.Request, res: express.Response) => {
+  app.post('/api/admin/extract-document', validateBody(extractDocumentRequestSchema), authenticateUser, requireRole(Roles.Admin, Roles.SuperAdmin), throttleLimit(15, 60 * 1000), async (req: express.Request, res: express.Response) => {
     const { fileBase64, fileName, mimeType } = req.body;
     if (!fileBase64) {
       return res.status(400).json({ error: 'Missing fileBase64 data' });
@@ -576,7 +576,7 @@ export const registerAiRoutes = (app: Express) => {
   
   // 5. Server-side Scout Trend synchronization
 
-  app.get('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), async (req, res) => {
+  app.get('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin, Roles.SuperAdmin), async (req, res) => {
     try {
       const supabaseClient = getDbClientForRequest(req)!;
       if (!supabaseClient) {
@@ -602,7 +602,7 @@ export const registerAiRoutes = (app: Express) => {
     }
   });
 
-  app.post('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin), validateBody(aiDecisionRecordSchema), async (req, res) => {
+  app.post('/api/ai-decisions', authenticateUser, requireRole(Roles.Admin, Roles.SuperAdmin), validateBody(aiDecisionRecordSchema), async (req, res) => {
     try {
       const { decision_type, subject_id, provider, model, prompt_version, input_hash, output_hash, result } = req.body;
       await recordAiDecision({

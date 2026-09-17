@@ -37,7 +37,12 @@ export const isDashboardPathAllowed = (role: unknown, pathname: string): boolean
   if (isTtoRole(role)) {
     return pathname === '/dashboard/overview' || pathname.startsWith('/dashboard/tto/disclosures');
   }
-  if (pathname.startsWith('/dashboard/admin/') || pathname.startsWith('/dashboard/tto/') || pathname.startsWith('/dashboard/access-requests')) {
+  if (pathname.startsWith('/dashboard/admin/')) {
+    const adminPage = pathname.slice('/dashboard/admin/'.length).split('/')[0];
+    const allowedAdminPages = ['overview', 'users', 'disclosures', 'projects', 'news', 'audit', 'decisions'];
+    return (role === 'Admin' || role === 'Super Admin') && allowedAdminPages.includes(adminPage);
+  }
+  if (pathname.startsWith('/dashboard/tto/') || pathname.startsWith('/dashboard/access-requests')) {
     return role === 'Admin' || role === 'Super Admin';
   }
   return pathname.startsWith('/dashboard/');
@@ -53,7 +58,7 @@ export const legacyDashboardTabPath = (tab: string | null, role: unknown): strin
     'admin-disclosures': '/dashboard/admin/disclosures',
     'tto-queue': '/dashboard/tto/disclosures',
     'tto-review': '/dashboard/tto/disclosures',
-    'publication-decisions': dashboardLandingPath(role),
+    'publication-decisions': '/dashboard/admin/decisions',
     'access-requests': '/dashboard/access-requests',
   };
   return tab && paths[tab] ? paths[tab] : dashboardLandingPath(role);

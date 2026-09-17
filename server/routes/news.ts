@@ -2,7 +2,7 @@ import type { Express } from 'express';
 import { auth } from '../../lib/auth';
 import { adminNewsRequestSchema } from '../../lib/requestSchemas';
 import { getServiceClient, serviceClientConfigError } from '../db/supabase';
-import { authenticateUser, newsSelectFields, requireRole, Roles } from '../middleware/auth';
+import { authenticateUser, isAdminRole, newsSelectFields, requireRole, Roles } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
 import { newsDedupeKey, normalizeNewsUrl, validateNewsPublication } from '../newsCuration';
 import { verifyNewsSourceEvidence, verifyNewsSourceEvidenceLive } from '../services/sourceVerification';
@@ -17,7 +17,7 @@ export const registerNewsRoutes = (app: Express) => {
         const svc = getServiceClient();
         if (!svc) return res.status(503).json({ error: serviceClientConfigError() });
         const { data: profile } = await svc.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
-        if (profile?.role !== Roles.Admin) return res.status(403).json({ error: 'Forbidden: insufficient permissions.' });
+        if (!isAdminRole(profile?.role)) return res.status(403).json({ error: 'Forbidden: insufficient permissions.' });
       }
       const db = getServiceClient();
       if (!db) return res.status(503).json({ error: serviceClientConfigError() });
@@ -43,7 +43,7 @@ export const registerNewsRoutes = (app: Express) => {
     return res.json({ lastSync: data?.[0]?.created_at || null });
   });
 
-  app.post('/api/admin/news', authenticateUser, requireRole(Roles.Admin), validateBody(adminNewsRequestSchema), async (req, res) => {
+  app.post('/api/admin/news', authenticateUser, requireRole(Roles.Admin, Roles.SuperAdmin), validateBody(adminNewsRequestSchema), async (req, res) => {
     try {
       const db = getServiceClient();
       if (!db) return res.status(503).json({ error: serviceClientConfigError() });
@@ -86,7 +86,7 @@ export const registerNewsRoutes = (app: Express) => {
     }
   });
 
-  app.delete('/api/admin/news/:id', authenticateUser, requireRole(Roles.Admin), async (req, res) => {
+  app.delete('/api/admin/news/:id', authenticateUser, requireRole(Roles.Admin, Roles.SuperAdmin), async (req, res) => {
     const db = getServiceClient();
     if (!db) return res.status(503).json({ error: serviceClientConfigError() });
     const { error } = await db.from('news').delete().eq('id', req.params.id);
@@ -95,6 +95,6 @@ export const registerNewsRoutes = (app: Express) => {
   });
 
   app.get('/api/admin/verify', authenticateUser, (req, res) => {
-    return res.json({ isAdmin: (req as any).userRole === Roles.Admin });
+    return res.json({ isAdmin: isAdminRole((req as any).userRole) });
   });
 };

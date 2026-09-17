@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { getBase64DecodedByteLength, validateStorageUpload } from '../../lib/uploadGuard';
 import { canAccessReleasedProject, canSignProjectObject } from '../../lib/authorization';
 import { getServiceClient, serviceClientConfigError } from '../db/supabase';
-import { authenticateUser, Roles } from '../middleware/auth';
+import { authenticateUser, isAdminRole } from '../middleware/auth';
 
 export const registerStorageRoutes = (app: Express) => {
   app.post('/api/storage/upload', authenticateUser, async (req, res) => {
@@ -64,7 +64,7 @@ export const registerStorageRoutes = (app: Express) => {
       if (!db) return res.status(503).json({ error: serviceClientConfigError() });
       const requests = Array.isArray(req.body?.requests) ? req.body.requests : [];
       if (requests.length > 100) return res.status(400).json({ error: 'Too many storage objects requested.' });
-      const isAdmin = (req as any).userRole === Roles.Admin;
+      const isAdmin = isAdminRole((req as any).userRole);
       const projectIds = [...new Set(requests.map((item: any) => item?.projectId).filter(Boolean))];
       const { data: projects, error: projectError } = await db.from('projects').select('id, owner_id').in('id', projectIds);
       if (projectError) throw projectError;
@@ -100,7 +100,7 @@ export const registerStorageRoutes = (app: Express) => {
       if (error) throw error;
       if (!project || !project.technical_details_url || project.technical_details_url === 'locked') return res.status(404).json({ error: 'Technical brief not found.' });
 
-      let authorized = project.owner_id === user.id || (req as any).userRole === Roles.Admin;
+      let authorized = project.owner_id === user.id || isAdminRole((req as any).userRole);
       if (!authorized) {
         const { data: approvals } = await db.from('eois').select('status').eq('sender_id', user.id).eq('project_id', req.params.id);
         authorized = canAccessReleasedProject((approvals || []).map((row: any) => row.status));

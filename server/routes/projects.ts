@@ -1,6 +1,6 @@
 import type { Express } from 'express';
 import { getServiceClient, serviceClientConfigError } from '../db/supabase';
-import { authenticateUser, PROJECT_MUTABLE_FIELDS, Roles } from '../middleware/auth';
+import { authenticateUser, isAdminRole, PROJECT_MUTABLE_FIELDS } from '../middleware/auth';
 import { protectProjectPublication } from '../../lib/projectPublication';
 
 export const registerProjectsRoutes = (app: Express) => {
@@ -88,11 +88,11 @@ export const registerProjectsRoutes = (app: Express) => {
       const { data: existing, error: existingError } = await db.from('projects').select('owner_id, visibility, disclosure_status').eq('id', req.params.id).maybeSingle();
       if (existingError) throw existingError;
       if (!existing) return res.status(404).json({ error: 'Project not found.' });
-      if (existing.owner_id !== user.id && (req as any).userRole !== Roles.Admin) {
+      if (existing.owner_id !== user.id && !isAdminRole((req as any).userRole)) {
         return res.status(403).json({ error: 'You do not have permission to modify this project.' });
       }
       const incoming = req.body?.project || req.body || {};
-      const ownerEdit = existing.owner_id === user.id && (req as any).userRole !== Roles.Admin;
+      const ownerEdit = existing.owner_id === user.id && !isAdminRole((req as any).userRole);
       const grandfathered = existing.visibility === 'Public' || existing.disclosure_status === 'Published';
       const project = protectProjectPublication(
         Object.fromEntries(Object.entries(incoming).filter(([key]) => PROJECT_MUTABLE_FIELDS.has(key))),
@@ -116,7 +116,7 @@ export const registerProjectsRoutes = (app: Express) => {
       if (!db) return res.status(503).json({ error: serviceClientConfigError() });
       const { data: existing } = await db.from('projects').select('owner_id').eq('id', req.params.id).maybeSingle();
       if (!existing) return res.status(404).json({ error: 'Project not found.' });
-      if (existing.owner_id !== user.id && (req as any).userRole !== Roles.Admin) {
+      if (existing.owner_id !== user.id && !isAdminRole((req as any).userRole)) {
         return res.status(403).json({ error: 'You do not have permission to delete this project.' });
       }
       const { error } = await db.from('projects').delete().eq('id', req.params.id);

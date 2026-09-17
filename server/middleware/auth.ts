@@ -5,11 +5,14 @@ import { getSupabaseClient } from '../db/supabase';
 
 export const Roles = {
   Admin: 'Admin',
+  SuperAdmin: 'Super Admin',
   IndustryPartner: 'Industry/Partner',
   Researcher: 'Researcher',
   Student: 'Student',
   Investor: 'Investor',
 } as const;
+
+export const isAdminRole = (role: unknown): boolean => role === Roles.Admin || role === Roles.SuperAdmin;
 
 export const SELF_ASSIGNABLE_ROLES = new Set([
   Roles.IndustryPartner,

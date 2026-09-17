@@ -466,7 +466,7 @@ export const ProfileSettings: React.FC<{
           </div>
         </div>
 
-         <div className="space-y-4 lg:sticky lg:top-6 lg:col-span-4 lg:self-start">
+         <div className="space-y-4 lg:col-span-4 lg:self-start">
           <div className="space-y-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
             <h4 className="text-[11px] font-semibold text-gray-400 tracking-wide px-1">Account Management</h4>
             <div className="space-y-1">

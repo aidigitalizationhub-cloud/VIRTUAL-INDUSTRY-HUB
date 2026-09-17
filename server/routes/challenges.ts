@@ -1,6 +1,6 @@
 import type { Express } from 'express';
 import { canMutateMatch } from '../../lib/authorization';
-import { authenticateUser, getDbClientForRequest, getRequestProfileId, Roles } from '../middleware/auth';
+import { authenticateUser, getDbClientForRequest, getRequestProfileId } from '../middleware/auth';
 import { throttleLimit } from '../middleware/rateLimit';
 import { validateBody } from '../middleware/validate';
 import { getServiceClient, getSupabaseClient } from '../db/supabase';
@@ -529,7 +529,7 @@ export const registerChallengesRoutes = (app: Express) => {
         return res.status(404).json({ error: 'Match record not found.' });
       }
   
-      if (!canMutateMatch(userId, match.candidate_user_id, match.partner_user_id, (req as any).userRole === Roles.Admin)) {
+       if (!canMutateMatch(userId, match.candidate_user_id, match.partner_user_id, ['Admin', 'Super Admin'].includes((req as any).userRole))) {
         return res.status(403).json({ error: 'Unauthorized to update this match status.' });
       }
   

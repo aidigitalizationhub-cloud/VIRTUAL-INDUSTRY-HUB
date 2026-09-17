@@ -1,5 +1,5 @@
 import type { Express } from 'express';
-import { authenticateUser, Roles } from '../middleware/auth';
+import { authenticateUser } from '../middleware/auth';
 import { getServiceClient, serviceClientConfigError } from '../db/supabase';
 
 export const registerEoisRoutes = (app: Express) => {
@@ -153,7 +153,7 @@ export const registerEoisRoutes = (app: Express) => {
       if (typeof status !== 'string' || status.length < 1 || status.length > 100) return res.status(400).json({ error: 'Invalid EOI status.' });
       const { data: eoi } = await db.from('eois').select('sender_id, recipient_id').eq('id', req.params.id).maybeSingle();
       if (!eoi) return res.status(404).json({ error: 'Message not found.' });
-      if (eoi.recipient_id !== userId && (req as any).userRole !== Roles.Admin) return res.status(403).json({ error: 'Only the recipient or an administrator can change this status.' });
+       if (eoi.recipient_id !== userId && !['Admin', 'Super Admin'].includes((req as any).userRole)) return res.status(403).json({ error: 'Only the recipient or an administrator can change this status.' });
       const { error } = await db.from('eois').update({ status }).eq('id', req.params.id);
       if (error) throw error;
       return res.json({ success: true });

@@ -10,7 +10,7 @@ describe('dashboard routing and capabilities', () => {
 
   it('normalizes legacy query tabs', () => {
     expect(legacyDashboardTabPath('messages', 'Researcher')).toBe('/dashboard/messages');
-     expect(legacyDashboardTabPath('publication-decisions', 'Admin')).toBe('/dashboard/admin/overview');
+     expect(legacyDashboardTabPath('publication-decisions', 'Admin')).toBe('/dashboard/admin/decisions');
     expect(legacyDashboardTabPath('unknown', 'Admin')).toBe('/dashboard/admin/overview');
   });
 
@@ -37,5 +37,12 @@ describe('dashboard routing and capabilities', () => {
   it('allows TTO detail pages under the guarded TTO workspace', () => {
     expect(isDashboardPathAllowed('TTO', '/dashboard/tto/disclosures/case-123')).toBe(true);
     expect(isDashboardPathAllowed('TTO', '/dashboard/admin/disclosures')).toBe(false);
+  });
+
+  it('allows known admin pages and rejects unknown admin paths', () => {
+    expect(isDashboardPathAllowed('Super Admin', '/dashboard/admin/decisions')).toBe(true);
+    expect(isDashboardPathAllowed('Admin', '/dashboard/admin/disclosures/case-123')).toBe(true);
+    expect(isDashboardPathAllowed('Admin', '/dashboard/admin/unknown')).toBe(false);
+    expect(isDashboardPathAllowed('Researcher', '/dashboard/admin/decisions')).toBe(false);
   });
 });

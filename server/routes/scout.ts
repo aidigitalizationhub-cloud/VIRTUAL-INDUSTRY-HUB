@@ -1,7 +1,7 @@
 import type { Express } from 'express';
 import { matchRankingsSchema, newsItemsSchema, parseAIJson } from '../../lib/aiSchemas';
 import { computeLocalMatchRankings } from '../../lib/scoring';
-import { authenticateUser, newsSelectFields, Roles } from '../middleware/auth';
+import { authenticateUser, isAdminRole, newsSelectFields } from '../middleware/auth';
 import { throttleLimit } from '../middleware/rateLimit';
 import { validateBody } from '../middleware/validate';
 import { getServiceClient, serviceClientConfigError } from '../db/supabase';
@@ -15,7 +15,7 @@ export const registerScoutRoutes = (app: Express) => {
     const { force } = req.body;
   
     // Restrict forced scout sync to admin only
-    if (force && (req as any).userRole !== Roles.Admin) {
+    if (force && !isAdminRole((req as any).userRole)) {
       return res.status(403).json({
         didUpdate: false,
         error: 'Forbidden: Forced synchronization is restricted to Admins only.'
