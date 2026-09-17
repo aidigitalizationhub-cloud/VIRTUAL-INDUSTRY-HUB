@@ -31,3 +31,9 @@
 - Admin routes are limited to Admin and Super Admin roles.
 - TTO roles use the separate TTO disclosure queue.
 - Direct unknown admin URLs are rejected by the client dashboard guard.
+
+## Release Verification Still Required
+
+- Sign in with one real account for each role and exercise the flows above in the deployed environment.
+- Verify database-backed empty, error, and success states with representative records.
+- Confirm required IP disclosure migrations and production authentication variables are present before release.

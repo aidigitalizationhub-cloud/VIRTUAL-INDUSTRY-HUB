@@ -83,6 +83,7 @@ export const StudentOverviewPage = ({ user }: { user: User | null }) => {
       setRecommendations(getRecommendations(allProjects, user));
     } catch (err) {
       console.error('Error loading student dashboard:', err);
+      showToast('Student workspace data could not be loaded. Please try again.', 'error');
     } finally {
       setLoading(false);
     }

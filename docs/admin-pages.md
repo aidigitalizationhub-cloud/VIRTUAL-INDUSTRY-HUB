@@ -31,3 +31,8 @@ The admin sidebar links to every route above. Disclosure detail routes under `/d
 - Confirm `/dashboard/admin/decisions` displays cases in `super_admin_review` and records a required written decision reason.
 - Confirm non-admin users cannot access admin routes or admin APIs.
 - Confirm empty, loading, error, and mobile states for each page.
+
+## Known Follow-Up
+
+- Manual browser verification still requires test accounts for each role and a deployed environment with the required database migrations.
+- Existing legacy plaintext messages remain visible as legacy records; the audit page now reports this accurately instead of claiming universal encryption.

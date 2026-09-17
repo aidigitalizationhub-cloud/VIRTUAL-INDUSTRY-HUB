@@ -859,6 +859,8 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
   const totalInvestors = profiles.filter(p => p.role === UserRole.Investor).length;
 
   const publicProjectsCount = projects.filter(p => p.visibility === Visibility.Public).length;
+  const encryptedMessageCount = eois.filter(e => isMessageEncrypted(e.raw_message || e.message)).length;
+  const integrityStatus = eois.length > 0 ? 'Not recorded' : 'No records';
 
   return (
     <div className="space-y-6 animate-fade-in text-gray-900 dark:text-gray-100">
@@ -2993,13 +2995,13 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-bold   text-white">Cryptographic Envelope Vault Active</h4>
+                          <h4 className="text-sm font-bold text-white">Message security record status</h4>
                           <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                            AES-256-GCM Verified
+                            Per-record verification
                           </span>
                         </div>
                         <p className="text-xs text-slate-400 leading-relaxed max-w-2xl">
-                          All user messages are encrypted in-transit and at-rest using AES-256-GCM symmetric envelopes with SHA-256 cryptographic digest verification. Plaintext payload contents are decrypted exclusively on authorized participant clients.
+                           New message envelopes use AES-256-GCM. Legacy plaintext records may remain in the ledger until migrated; payload contents are decrypted exclusively on authorized participant clients.
                         </p>
                       </div>
                     </div>
@@ -3025,14 +3027,14 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                     <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
                       <p className="text-[11px] font-semibold text-gray-400 tracking-wider">AES-256 Encrypted</p>
                       <p className="text-2xl font-bold text-emerald-600">
-                        {eois.filter(e => isMessageEncrypted(e.raw_message || e.message)).length || eois.length}
+                        {encryptedMessageCount}
                       </p>
-                      <p className="text-[11px] text-gray-400 font-medium">Encrypted message envelopes</p>
+                      <p className="text-[11px] text-gray-400 font-medium">Records identified as encrypted</p>
                     </div>
                     <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
                       <p className="text-[11px] font-semibold text-gray-400 tracking-wider">SHA-256 Integrity</p>
-                      <p className="text-2xl font-bold text-ug-teal">100%</p>
-                      <p className="text-[11px] text-gray-400 font-medium">Verified digest checksums</p>
+                        <p className="text-2xl font-bold text-ug-teal">{integrityStatus}</p>
+                       <p className="text-[11px] text-gray-400 font-medium">Digest evidence is not stored for these records</p>
                     </div>
                     <div className="bg-white border border-gray-100 rounded-[1.5rem] p-5 shadow-sm space-y-1">
                       <p className="text-[11px] font-semibold text-gray-400 tracking-wider">Offboarding Audits</p>
