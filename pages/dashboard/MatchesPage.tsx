@@ -581,7 +581,7 @@ ${senderName}`
                    )}
                  </div>
                </div>
-                 <div className="mt-4 flex flex-row gap-2 border-t border-slate-100 pt-4 sm:justify-end">
+                  <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end">
                  <button
                    onClick={(e) => {
                      e.stopPropagation();
@@ -590,14 +590,14 @@ ${senderName}`
                        setActiveTab('messages');
                      }
                    }}
-                     className="min-w-0 flex-1 border border-slate-200 bg-white px-2 py-2.5 text-xs font-semibold text-ug-navy transition hover:border-ug-teal hover:text-ug-teal active:scale-[.98] sm:flex-none sm:px-3"
+                      className="w-full border border-slate-200 bg-white px-2 py-2.5 text-xs font-semibold text-ug-navy transition hover:border-ug-teal hover:text-ug-teal active:scale-[.98] sm:w-auto sm:flex-none sm:px-3"
                    title="Open direct chat"
                  >
                    <span className="flex items-center gap-1"><MessageSquare size={12} /> Chat</span>
                  </button>
                  <button
                    onClick={(e) => { e.stopPropagation(); handleInitiateCollaborationClick(collab); }}
-                     className="min-w-0 flex-1 bg-ug-navy px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-ug-teal active:scale-[.98] sm:flex-none sm:px-3.5"
+                      className="w-full bg-ug-navy px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-ug-teal active:scale-[.98] sm:w-auto sm:flex-none sm:px-3.5"
                  >
                    Initiate Proposal
                  </button>

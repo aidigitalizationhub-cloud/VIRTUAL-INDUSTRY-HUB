@@ -12,6 +12,7 @@ import { getGeminiResponse } from '../services/geminiService';
 import { DocumentExtractionService } from '../services/documentExtractionService';
 import { inspectMessageEnvelope, isMessageEncrypted, computeSHA256 } from '../lib/cryptoService';
 import { ReportCenter } from './ReportCenter';
+import ImageWithFallback from './ImageWithFallback';
 import { useNavigate } from 'react-router-dom';
 
 interface AdminDashboardProps {
@@ -1753,7 +1754,7 @@ Do NOT include any extra conversational text or markdown codeblock wrappers arou
                           <div className="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             <div className="flex items-center gap-3.5">
                                <div className="h-16 w-20 overflow-hidden rounded-xl border border-gray-100 bg-gray-50 shrink-0">
-                                 {activeProj.image_url ? <img src={activeProj.image_url.split('|')[0]} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-[#1a1a4b]"><ShieldCheck size={26} className="stroke-[1.5]" /></div>}
+                                 {activeProj.image_url ? <ImageWithFallback src={activeProj.image_url.split('|')[0]} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-[#1a1a4b]"><ShieldCheck size={26} className="stroke-[1.5]" /></div>}
                               </div>
                               <div>
                                 <h4 className="text-base md:text-lg font-bold text-[#1a1a4b] leading-snug">{activeProj.title}</h4>

@@ -327,9 +327,6 @@ export const MessagesPage: React.FC<MessagesSectionProps> = ({ user, initialThre
 
   return (
     <div className="relative">
-      <div role="note" className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium leading-relaxed text-amber-900">
-        Messages are stored securely by the platform but are not end-to-end encrypted. Do not include passwords, private keys, or highly confidential information.
-      </div>
       <div className="bg-white md:rounded-2xl border-x md:border border-gray-200 shadow-sm overflow-hidden h-[calc(100vh-180px)] md:h-[750px] flex flex-col md:flex-row animate-fade-in font-sans relative">
       {/* Mobile Messages UI (Accordion Style) */}
       <div className="md:hidden flex-1 flex flex-col overflow-y-auto custom-scrollbar bg-white">

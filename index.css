@@ -16,6 +16,34 @@ html {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Keep every route inside the viewport on narrow devices. */
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+@media (max-width: 639px) {
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    max-width: 100%;
+  }
+
+  .disclosure-page {
+    min-width: 0;
+  }
+}
+
 /* Keep keyboard navigation visible across the utility-class-heavy UI. */
 :where(button, a, input, textarea, select):focus-visible {
   outline: 2px solid #0891b2;

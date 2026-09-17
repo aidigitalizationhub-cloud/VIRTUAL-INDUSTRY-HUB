@@ -59,9 +59,6 @@ const DashboardHeaderContent: React.FC<DashboardHeaderProps> = ({ displayName, a
       </div>
     )}
     <div className="flex items-center gap-1.5 sm:gap-6">
-      <button onClick={() => onNavigate('/')} className="sm:hidden p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all flex items-center gap-1" title="Return to Home">
-         <Home size={18} className="text-ug-teal" /><span className="text-[11px] font-bold tracking-wider">{t('nav.home')}</span>
-      </button>
       {showMessages && <button onClick={onMessages} className={`p-2 transition-all relative rounded-xl hover:bg-white/10 ${activeTab === 'messages' ? 'text-ug-teal' : 'text-white/70 hover:text-white'}`} title={t('dashboard.messagesAndNotifications')} aria-label={t('dashboard.messagesAndNotifications')}>
         <Bell size={18} />
         {unreadCount > 0 && <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-ug-teal text-white text-[11px] font-semibold flex items-center justify-center rounded-full border border-ug-navy shadow-lg">{unreadCount > 9 ? '9+' : unreadCount}</span>}

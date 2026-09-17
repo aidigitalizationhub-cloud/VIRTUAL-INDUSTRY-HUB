@@ -289,7 +289,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
   };
 
   const renderRoleStep = () => (
-    <div className="max-w-4xl mx-auto p-8">
+    <div className="max-w-4xl mx-auto p-4 sm:p-8">
       <div className="text-center mb-12">
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
@@ -298,7 +298,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         >
           <Zap size={40} className="fill-current" />
         </motion.div>
-        <h1 className="text-4xl font-bold text-ug-navy mb-4 tracking-tighter col-span-2">Who are you in this ecosystem?</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-ug-navy mb-4 tracking-tighter col-span-2">Who are you in this ecosystem?</h1>
         <p className="text-gray-500 font-medium col-span-2">Select your identity to personalize your intelligence hub.</p>
       </div>
 
@@ -314,7 +314,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
             whileHover={{ y: -5, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => handleRoleSelect(role.id)}
-            className={`group bg-white p-8 rounded-2xl border-2 text-left transition-all shadow-xl ${
+             className={`group bg-white p-5 sm:p-8 rounded-2xl border-2 text-left transition-all shadow-xl ${
               selectedRole === role.id ? 'border-ug-teal ring-4 ring-ug-teal/10' : 'border-gray-100 hover:border-ug-teal shadow-gray-100 hover:shadow-ug-teal/10'
             }`}
           >
@@ -335,7 +335,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="mt-12 max-w-2xl mx-auto bg-gray-50 rounded-2xl p-8 border-2 border-gray-100 relative text-center"
+          className="mt-8 sm:mt-12 max-w-2xl mx-auto bg-gray-50 rounded-2xl p-5 sm:p-8 border-2 border-gray-100 relative text-center"
         >
           <h3 className="text-lg font-bold text-ug-navy uppercase tracking-wider mb-2">Portal Setup Type</h3>
           <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-6">Are you setting up as an individual advisor, or on behalf of an organization?</p>
@@ -381,7 +381,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
   );
 
   const renderEntityIdentity = () => (
-    <div className="max-w-2xl mx-auto p-8">
+    <div className="max-w-2xl mx-auto p-4 sm:p-8">
       <button onClick={() => navigateToStep('role')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
         <ChevronLeft size={16} /> Back
       </button>
@@ -597,7 +597,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
     };
 
     return (
-      <div className="max-w-2xl mx-auto p-8">
+      <div className="max-w-2xl mx-auto p-4 sm:p-8">
         <button onClick={() => navigateToStep('entity_identity')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
           <ChevronLeft size={16} /> Back
         </button>
@@ -608,7 +608,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
           <p className="text-gray-400 text-sm font-medium mt-2">Define focus tracks and resource exchanges. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
         </div>
 
-        <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth pb-6">
+        <div className="space-y-8 max-h-none overflow-y-visible pr-0 md:max-h-[60vh] md:overflow-y-auto md:pr-4 scroll-smooth pb-6">
           {/* SECTOR VECTOR TRACKS */}
           <div className={`p-4 rounded-2xl transition-all ${fieldErrors.sectorVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("Focus Tracks", "sectorVector")}
@@ -796,7 +796,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
     };
 
     return (
-      <div className="max-w-2xl mx-auto p-8">
+      <div className="max-w-2xl mx-auto p-4 sm:p-8">
         <button onClick={() => navigateToStep('entity_focus')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
           <ChevronLeft size={16} /> Back
         </button>
@@ -807,7 +807,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
           <p className="text-gray-400 text-sm font-medium mt-2">Specify engagement workflows and target readiness. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
         </div>
 
-        <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth pb-6">
+        <div className="space-y-8 max-h-none overflow-y-visible pr-0 md:max-h-[60vh] md:overflow-y-auto md:pr-4 scroll-smooth pb-6">
           {/* Collaboration Models */}
           <div className={`p-4 rounded-2xl transition-all ${fieldErrors.collaborationVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("Preferred Collaboration Models", "collaborationVector")}
@@ -953,7 +953,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
     };
 
     return (
-      <div className="max-w-2xl mx-auto p-8">
+      <div className="max-w-2xl mx-auto p-4 sm:p-8">
         <button onClick={() => navigateToStep('entity_model')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
           <ChevronLeft size={16} /> Back
         </button>
@@ -964,7 +964,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
           <p className="text-gray-400 text-sm font-medium mt-2">Select capabilities your organization values or validates. Mandatory fields marked with (<span className="text-red-500 font-bold">*</span>).</p>
         </div>
 
-        <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth pb-6">
+        <div className="space-y-8 max-h-none overflow-y-visible pr-0 md:max-h-[60vh] md:overflow-y-auto md:pr-4 scroll-smooth pb-6">
           <div className={`p-4 rounded-2xl transition-all ${fieldErrors.capabilityVector ? 'border-2 border-red-500 bg-red-50/20' : ''}`}>
             {renderFieldLabel("Specific Competencies We Support / Value", "capabilityVector")}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
@@ -1025,7 +1025,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
   };
 
   const renderEntityAIQuestions = () => (
-    <div className="max-w-2xl mx-auto p-8">
+    <div className="max-w-2xl mx-auto p-4 sm:p-8">
       <button onClick={() => navigateToStep('entity_competencies')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors font-sans focus:outline-none cursor-pointer">
         <ChevronLeft size={16} /> Back
       </button>
@@ -1036,7 +1036,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         <p className="text-gray-400 text-sm font-medium mt-2">Fill out these open-ended statements to improve your match accuracy. Mandatory fields marked with (<span className="text-red-500 font-bold">*</span>).</p>
       </div>
 
-      <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth pb-6">
+      <div className="space-y-6 max-h-none overflow-y-visible pr-0 md:max-h-[60vh] md:overflow-y-auto md:pr-4 scroll-smooth pb-6">
         <div>
           {renderFieldLabel("What specific medical diagnostics, drugs, or healthcare problems does your organization actively seek to solve?", "problemStatement")}
           <textarea 
@@ -1099,7 +1099,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
   );
 
   const renderQuestionnaire = () => (
-    <div className="max-w-2xl mx-auto p-8">
+    <div className="max-w-2xl mx-auto p-4 sm:p-8">
       <button onClick={() => navigateToStep('role')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors cursor-pointer">
         <ChevronLeft size={16} /> Back
       </button>
@@ -1110,7 +1110,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         <p className="text-gray-400 text-sm font-medium mt-2">Tell us what you want to achieve today. Mandatory fields are marked with (<span className="text-red-500 font-bold">*</span>).</p>
       </div>
 
-      <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 scroll-smooth">
+      <div className="space-y-8 max-h-none overflow-y-visible pr-0 md:max-h-[60vh] md:overflow-y-auto md:pr-4 scroll-smooth">
         {/* COMMON QUESTIONS */}
         <div>
           {renderFieldLabel("Primary Focus / Area of Expertise", "expertise")}
@@ -1352,7 +1352,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
     const hasCvError = Boolean(fieldErrors.cvText);
 
     return (
-      <div className="max-w-2xl mx-auto p-8">
+      <div className="max-w-2xl mx-auto p-4 sm:p-8">
         <button onClick={() => navigateToStep('questionnaire')} className="mb-8 flex items-center gap-2 text-gray-400 hover:text-ug-navy font-bold text-xs uppercase tracking-wide transition-colors cursor-pointer">
           <ChevronLeft size={16} /> Back
         </button>
@@ -1476,7 +1476,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
   );
 
   const renderSummary = () => (
-    <div className="max-w-4xl mx-auto p-8">
+    <div className="max-w-4xl mx-auto p-4 sm:p-8">
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <div className="flex-1">
           <div className="mb-10">
@@ -1584,29 +1584,29 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
 
   if (isEmbedded) {
     return (
-      <div className="w-full bg-white p-6 md:p-6 rounded-2xl border border-gray-100 shadow-sm font-sans text-ug-navy relative overflow-hidden selection:bg-ug-teal/20">
+       <div className="w-full bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm font-sans text-ug-navy relative overflow-hidden selection:bg-ug-teal/20">
         <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[400px] h-[400px] bg-ug-teal/5 rounded-full blur-[80px] pointer-events-none" />
         
         {/* Simplified Header for Embedded status monitoring */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-100 pb-6 mb-8 relative z-10 gap-4">
+         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-100 pb-5 sm:pb-6 mb-6 sm:mb-8 relative z-10 gap-3 sm:gap-4">
           <div className="flex flex-col">
             <span className="text-[11px] font-semibold text-ug-teal tracking-[0.2em] mb-1">Interactive Match Setup</span>
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold text-ug-navy uppercase tracking-tight">AI Matching Portal</span>
             </div>
           </div>
-          <div className="flex items-center gap-6 self-stretch sm:self-auto justify-between sm:justify-start">
-            <div className="flex gap-1.5">
-              {stepsList.map((s, i) => (
-                <div key={s} className={`h-1.5 rounded-full transition-all duration-700 ${
-                  stepsList.indexOf(step) >= i ? 'w-8 bg-ug-teal' : 'w-3 bg-gray-100'
-                }`} />
-              ))}
-            </div>
+           <div className="flex w-full flex-col items-start gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-6">
+             <div className="flex w-full gap-1.5 sm:w-auto">
+               {stepsList.map((s, i) => (
+                 <div key={s} className={`h-1.5 rounded-full transition-all duration-700 ${
+                   stepsList.indexOf(step) >= i ? 'flex-1 sm:w-8 sm:flex-none bg-ug-teal' : 'w-3 bg-gray-100'
+                 }`} />
+               ))}
+             </div>
             {onSkip && (
               <button 
                 onClick={onSkip} 
-                className="text-gray-400 hover:text-ug-navy font-semibold text-[11px] tracking-wide transition-colors border border-gray-200 hover:border-gray-300 px-3.5 py-2 rounded-xl active:scale-95 duration-150 shrink-0"
+                 className="self-end text-gray-400 hover:text-ug-navy font-semibold text-[11px] tracking-wide transition-colors border border-gray-200 hover:border-gray-300 px-3.5 py-2 rounded-xl active:scale-95 duration-150 shrink-0"
               >
                 Close Portal
               </button>
