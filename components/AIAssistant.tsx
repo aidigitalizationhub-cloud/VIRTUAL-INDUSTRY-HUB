@@ -38,7 +38,7 @@ const AIAssistant: React.FC = () => {
 
           {/* Chatbot */}
           <iframe
-            src="https://innoguid.netlify.app"
+            src="https://innoguid.vercel.app/"
             title="InnoGuide Chatbot"
             className="w-full border-0"
             style={{
