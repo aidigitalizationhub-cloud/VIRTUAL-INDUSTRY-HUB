@@ -34,5 +34,6 @@ The admin sidebar links to every route above. Disclosure detail routes under `/d
 
 ## Known Follow-Up
 
+- The retired AI Decision Ledger markup and unused `DisclosureAdminReview` component have been removed. The live Decisions route remains `PublicationDecision`.
 - Manual browser verification still requires test accounts for each role and a deployed environment with the required database migrations.
 - Existing legacy plaintext messages remain visible as legacy records; the audit page now reports this accurately instead of claiming universal encryption.

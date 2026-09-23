@@ -1118,16 +1118,6 @@ export const StorageService = {
     }
   },
 
-  getAiDecisions: async (status?: string): Promise<AiDecision[]> => {
-    try {
-      const data = await getJson<{ decisions?: AiDecision[] }>(`/api/ai-decisions?status=${encodeURIComponent(status || 'all')}`);
-      return data?.decisions || [];
-    } catch (e) {
-      console.error("Failed to load AI decision ledger:", e);
-      return [];
-    }
-  },
-
   deleteAccount: async (userId: string): Promise<void> => {
     if (!userId) return;
     try {
