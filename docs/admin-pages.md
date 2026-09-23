@@ -6,13 +6,13 @@ All admin pages are rendered inside the protected `/dashboard/*` workspace. Admi
 
 | Route | Purpose | UI source |
 | --- | --- | --- |
-| `/dashboard/admin/overview` | Platform metrics and engagement summary | `AdminDashboard` metrics tab |
-| `/dashboard/admin/users` | User directory, role management, and exports | `AdminDashboard` users tab |
-| `/dashboard/admin/projects` | Project screening, filtering, moderation, and withdrawal | `AdminDashboard` projects tab |
+| `/dashboard/admin/overview` | Platform metrics and engagement summary | `AdminMetricsSection` via `AdminDashboard` |
+| `/dashboard/admin/users` | User directory, role management, and exports | `AdminUsersSection` via `AdminDashboard` |
+| `/dashboard/admin/projects` | Project screening, filtering, moderation, and withdrawal | `AdminProjectsSection` via `AdminDashboard` |
 | `/dashboard/admin/disclosures` | Administrative disclosure review and evidence workflow | `ResearcherDisclosureWorkspace` admin mode |
 | `/dashboard/admin/decisions` | Final human publication decisions | `PublicationDecision` |
-| `/dashboard/admin/news` | News creation, source verification, AI scouting, and publishing | `AdminDashboard` news tab |
-| `/dashboard/admin/audit` | Message, encryption, and offboarding audit views | `AdminDashboard` logs tab |
+| `/dashboard/admin/news` | News creation, source verification, AI scouting, and publishing | `AdminNewsSection` via `AdminDashboard` |
+| `/dashboard/admin/audit` | Message, encryption, and offboarding audit views | `AdminAuditSection` via `AdminDashboard` |
 
 The admin sidebar links to every route above. Disclosure detail routes under `/dashboard/admin/disclosures/:id` are also allowed and are handled by the disclosure workspace.
 
@@ -37,3 +37,18 @@ The admin sidebar links to every route above. Disclosure detail routes under `/d
 - The retired AI Decision Ledger markup and unused `DisclosureAdminReview` component have been removed. The live Decisions route remains `PublicationDecision`.
 - Manual browser verification still requires test accounts for each role and a deployed environment with the required database migrations.
 - Existing legacy plaintext messages remain visible as legacy records; the audit page now reports this accurately instead of claiming universal encryption.
+
+## Admin Dashboard Structure
+
+`components/AdminDashboard.tsx` owns admin mutations, filters, and tab orchestration. Shared registry loading is provided by `components/admin/useAdminData.ts`. The rendered workspaces are split into focused components under `components/admin/`:
+
+- `AdminMetricsSection.tsx`
+- `AdminUsersSection.tsx`
+- `AdminProjectsSection.tsx`
+- `AdminNewsSection.tsx`
+- `AdminAuditSection.tsx`
+- `AdminReportModal.tsx`
+
+Disclosure review is intentionally not part of the shell; `/dashboard/admin/disclosures` uses the dedicated disclosure workspace. The remaining follow-up is moving domain state and handlers into hooks if the parent grows again.
+
+`useAdminData` preserves the existing overview-only and full-registry loading paths and exposes the refresh callback used by news synchronization and the admin header.

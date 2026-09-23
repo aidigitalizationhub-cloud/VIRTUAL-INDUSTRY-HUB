@@ -24,7 +24,8 @@ Extracted pages (`pages/dashboard/`):
 All dashboard pages load via `React.lazy` + `Suspense` (`pages/Dashboards.tsx`); `Dashboards` chunk is ~74 KB, `AdminDashboard` ships as a separate on-demand chunk.
 Shared chrome: `components/dashboard/{DashboardHeader,DashboardNavigation,DashboardPrimitives,DashboardWidgets,ProfileInsight,ProfileSettings,ProjectFormModal}`.
 Shared helpers: `lib/messageUtils.ts` (`isRevealRequestMessage`), `lib/constants.ts` (previously root `constants.ts`; dead `LATEST_NEWS`/`MOCK_PROJECTS` removed), canonical domain types in `types/domain.ts` (root `types.ts` is a re-export shim).
-`components/AdminDashboard.tsx` remains the implementation behind the admin route wrappers; disclosure review is handled by the unified IP workspaces.
+`components/AdminDashboard.tsx` remains the orchestration layer behind the admin route wrappers; its metrics, users, projects, news, audit, and report views are split under `components/admin/`. Disclosure review is handled by the unified IP workspaces.
+`pages/News.tsx` now owns News data loading, navigation, filters, and handlers. The public feed, article detail, and admin curator views are isolated in `components/news/NewsFeed.tsx`, `NewsArticleDetail.tsx`, and `NewsCuratorWorkspace.tsx`. `services/storageService.ts` is intentionally excluded from this page-splitting work.
 `vercel.json` includes an SPA fallback rewrite plus the `/api/*` rewrite; `HashRouter` is retained deliberately (works on any static host).
 
 ## IP workspaces (new)
