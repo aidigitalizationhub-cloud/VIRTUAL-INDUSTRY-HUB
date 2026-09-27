@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 // --- AI output schemas (validated server-side before any DB write) ---
-
 export const newsItemSchema = z.object({
   title: z.string().min(1),
   category: z.string().optional(),
@@ -13,31 +12,20 @@ export const newsItemSchema = z.object({
   external_url: z.string().optional(),
 }).passthrough();
 
-export const newsDraftSchema = z.object({
-  title: z.string().min(1),
-  summary: z.string().optional(),
-  category: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  source_verification_notes: z.string().optional(),
-}).passthrough();
 
-export const matchRankingSchema = z.object({
-  id: z.string().optional(),
-  index: z.number().optional(),
-  score: z.number().optional(),
-  reasoning: z.string().optional(),
-  alignment_label: z.string().optional(),
-}).passthrough();
-
-export const matchRankingsSchema = z.object({
-  rankings: z.array(matchRankingSchema),
-}).passthrough();
 
 // NOTE: profile extraction is validated by parseProfileExtraction in
 // ./profileExtractionSchema, which checks the full shape and grounds every
 // factual claim in the source text. Do not reintroduce a permissive
 // profile-only schema here; the previous one accepted invented education,
 // GPA and employment because it passed everything through unchecked.
+//
+// NOTE: news draft extraction is validated by parseNewsDraft in
+// ./newsDraftSchema, which grounds each field in the uploaded document and
+// constrains the category. The permissive newsDraftSchema that used to live
+// here accepted invented grant amounts and partner names, and the endpoint
+// reported needs_review: false whenever the JSON merely parsed, which
+// suppressed the admin review prompt.
 
 export const stringArraySchema = z.array(z.string());
 

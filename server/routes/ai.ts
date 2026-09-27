@@ -1,7 +1,8 @@
 import type { Express } from 'express';
 import express from 'express';
 import mammoth from 'mammoth';
-import { newsDraftSchema, stringArraySchema, parseAIJson } from '../../lib/aiSchemas';
+import { stringArraySchema, parseAIJson } from '../../lib/aiSchemas';
+import { parseNewsDraft } from '../../lib/newsDraftSchema';
 import { authenticateUser, getDbClientForRequest, requireRole, Roles } from '../middleware/auth';
 import { throttleLimit } from '../middleware/rateLimit';
 import { validateBody } from '../middleware/validate';
@@ -319,26 +320,52 @@ export const registerAiRoutes = (app: Express) => {
         throw extractError || new Error("Failed to receive structured response from Gemini.");
       }
   
-      try {
-        const parsedData = parseAIJson(newsDraftSchema, jsonText);
-        return res.json({ success: true, needs_review: false, text, data: parsedData });
-      } catch (parseErr) {
-        console.warn("JSON parsing of Gemini output failed, running fallback text structure:", jsonText);
-        return res.json({
-          success: true,
-          needs_review: true,
-          text,
-          data: {
-            title: fileName ? fileName.replace(/\.[^/.]+$/, "") : "Extracted Document",
-            summary: text.slice(0, 400) + (text.length > 400 ? "..." : ""),
-            category: "Announcement",
-            tags: ["Extracted"],
-            source_verification_notes: "Auto-extracted. Raw draft text parsing completed. Human review required before publishing.",
-            needs_review: true
-          }
-        });
+      const draft = parseNewsDraft(jsonText, text);
+  
+      await recordAiDecision({
+        decision_type: 'news_draft_extraction',
+        subject_id: null,
+        provider: 'gemini',
+        model: GEMINI_FALLBACK_MODELS[0],
+        prompt_version: 'ugjh-news-draft-v1',
+        result: {
+          usable: draft.ok,
+          needs_review: draft.needs_review,
+          checked_fields: draft.validation.checked,
+          supported_fields: draft.validation.supported,
+          dropped_fields: draft.validation.dropped,
+          dropped_details: draft.validation.dropped_details.slice(0, 5),
+        }
+      });
+  
+      if (draft.ok) {
+        if (draft.validation.dropped > 0) {
+          console.warn(
+            `News draft extraction kept ${draft.validation.supported} of ${draft.validation.checked} field(s); ` +
+            `dropped: ${draft.validation.dropped_details.slice(0, 5).join(' | ')}`
+          );
+        }
+        // needs_review is true whenever anything had to be dropped, so the admin
+        // is told exactly which field to re-check before publishing.
+        return res.json({ success: true, needs_review: draft.needs_review, text, data: draft.data });
       }
   
+      // Nothing usable survived validation. Fall back to a raw excerpt of the
+      // document, which is grounded by construction, rather than persisting
+      // model prose nobody checked.
+      console.warn("News draft extraction produced no grounded fields; using a raw document excerpt:", draft.validation.dropped_details);
+      return res.json({
+        success: true,
+        needs_review: true,
+        text,
+        data: {
+          title: fileName ? fileName.replace(/\.[^/.]+$/, "") : "Extracted Document",
+          summary: text.slice(0, 400) + (text.length > 400 ? "..." : ""),
+          category: "Announcement",
+          tags: ["Extracted"],
+          source_verification_notes: "Auto-extracted. The AI draft could not be verified against the document text, so a raw excerpt is shown instead. Human review required before publishing."
+        }
+      });
     } catch (err: any) {
       console.error('Admin Document Extraction Error:', err);
       console.error('Document text extraction failed:', err.message);

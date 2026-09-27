@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractJson, parseAIJson, newsDraftSchema, newsItemsSchema, matchRankingsSchema, stringArraySchema } from './aiSchemas';
+import { extractJson, parseAIJson, newsItemsSchema, stringArraySchema } from './aiSchemas';
 
 describe('extractJson', () => {
   it('parses plain JSON objects', () => {
@@ -28,24 +28,10 @@ describe('extractJson', () => {
 });
 
 describe('parseAIJson', () => {
-  it('validates a news draft', () => {
-    const parsed = parseAIJson(newsDraftSchema, '{"title":"T","summary":"S","tags":["a"]}');
-    expect(parsed.title).toBe('T');
-  });
-
-  it('rejects a news draft missing the required title', () => {
-    expect(() => parseAIJson(newsDraftSchema, '{"summary":"S"}')).toThrow();
-  });
-
   it('validates news items with relevance_score', () => {
     const parsed = parseAIJson(newsItemsSchema, '[{"title":"T","relevance_score":88}]');
     expect(parsed).toHaveLength(1);
     expect(parsed[0].relevance_score).toBe(88);
-  });
-
-  it('validates match rankings', () => {
-    const parsed = parseAIJson(matchRankingsSchema, '{"rankings":[{"id":"1","index":0,"score":80}]}');
-    expect(parsed.rankings[0].score).toBe(80);
   });
 
   it('validates a string array', () => {
