@@ -1,7 +1,7 @@
 import type { Express } from 'express';
-import { newsItemsSchema, parseAIJson } from '../../lib/aiSchemas';
 import { computeLocalMatchRankings } from '../../lib/scoring';
 import { parseMatchEnrichment, type MatchEnrichment } from '../../lib/matchRankingSchema';
+import { parseScoutedNews } from '../../lib/scoutNewsSchema';
 import { collectStringValues } from '../../lib/grounding';
 import { authenticateUser, isAdminRole, newsSelectFields } from '../middleware/auth';
 import { throttleLimit } from '../middleware/rateLimit';
@@ -68,33 +68,35 @@ export const registerScoutRoutes = (app: Express) => {
           throw new Error("Ecosystem services currently busy. Bypassing live sync to fallback.");
         }
   
-        const rawScoutedData = parseAIJson(newsItemsSchema, providerOutput.text.trim());
-  
-        for (let i = 0; i < Math.min(rawScoutedData.length, 4); i++) {
-          const item = rawScoutedData[i];
+        const scouted = parseScoutedNews(providerOutput.text);
+
+        for (const item of scouted.items.slice(0, 4)) {
           finalizedItems.push({
-            title: item.title,
-            category: item.category,
+            ...item,
             published_at: today,
             image_url: '', // Empty initially for manual review and image upload!
-            summary: item.summary,
-            tags: item.tags || [],
-            relevance_score: item.relevance_score || 0,
-            source_verification_notes: item.source_verification_notes || '',
-            external_url: item.external_url || '',
             is_ai_generated: true,
             source_name: item.source_name || 'Global News Feed',
             status: 'Draft' // Saved as Draft so admin must upload image and review before publishing
           });
         }
-  
+
         await recordAiDecision({
           decision_type: 'news_scouting',
           subject_id: null,
           provider: providerOutput.provider,
           model: providerOutput.model,
           prompt_version: 'ugjh-news-scout-v1',
-          result: { scouted_items: finalizedItems.length }
+          result: {
+            scouted_items: finalizedItems.length,
+            items_checked: scouted.validation.checked,
+            items_kept: scouted.validation.kept,
+            items_dropped: scouted.validation.dropped,
+            dropped_details: scouted.validation.dropped_details,
+            // These items are written without live source retrieval, so the
+            // publication path is the only thing that verifies them.
+            source_retrieval: 'none',
+          }
         });
       } catch (scoutError: any) {
         if (scoutError instanceof AiProvenancePersistenceError) throw scoutError;

@@ -1,19 +1,7 @@
 import { z } from 'zod';
 
 // --- AI output schemas (validated server-side before any DB write) ---
-export const newsItemSchema = z.object({
-  title: z.string().min(1),
-  category: z.string().optional(),
-  summary: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  relevance_score: z.number().optional(),
-  source_verification_notes: z.string().optional(),
-  source_name: z.string().optional(),
-  external_url: z.string().optional(),
-}).passthrough();
-
-
-
+//
 // NOTE: profile extraction is validated by parseProfileExtraction in
 // ./profileExtractionSchema, which checks the full shape and grounds every
 // factual claim in the source text. Do not reintroduce a permissive
@@ -26,10 +14,14 @@ export const newsItemSchema = z.object({
 // here accepted invented grant amounts and partner names, and the endpoint
 // reported needs_review: false whenever the JSON merely parsed, which
 // suppressed the admin review prompt.
+//
+// NOTE: scouted news items are validated by parseScoutedNews in
+// ./scoutNewsSchema. The permissive newsItemSchema and newsItemsSchema that
+// used to live here accepted any relevance_score -- including 99, which the UI
+// badges as high relevance -- and let the model's own note stand in for a
+// verification note.
 
 export const stringArraySchema = z.array(z.string());
-
-export const newsItemsSchema = z.array(newsItemSchema);
 
 /**
  * Extract and parse JSON from raw AI text. Handles markdown code fences and

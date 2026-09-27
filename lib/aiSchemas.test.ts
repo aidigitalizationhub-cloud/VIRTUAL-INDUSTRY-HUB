@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractJson, parseAIJson, newsItemsSchema, stringArraySchema } from './aiSchemas';
+import { extractJson, parseAIJson, stringArraySchema } from './aiSchemas';
 
 describe('extractJson', () => {
   it('parses plain JSON objects', () => {
@@ -28,12 +28,6 @@ describe('extractJson', () => {
 });
 
 describe('parseAIJson', () => {
-  it('validates news items with relevance_score', () => {
-    const parsed = parseAIJson(newsItemsSchema, '[{"title":"T","relevance_score":88}]');
-    expect(parsed).toHaveLength(1);
-    expect(parsed[0].relevance_score).toBe(88);
-  });
-
   it('validates a string array', () => {
     expect(parseAIJson(stringArraySchema, '["a","b"]')).toEqual(['a', 'b']);
   });
