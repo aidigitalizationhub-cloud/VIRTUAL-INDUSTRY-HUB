@@ -48,9 +48,42 @@ describe('match ranking enrichment validation', () => {
       context(),
     );
 
-    // The reasoning is refused, but the safe label survives.
     expect(result.byKey.get('id:aaaa-1111')?.reasoning).toBeUndefined();
     expect(result.validation.dropped_details.join(' ')).toContain('ungrounded reasoning');
+  });
+
+  it('discards the label when the entry offered a rationale that was rejected', () => {
+    // Otherwise a fabricated explanation could still leave the candidate
+    // presented to the researcher as "Highly Compatible".
+    const result = parseMatchEnrichment(
+      rankings([
+        { id: 'aaaa-1111', index: 0, reasoning: 'He is an expert in CRISPR cancer therapy and holds three patents in oncology.', alignment_label: 'Highly Compatible' },
+      ]),
+      context(),
+    );
+
+    expect(result.byKey.get('id:aaaa-1111')?.alignment_label).toBeUndefined();
+    expect(result.validation.dropped_details.join(' ')).toContain('discarded because its reasoning was rejected');
+  });
+
+  it('discards the label when the rationale was too long', () => {
+    const result = parseMatchEnrichment(
+      rankings([{ id: 'aaaa-1111', index: 0, reasoning: 'malaria '.repeat(200), alignment_label: 'Highly Compatible' }]),
+      context(),
+    );
+
+    expect(result.byKey.get('id:aaaa-1111')?.alignment_label).toBeUndefined();
+  });
+
+  it('still accepts a label when the entry offered no rationale at all', () => {
+    // An entry may legitimately enrich only the label, and the controlled
+    // vocabulary makes that safe on its own.
+    const result = parseMatchEnrichment(
+      rankings([{ id: 'aaaa-1111', index: 0, alignment_label: 'Strategic Match' }]),
+      context(),
+    );
+
+    expect(result.byKey.get('id:aaaa-1111')?.alignment_label).toBe('Strategic Match');
   });
 
   it('rejects an alignment label outside the allowed set', () => {

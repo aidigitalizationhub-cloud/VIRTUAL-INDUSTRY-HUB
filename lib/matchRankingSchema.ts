@@ -100,13 +100,25 @@ export const parseMatchEnrichment = (
     if (Number.isFinite(Number(lr.index))) realIndexes.add(Number(lr.index));
   }
 
-  // A two-sentence strategic-fit explanation legitimately uses connecting
-  // vocabulary that appears in neither profile. Treat those words as generic so
-  // honest reasoning is not rejected purely for being connective.
+  // A two-sentence strategic-fit explanation legitimately uses framing and
+  // connective vocabulary that appears in neither profile: "shared focus on",
+  // "complementary expertise in". Those words are semantically empty -- a claim
+  // built only from them carries no factual content, so admitting them cannot
+  // lend support to a fabrication. Specific nouns and numbers are what make a
+  // claim checkable, and those are still held to the source.
   const CONNECTING_VOCABULARY = [
     'match', 'matches', 'matching', 'compatible', 'compatibility', 'strategic', 'strategy',
     'alignment', 'aligned', 'synergy', 'synergies', 'research', 'researcher', 'collaboration',
-    'collaborate', 'complementary', 'overlap', 'strong', 'potential', 'fit', 'relevant',
+    'collaborate', 'complementary', 'overlap', 'overlaps', 'strong', 'potential', 'fit', 'relevant',
+    'shared', 'share', 'shares', 'focus', 'focused', 'focuses', 'common', 'joint', 'both',
+    'emphasis', 'expertise', 'experience', 'specialisation', 'specialization', 'background',
+    'offer', 'offers', 'offered', 'offering', 'providing', 'provides', 'provide', 'include',
+    'including', 'includes', 'across', 'domain', 'domains', 'field', 'fields', 'topic', 'topics',
+    'interest', 'interests', 'skill', 'skills', 'work', 'works', 'working', 'area', 'areas',
+    'likely', 'would', 'could', 'may', 'able', 'help', 'helps', 'assist', 'partner', 'partners',
+    'partnership', 'organisation', 'organization', 'institution', 'university', 'team', 'teams',
+    'related', 'applicable', 'useful', 'valuable', 'helpfully', 'naturally', 'particularly',
+    'notably', 'suitable', 'promising', 'clear', 'directly', 'closely', 'well',
   ].join(' ');
 
   const parsed = extractJson(raw);
@@ -166,15 +178,23 @@ export const parseMatchEnrichment = (
 
     const enrichment: MatchEnrichment = {};
 
+    // If this entry offered a rationale and the rationale was rejected, the
+    // model's judgement about this candidate is not trustworthy, so its label
+    // goes with it. Otherwise a fabricated explanation could still leave the
+    // candidate labelled "Highly Compatible".
+    let reasoningRejected = false;
+
     const rawReasoning = typeof record.reasoning === 'string' ? record.reasoning.trim() : '';
     if (rawReasoning) {
       if (rawReasoning.length > MAX_REASONING_CHARS) {
         dropped += 1;
+        reasoningRejected = true;
         dropped_details.push(`reasoning for ${key} exceeded ${MAX_REASONING_CHARS} characters`);
       } else if (!isSupported(rawReasoning, grounding) || !numbersAreGrounded(rawReasoning, grounding)) {
         // This is the case that matters: a claim about a third party that the
         // supplied profile text does not support.
         dropped += 1;
+        reasoningRejected = true;
         dropped_details.push(`ungrounded reasoning for ${key}: ${rawReasoning.slice(0, 120)}`);
       } else {
         enrichment.reasoning = rawReasoning;
@@ -183,7 +203,10 @@ export const parseMatchEnrichment = (
 
     const rawLabel = typeof record.alignment_label === 'string' ? record.alignment_label.trim() : '';
     if (rawLabel) {
-      if (isAlignmentLabel(rawLabel)) {
+      if (reasoningRejected) {
+        dropped += 1;
+        dropped_details.push(`alignment_label for ${key} discarded because its reasoning was rejected`);
+      } else if (isAlignmentLabel(rawLabel)) {
         enrichment.alignment_label = rawLabel;
       } else {
         dropped += 1;

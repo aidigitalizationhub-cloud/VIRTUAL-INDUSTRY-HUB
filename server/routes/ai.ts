@@ -452,7 +452,7 @@ export const registerAiRoutes = (app: Express) => {
   
   SOURCE 2: QUESTIONNAIRE RESPONSES
   <JSON_START>
-  ${JSON.stringify(questionnaire).slice(0, 10000)}
+  ${JSON.stringify(questionnaire ?? {}).slice(0, 10000)}
   <JSON_END>
   
   Provide semantic_summary (2-3 sentences) summarizing the profile, and embedding_text (concise keyword dump for semantic vector analysis).`;
