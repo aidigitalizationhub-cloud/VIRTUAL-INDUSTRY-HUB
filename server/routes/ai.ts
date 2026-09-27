@@ -8,6 +8,7 @@ import { validateBody } from '../middleware/validate';
 import { GEMINI_FALLBACK_MODELS, generateWithFallback, generateWithProviders, getGeminiClient, getGroqClient, recordAiDecision } from '../services/aiGateway';
 import { translateRequestSchema, chatRequestSchema, embedRequestSchema, extractDocumentRequestSchema, aiProfileRequestSchema, aiDecisionRecordSchema } from '../../lib/requestSchemas';
 import { getBase64DecodedByteLength, validateUpload } from '../../lib/uploadGuard';
+import { buildUnavailableProfile } from '../../lib/profileExtractionFallback';
 
 export const registerAiRoutes = (app: Express) => {
   app.post('/api/translate', validateBody(translateRequestSchema), authenticateUser, throttleLimit(30, 60 * 1000), async (req: express.Request, res: express.Response) => {
@@ -438,139 +439,21 @@ export const registerAiRoutes = (app: Express) => {
         return res.json({ profile });
       }
   
-      // High quality offline fallback match if keys are missing or invalid
-      console.log("No valid AI API keys found. Generating bespoke mock profile from questionnaire responses.");
-      
-      const role = (questionnaire?.selectedRole || questionnaire?.userRole || userType || 'student').toLowerCase();
-      const name = questionnaire?.fullName || 'University of Ghana Innovator';
-      const email = questionnaire?.email || 'innovator@ug.edu.gh';
-      const phone = questionnaire?.phone || '';
-      const skillsList = questionnaire?.primarySkills ? questionnaire.primarySkills.split(',').map((s: string) => s.trim()) : [];
-      const interestsList = questionnaire?.researchInterests ? questionnaire.researchInterests.split(',').map((s: string) => s.trim()) : [];
-      
-      const fallbackProfile = {
-        personal_information: {
-          full_name: name,
-          email: email,
-          phone: phone,
-          country: "Ghana",
-          city: "Accra",
-          linkedin: "",
-          github: "",
-          portfolio_website: ""
-        },
-        professional_profile: {
-          professional_title: (role.charAt(0).toUpperCase() + role.slice(1)) + " in Legon Hub",
-          current_role: role,
-          institution_or_company: "University of Ghana",
-          years_of_experience: "2",
-          experience_level: "intermediate"
-        },
-        education: [
-          {
-            institution: "University of Ghana",
-            degree: "Bachelor of Science",
-            field_of_study: "Biotech & Medical Science",
-            graduation_year: "2026",
-            gpa: "3.7"
-          }
-        ],
-        skills: {
-          technical_skills: skillsList.length ? skillsList : ["Genomic Analysis", "PCR Assay Development", "Biomedical Engineering"],
-          research_skills: ["Experimental Design", "Data Compilation", "Clinical Validation Protocols"],
-          business_skills: ["Intellectual Property Analysis", "Startup Pitching"],
-          soft_skills: ["Scientific Communication", "Interdisciplinary Collaboration"],
-          tools_and_technologies: ["RStudio", "Gel Electrophoresis Kit", "Python Pandas"]
-        },
-        work_experience: [
-          {
-            role: "Academic / Lab Associate",
-            organization: "Noguchi Memorial Institute for Medical Research",
-            duration: "18 Months",
-            location: "University of Ghana, Legon",
-            responsibilities: ["Supporting lab lead with sample characterization and PCR runs", "Documenting biohazard safety logs"],
-            achievements: ["Successfully reduced reagent waste by 12% through meticulous double-well pipetting schedule"]
-          }
-        ],
-        research_information: {
-          research_interests: interestsList.length ? interestsList : ["Point of Care Assays", "Phytotherapy Anti-inflammatories"],
-          research_areas: ["Diagnostics", "Molecular Medicine"],
-          research_keywords: ["Assays", "Low-cost PCR", "Phytomedicine", "Ghana Diagnostics"],
-          methodologies: ["Quantitative Assay Design", "Clinical Cohort Review"],
-          research_domains: ["Life Sciences"]
-        },
-        projects: [
-          {
-            project_name: "Collaborative paper-strip assay experiment",
-            description: "Designing a rapid, colorimetric paper lateral-flow diagnostics tool focused on infectious biomarkers.",
-            technologies_used: ["Cellulose Binding", "Gold Nanoparticles"],
-            industry: "Diagnostics",
-            impact: "Dramatically improves regional screening latency, lowering diagnosis price constraint.",
-            commercialization_potential: "High; current technology validation achieves TRL 4."
-          }
-        ],
-        publications: [],
-        certifications: ["UG Lab Biosafety Certificate"],
-        industries: ["Therapeutics & Diagnostics", "Higher Education"],
-        startup_and_innovation_signals: {
-          startup_experience: false,
-          prototype_built: true,
-          patents: [],
-          commercial_research: true,
-          market_validation: false,
-          entrepreneurial_interests: ["Bio-Venturing", "Licensing Deals"]
-        },
-        collaboration_profile: {
-          looking_for: ["Licensing Partners", "Clinical Trial Mentors", "Angel Capitalists"],
-          can_offer: ["Local Assay Validation Lab Support", "Ghanaian Biotech Market Feedback"],
-          preferred_collaboration_types: ["Co-Development", "Licensing", "Consulting"],
-          availability: "Part-Time",
-          preferred_regions: ["West Africa", "Global Partnership Networks"]
-        },
-        investment_and_funding_profile: {
-          seeking_funding: true,
-          investment_interests: ["Medtech Innovation"],
-          funding_stage: "Pre-seed",
-          estimated_budget_needs: "$25,000",
-          target_industries: ["Diagnostics", "Bio-Engineering"]
-        },
-        student_profile: {
-          internship_interests: ["Pharma QA/QC Team", "R&D Clinical Lab Group"],
-          career_goals: ["Biosensor Engineering Director", "Clinical Program Manager"],
-          preferred_industries: ["Biomedical Engineering", "Health Services R&D"],
-          learning_interests: ["Venture Capital modeling", "Phytotherapeutic screening regulations"]
-        },
-        semantic_tags: [role, "innovator-legon", "health-ug"],
-        semantic_summary: `Highly capable ${role} based at University of Ghana Legon Campus specializing in modern assays and public health. Passionate about bringing functional research discoveries out of the academic bench and successfully onto the clinical market.`,
-        embedding_text: `${name} ${role} University of Ghana ${skillsList.join(' ')} ${interestsList.join(' ')}`
-      };
-  
-      return res.json({ profile: fallbackProfile });
+      // No provider produced a usable result. Return only what the researcher
+      // supplied. Fabricating education, GPA, employment or funding data here
+      // would put invented claims into a research matchmaking record.
+      console.warn('AI profile extraction unavailable: no provider returned a usable result.');
+      const unavailableProfile = buildUnavailableProfile({ questionnaire, userType });
+      await recordAiDecision({
+        decision_type: 'profile_extraction_unavailable',
+        subject_id: (req as any).user?.id || null,
+        prompt_version: 'ugjh-profile-extraction-v1',
+        result: { reason: 'no provider returned a usable result', partial: true }
+      });
+      return res.json({ profile: unavailableProfile });
     } catch (error: any) {
       console.error('Server profile extraction error:', error);
-      const safeRole = req.body?.userType || 'Researcher';
-      const safeName = req.body?.questionnaire?.fullName || 'University of Ghana Innovator';
-      return res.json({
-        profile: {
-          personal_information: { full_name: safeName, email: "innovator@ug.edu.gh", phone: "", country: "Ghana", city: "Accra", linkedin: "", github: "", portfolio_website: "" },
-          professional_profile: { professional_title: "Researcher / Innovator", current_role: safeRole, institution_or_company: "University of Ghana", years_of_experience: "3", experience_level: "intermediate" },
-          education: [{ institution: "University of Ghana", degree: "Postgraduate Degree", field_of_study: "Scientific Innovation", graduation_year: "2025", gpa: "3.8" }],
-          skills: { technical_skills: ["Scientific Analysis", "Research Methodologies"], research_skills: ["Experimental Design"], business_skills: ["Project Management"], soft_skills: ["Communication"], tools_and_technologies: ["Python", "R"] },
-          work_experience: [],
-          research_information: { research_interests: ["Innovation", "Healthcare"], research_areas: ["Life Sciences"], research_keywords: ["Ghana", "Research"], methodologies: ["Empirical"], research_domains: ["Sciences"] },
-          projects: [],
-          publications: [],
-          certifications: [],
-          industries: ["Higher Education"],
-          startup_and_innovation_signals: { startup_experience: false, prototype_built: true, patents: [], commercial_research: true, market_validation: false, entrepreneurial_interests: [] },
-          collaboration_profile: { looking_for: ["Research Partners"], can_offer: ["Academic Expertise"], preferred_collaboration_types: ["Co-Development"], availability: "Full-Time", preferred_regions: ["West Africa"] },
-          investment_and_funding_profile: { seeking_funding: true, investment_interests: [], funding_stage: "Seed", estimated_budget_needs: "", target_industries: [] },
-          student_profile: { internship_interests: [], career_goals: [], preferred_industries: [], learning_interests: [] },
-          semantic_tags: [safeRole, "ug-innovator"],
-          semantic_summary: `Capable ${safeRole} at University of Ghana focused on high-impact research.`,
-          embedding_text: `${safeName} ${safeRole} University of Ghana`
-        }
-      });
+      return res.json({ profile: buildUnavailableProfile({ questionnaire, userType }) });
     }
   });
   

@@ -223,6 +223,15 @@ export interface AIProfile {
   semantic_tags: string[];
   semantic_summary: string;
   embedding_text: string;
+  /**
+   * Set when a model did not produce this profile. 'unavailable' means only the
+   * values the person supplied themselves are present and nothing was inferred,
+   * generated or completed on their behalf. Callers must surface
+   * extraction_notice rather than treating this as a real extraction.
+   */
+  extraction_status?: 'complete' | 'unavailable';
+  partial?: boolean;
+  extraction_notice?: string;
 }
 
 export interface NewsItem {
