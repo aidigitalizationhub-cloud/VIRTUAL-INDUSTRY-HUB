@@ -33,12 +33,11 @@ export const matchRankingsSchema = z.object({
   rankings: z.array(matchRankingSchema),
 }).passthrough();
 
-export const profileSchema = z.object({
-  personal_information: z.object({
-    full_name: z.string().optional(),
-    email: z.string().optional(),
-  }).passthrough(),
-}).passthrough();
+// NOTE: profile extraction is validated by parseProfileExtraction in
+// ./profileExtractionSchema, which checks the full shape and grounds every
+// factual claim in the source text. Do not reintroduce a permissive
+// profile-only schema here; the previous one accepted invented education,
+// GPA and employment because it passed everything through unchecked.
 
 export const stringArraySchema = z.array(z.string());
 

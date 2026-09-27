@@ -1,7 +1,7 @@
 import type { Express } from 'express';
 import express from 'express';
 import mammoth from 'mammoth';
-import { newsDraftSchema, profileSchema, stringArraySchema, parseAIJson } from '../../lib/aiSchemas';
+import { newsDraftSchema, stringArraySchema, parseAIJson } from '../../lib/aiSchemas';
 import { authenticateUser, getDbClientForRequest, requireRole, Roles } from '../middleware/auth';
 import { throttleLimit } from '../middleware/rateLimit';
 import { validateBody } from '../middleware/validate';
@@ -9,6 +9,7 @@ import { GEMINI_FALLBACK_MODELS, generateWithFallback, generateWithProviders, ge
 import { translateRequestSchema, chatRequestSchema, embedRequestSchema, extractDocumentRequestSchema, aiProfileRequestSchema, aiDecisionRecordSchema } from '../../lib/requestSchemas';
 import { getBase64DecodedByteLength, validateUpload } from '../../lib/uploadGuard';
 import { buildUnavailableProfile } from '../../lib/profileExtractionFallback';
+import { parseProfileExtraction } from '../../lib/profileExtractionSchema';
 
 export const registerAiRoutes = (app: Express) => {
   app.post('/api/translate', validateBody(translateRequestSchema), authenticateUser, throttleLimit(30, 60 * 1000), async (req: express.Request, res: express.Response) => {
@@ -406,7 +407,15 @@ export const registerAiRoutes = (app: Express) => {
     "embedding_text": ""
   }
   
-  Respond with JSON ONLY. Ensure all arrays/objects are present even if empty.`;
+  Respond with JSON ONLY. Ensure all arrays/objects are present even if empty.
+
+  GROUNDING RULES (STRICTLY ENFORCED - DO NOT VIOLATE):
+  1. Use ONLY facts that literally appear in SOURCE 1 or SOURCE 2. Never invent, assume, infer, estimate or round a value.
+  2. If a value is not present in the sources, leave the string EMPTY (""), leave the array EMPTY ([]), and set boolean signals to false. Emptiness is correct and expected. A missing fact must never be filled with a plausible default.
+  3. Never output a GPA, grade, graduation year, publication year, salary, budget, funding amount, TRL level, percentage, metric or any other NUMBER that does not appear verbatim in the sources. Do not convert ("3 years") into ("3.0") or infer a year.
+  4. Never name an employer, university, institute, certification or award that is not named in the sources. Do not describe achievements or impact you were not told about.
+  5. Do not describe the person's country, city, employer, seniority or experience level unless the sources state it. Leave the field empty instead.
+  6. semantic_summary and embedding_text may summarise ONLY the grounded facts above. They must not introduce any new fact, claim or number.`;
   
     const userPrompt = `EXTRACT AND MERGE PROFILE DATA INTO SYSTEM SCHEMA:
   SOURCE 1: CV / RESUME TEXT
@@ -427,16 +436,45 @@ export const registerAiRoutes = (app: Express) => {
         system: systemPrompt
       });
       if (providerOutput) {
-        const profile = parseAIJson(profileSchema, providerOutput.text.trim());
+        // Ground every factual claim in the sources the model was given. Claims
+        // the source cannot support are removed rather than persisted, and an
+        // output that is mostly unsupported is refused entirely.
+        const extraction = parseProfileExtraction(providerOutput.text, { cvText, questionnaire });
+
+        if (extraction.ok) {
+          await recordAiDecision({
+            decision_type: 'profile_extraction',
+            subject_id: (req as any).user?.id || null,
+            provider: providerOutput.provider,
+            model: providerOutput.model,
+            prompt_version: 'ugjh-profile-extraction-v1',
+            result: {
+              profile_keys: Object.keys(extraction.profile || {}),
+              grounded_claims: extraction.validation.supported_claims,
+              checked_claims: extraction.validation.checked_claims,
+              dropped_claims: extraction.validation.dropped_claims.slice(0, 20),
+              unsupported_ratio: extraction.validation.unsupported_ratio,
+            }
+          });
+          return res.json({ profile: extraction.profile });
+        }
+
+        // The model answered, but not with anything the sources support.
+        console.warn(`AI profile extraction rejected: ${extraction.reason}`);
+        const rejectedProfile = buildUnavailableProfile({ questionnaire, userType });
         await recordAiDecision({
-          decision_type: 'profile_extraction',
+          decision_type: 'profile_extraction_ungrounded',
           subject_id: (req as any).user?.id || null,
           provider: providerOutput.provider,
           model: providerOutput.model,
           prompt_version: 'ugjh-profile-extraction-v1',
-          result: { profile_keys: Object.keys(profile || {}) }
+          result: {
+            reason: extraction.reason,
+            unsupported_ratio: extraction.validation.unsupported_ratio,
+            dropped_claims: extraction.validation.dropped_claims.slice(0, 20),
+          }
         });
-        return res.json({ profile });
+        return res.json({ profile: rejectedProfile });
       }
   
       // No provider produced a usable result. Return only what the researcher
