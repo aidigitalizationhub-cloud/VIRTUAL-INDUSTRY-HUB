@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { AIProfile } from '../types/domain';
+import { createGrounding, isSupported, numbersAreGrounded, collectStringValues, type Grounding } from './grounding';
 
 // A model can still invent things despite the grounding rules in the prompt, and
 // `profileSchema` in aiSchemas.ts only checked two fields while passing
@@ -193,108 +194,16 @@ export type ProfileExtractionResult =
   | { ok: false; reason: string; validation: { dropped_claims: string[]; checked_claims: number; supported_claims: number; unsupported_ratio: number } }
   | { ok: true; profile: AIProfile; validation: { dropped_claims: string[]; checked_claims: number; supported_claims: number; unsupported_ratio: number } };
 
-const STOPWORDS = new Set([
-  'the', 'and', 'for', 'with', 'from', 'that', 'this', 'our', 'their', 'they', 'them', 'has', 'have', 'had',
-  'was', 'were', 'are', 'but', 'not', 'you', 'his', 'her', 'its', 'who', 'which', 'will', 'would', 'can',
-  'into', 'over', 'such', 'than', 'then', 'when', 'what', 'some', 'more', 'most', 'other', 'also', 'been',
-  'being', 'both', 'each', 'only', 'very', 'per', 'via', 'using', 'used', 'use', 'based', 'new', 'all',
-  'any', 'own', 'same', 'so', 'do', 'does', 'did', 'get', 'got', 'one', 'two', 'out', 'off', 'up', 'down',
-  'about', 'after', 'before', 'between', 'during', 'under', 'above', 'below', 'while', 'because', 'work',
-  'worked', 'working', 'including', 'include', 'includes', 'various', 'related', 'role', 'roles', 'field',
-]);
-
-/** Lowercase, strip punctuation, collapse whitespace. */
-const normalise = (value: string): string =>
-  value
-    .toLowerCase()
-    .replace(/[^a-z0-9$%.]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const contentTokens = (value: string): string[] => {
-  const out: string[] = [];
-  for (const raw of normalise(value).split(' ')) {
-    // Trim punctuation from the edges so "ghana." matches "ghana".
-    const token = raw.replace(/^[^a-z0-9]+/i, '').replace(/[^a-z0-9]+$/i, '');
-    if (token.length < 3) continue;
-    // Numbers are compared numerically in numbersIn, not as text tokens, so
-    // "2023.0" and "graduated 2023." are treated as the same year.
-    if (/^[\d.,$%]+$/.test(token)) continue;
-    if (STOPWORDS.has(token)) continue;
-    out.push(token);
-  }
-  return out;
-};
-
-const numbersIn = (value: string): number[] =>
-  (normalise(value).match(/\d+(?:\.\d+)?/g) || []).map((n) => Number(n));
-
-type Grounding = {
-  haystack: string;
-  tokens: Set<string>;
-  numbers: Set<number>;
+type GroundingWithSources = Grounding & {
   // Every string value the person actually supplied.
   supplied: string[];
 };
 
-/** Collect only questionnaire *values*, never keys, so field names cannot "ground" a claim. */
-const collectSupplied = (input: unknown, out: string[] = []): string[] => {
-  if (input === null || input === undefined) return out;
-  if (typeof input === 'string') {
-    out.push(input);
-    return out;
-  }
-  if (typeof input === 'number' || typeof input === 'boolean') {
-    out.push(String(input));
-    return out;
-  }
-  if (Array.isArray(input)) {
-    for (const item of input) collectSupplied(item, out);
-    return out;
-  }
-  if (typeof input === 'object') {
-    for (const value of Object.values(input as Record<string, unknown>)) collectSupplied(value, out);
-  }
-  return out;
-};
-
-const buildGrounding = (source: { cvText?: string; questionnaire?: unknown }): Grounding => {
-  const supplied = collectSupplied(source.questionnaire);
+const buildGrounding = (source: { cvText?: string; questionnaire?: unknown }): GroundingWithSources => {
+  const supplied = collectStringValues(source.questionnaire);
   if (typeof source.cvText === 'string' && source.cvText.trim()) supplied.push(source.cvText);
-  const haystack = normalise(supplied.join(' \n '));
-  const tokens = new Set<string>();
-  const numbers = new Set<number>();
-  for (const chunk of supplied) {
-    for (const token of contentTokens(chunk)) tokens.add(token);
-    for (const n of numbersIn(chunk)) numbers.add(n);
-  }
-  return { haystack, tokens, numbers, supplied };
+  return { ...createGrounding(supplied), supplied };
 };
-
-/**
- * A claim is supported when enough of its meaningful words appear in the source.
- * Deliberately tolerant of rephrasing and word order, and deliberately intolerant
- * of claims built from vocabulary the person never used.
- */
-const isSupported = (claim: string, g: Grounding, threshold = 0.7): boolean => {
-  const value = normalise(claim);
-  if (!value) return true; // empty is not a claim
-  if (g.haystack.includes(value)) return true;
-  const tokens = contentTokens(claim);
-  if (tokens.length === 0) {
-    // Claim is made of numbers or stopwords/short words only. Accept it when
-    // verbatim, or when every number it states appears in the source.
-    if (g.haystack.includes(value)) return true;
-    const nums = numbersIn(claim);
-    return nums.length > 0 && nums.every((n) => g.numbers.has(n));
-  }
-  const hits = tokens.filter((t) => g.tokens.has(t)).length;
-  return hits / tokens.length >= threshold;
-};
-
-/** Every number in a claim must exist in the source. Kills invented metrics. */
-const numbersAreGrounded = (claim: string, g: Grounding): boolean =>
-  numbersIn(claim).every((n) => g.numbers.has(n));
 
 const BOOLEAN_EVIDENCE: Record<string, string[]> = {
   startup_experience: ['startup', 'start ups', 'founder', 'founded', 'venture', 'entrepreneur', 'incorporated', 'registered company'],

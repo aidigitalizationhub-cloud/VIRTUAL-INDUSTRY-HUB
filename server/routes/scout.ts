@@ -1,6 +1,8 @@
 import type { Express } from 'express';
-import { matchRankingsSchema, newsItemsSchema, parseAIJson } from '../../lib/aiSchemas';
+import { newsItemsSchema, parseAIJson } from '../../lib/aiSchemas';
 import { computeLocalMatchRankings } from '../../lib/scoring';
+import { parseMatchEnrichment, type MatchEnrichment } from '../../lib/matchRankingSchema';
+import { collectStringValues } from '../../lib/grounding';
 import { authenticateUser, isAdminRole, newsSelectFields } from '../middleware/auth';
 import { throttleLimit } from '../middleware/rateLimit';
 import { validateBody } from '../middleware/validate';
@@ -178,6 +180,10 @@ export const registerScoutRoutes = (app: Express) => {
     }
   
     const computeLocalRankings = () => computeLocalMatchRankings(up, candidates);
+
+    // The text the model is actually shown about the user, used to ground the
+    // explanation it returns. Values only, never field names.
+    const promptUserText = collectStringValues(up).join(' ');
   
     const prompt = `
         You are an elite AI Matching Engine for the University of Ghana Research Hub.
@@ -233,26 +239,45 @@ export const registerScoutRoutes = (app: Express) => {
       // Deterministic scores are authoritative; the LLM only supplies explanation text.
       const localRankings = computeLocalRankings();
   
-      let llmRankings: any[] | null = null;
+      let llmRankings: Map<string, MatchEnrichment> | null = null;
       let provider: string | null = null;
       let model: string | null = null;
+      let enrichmentAccepted = 0;
+      let enrichmentDropped = 0;
   
       const providerOutput = await generateWithProviders(prompt, {
         json: true,
         system: 'You are a professional research matching AI. Respond strictly in JSON format matching the specified schema.'
       });
       if (providerOutput) {
-        llmRankings = parseAIJson(matchRankingsSchema, providerOutput.text.trim()).rankings;
+        // Ground the model's explanation before it is shown to a researcher as
+        // the justification for meeting a specific person or organisation. The
+        // deterministic id, index and score below are never taken from the model.
+        const enrichment = parseMatchEnrichment(providerOutput.text, {
+          localRankings: localRankings.map((lr: any) => ({ id: lr.id, index: lr.index })),
+          candidateTextByIndex: new Map<number, string>(
+            candidates.map((c: any, i: number) => [
+              i,
+              [c?.name, c?.title, c?.role, c?.semantic_summary, c?.description].filter(Boolean).join(' '),
+            ]),
+          ),
+          userText: promptUserText,
+        });
+        llmRankings = enrichment.byKey;
         provider = providerOutput.provider;
         model = providerOutput.model;
+        enrichmentAccepted = enrichment.validation.accepted;
+        enrichmentDropped = enrichment.validation.dropped;
+        if (enrichmentDropped > 0) {
+          console.warn(`Match ranking enrichment: dropped ${enrichmentDropped} ungrounded item(s): ${enrichment.validation.dropped_details.slice(0, 5).join(' | ')}`);
+        }
       }
   
       // Merge: keep the deterministic score, use LLM reasoning/label only when present.
       const finalRankings = localRankings.map((lr: any) => {
-        const llm = (llmRankings || []).find((r: any) =>
-          (r.id && lr.id && String(r.id).toLowerCase() === String(lr.id).toLowerCase()) ||
-          (r.index !== undefined && Number(r.index) === lr.index)
-        );
+        const byKey = llmRankings || new Map<string, MatchEnrichment>();
+        const llm =
+          byKey.get(`id:${String(lr.id || '').trim().toLowerCase()}`) || byKey.get(`idx:${Number(lr.index)}`);
         return {
           id: lr.id,
           index: lr.index,
@@ -268,7 +293,12 @@ export const registerScoutRoutes = (app: Express) => {
         provider: provider || 'hybrid',
         model: model || 'scoring-engine',
         prompt_version: 'ugjh-match-rankings-v1',
-        result: { rankings_count: finalRankings.length, llm_enriched: llmRankings ? true : false }
+        result: {
+          rankings_count: finalRankings.length,
+          llm_enriched: enrichmentAccepted > 0,
+          enrichment_accepted: enrichmentAccepted,
+          enrichment_dropped: enrichmentDropped,
+        }
       });
   
       return res.json({ rankings: finalRankings });
