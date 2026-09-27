@@ -9,7 +9,7 @@ import { StorageService } from '../services/storageService';
 import { EmbeddingService } from '../services/embeddingService';
 import { 
   Users, GraduationCap, Building, Wallet, 
-  ChevronRight, ChevronLeft, Upload, Check, Loader2, Sparkles, Target, Zap, Rocket
+  ChevronRight, ChevronLeft, Upload, Check, Loader2, Sparkles, Target, Zap, Rocket, TriangleAlert
 } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
@@ -248,6 +248,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
       }
       
       setExtractedProfile(profile);
+
+      if (profile.extraction_status === 'unavailable') {
+        showToast(
+          "AI extraction was unavailable. Your profile contains only what you entered - please complete it manually.",
+          "warning"
+        );
+      }
       
       // Generate Embedding for matching
       let embedding: number[] | undefined;
@@ -1475,8 +1482,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
     </div>
   );
 
-  const renderSummary = () => (
+  const renderSummary = () => {
+    const extractionUnavailable = extractedProfile?.extraction_status === 'unavailable';
+    return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8">
+      {extractionUnavailable && (
+        <div className="mb-8 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 flex items-start gap-3">
+          <TriangleAlert size={18} className="text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-[11px] font-bold tracking-widest uppercase mb-1">AI extraction unavailable</p>
+            <p className="text-sm leading-relaxed">
+              {extractedProfile?.extraction_notice ||
+                'Only values you supplied are shown. Nothing was generated or inferred.'}{' '}
+              Please review and complete your profile manually, or retry extraction later.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <div className="flex-1">
           <div className="mb-10">
@@ -1489,11 +1511,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
               </div>
             </div>
             <h1 className="text-3xl font-bold text-ug-navy tracking-tighter mb-6 leading-none">
-                Intelligence Extraction <span className="text-ug-teal">Complete.</span>
+                {extractionUnavailable ? (
+                  <>Profile <span className="text-amber-600">Incomplete.</span></>
+                ) : (
+                  <>Intelligence Extraction <span className="text-ug-teal">Complete.</span></>
+                )}
             </h1>
+            {extractedProfile?.semantic_summary && (
             <p className="text-gray-500 font-medium leading-relaxed italic text-lg">
                 "{extractedProfile?.semantic_summary}"
             </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
@@ -1580,7 +1608,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ user, onComplete, onSkip
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   if (isEmbedded) {
     return (
