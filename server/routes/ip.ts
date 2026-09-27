@@ -5,12 +5,13 @@ import { applyTransition, isUuid, missingTables } from '../ip/ipService';
 import { canViewDisclosure, canAdminReview, canTtoReview, canDecidePublication, isTtoRole, isAdminRole } from '../ip/ipAuthz';
 import { writeIpEvent } from '../ip/ipAudit';
 import { buildAdvisoryFindings } from '../ip/ipAi';
-import { collectIpEvidence, formatIpEvidenceForPrompt, formatIpReviewerFinding } from '../ip/ipEvidence';
+import { collectIpEvidence } from '../ip/ipEvidence';
+import { buildIpScreenPrompt, runAssistantReviewerScreen } from '../ip/ipScreenResult';
 import { getServiceClient, serviceClientConfigError } from '../db/supabase';
 import { authenticateUser, getDbClientForRequest, getRequestProfileId } from '../middleware/auth';
 import { throttleLimit } from '../middleware/rateLimit';
 import { validateBody } from '../middleware/validate';
-import { generateWithAssistantReviewer, recordAiDecision } from '../services/aiGateway';
+import { recordAiDecision } from '../services/aiGateway';
 import { AiProvenancePersistenceError } from '../../lib/aiProvenance';
 import {
   createIpDisclosureRequestSchema, submitIpDisclosureRequestSchema, listIpDisclosuresQuerySchema,
@@ -170,26 +171,18 @@ export const registerIpRoutes = (app: Express) => {
         }
          const { data: submittedLinks } = await db.from('ip_disclosure_links').select('url, title, source_type, notes').eq('disclosure_id', disclosureId).limit(20);
          const evidenceSources = await collectIpEvidence({ db, title: projectResult.data?.title, description: projectResult.data?.description, links: submittedLinks || [] });
-         const aiPrompt = `Review this university IP disclosure for potential IP protection, prior disclosure, ownership, confidentiality, and authenticity concerns. Return JSON with summary (string), risk (info|low|medium|high|critical), recommendation (string), reasoning (array of objects with issue, source_ids, why_it_matters, confidence), and required_actions (array of strings). Every reasoning item must cite one or more source IDs from the evidence packet or answer keys. Distinguish reported facts, potential implications, and items requiring verification. Do not claim that rights are forfeited, determine inventorship, or make a legal or publication decision. Project title: ${projectResult.data?.title || ''}. Description: ${projectResult.data?.description || ''}. Answers: ${JSON.stringify(updated.data.answers ?? {})}\nEvidence packet:\n${formatIpEvidenceForPrompt(evidenceSources)}`;
-         const providerResult = await generateWithAssistantReviewer(aiPrompt);
-        if (providerResult) {
-          let aiOutput: any = null;
-          try { aiOutput = JSON.parse(providerResult.text); } catch { aiOutput = { summary: providerResult.text }; }
-          await db.from('ip_disclosure_findings').insert({
-            disclosure_id: disclosureId,
-            author_id: researcherId,
-             author_role: 'Assistant reviewer',
-            category: input.route === 'tto_opt_out' ? 'authenticity' : 'ai',
-             title: 'Assistant reviewer advisory screening result',
-             body: formatIpReviewerFinding(aiOutput, evidenceSources, updated.data.answers ?? {}),
-            severity: ['info', 'low', 'medium', 'high', 'critical'].includes(aiOutput?.risk) ? aiOutput.risk : 'info',
-            source_type: 'ai',
-            visibility: 'internal',
-            is_preliminary: true,
-          });
-           await recordAiDecision({ decision_type: input.route === 'tto_opt_out' ? 'ip_authenticity_screening' : 'ip_advisory_screening', subject_id: disclosureId, provider: providerResult.provider, model: providerResult.model, prompt_version: 'ip-disclosure-v2', result: { ...aiOutput, evidence_sources: evidenceSources } });
-        }
-        await writeIpEvent(db, { disclosure_id: disclosureId, actor_id: researcherId, actor_role: 'System', action: 'ai_screen_completed', from_status: next.status, to_status: next.status, details: { count: screened.findings.length, automatic: true, route: input.route } });
+         const aiPrompt = buildIpScreenPrompt({ title: projectResult.data?.title, description: projectResult.data?.description, answers: updated.data.answers ?? {}, sources: evidenceSources });
+         const screen = await runAssistantReviewerScreen({
+           db,
+           disclosureId,
+           authorId: researcherId,
+           category: input.route === 'tto_opt_out' ? 'authenticity' : 'ai',
+           answers: updated.data.answers ?? {},
+           sources: evidenceSources,
+           prompt: aiPrompt,
+           decisionType: input.route === 'tto_opt_out' ? 'ip_authenticity_screening' : 'ip_advisory_screening',
+         });
+        await writeIpEvent(db, { disclosure_id: disclosureId, actor_id: researcherId, actor_role: 'System', action: 'ai_screen_completed', from_status: next.status, to_status: next.status, details: { count: screened.findings.length, automatic: true, route: input.route, screening_escalation: screen.escalation, needs_human_review: screen.needsHumanReview } });
       } catch (screenError) {
         console.error('Automatic IP screening failed; disclosure remains available for reviewer screening:', screenError);
         if (screenError instanceof AiProvenancePersistenceError) throw screenError;
@@ -389,24 +382,15 @@ export const registerIpRoutes = (app: Express) => {
       }
       const { data: reviewLinks } = await db.from('ip_disclosure_links').select('url, title, source_type, notes').eq('disclosure_id', disclosureId).limit(20);
       const evidenceSources = await collectIpEvidence({ db, title: proj?.title, description: proj?.description, links: reviewLinks || [] });
-      const aiPrompt = `Review this university IP disclosure for potential IP protection, prior disclosure, ownership, confidentiality, and authenticity concerns. Return JSON with summary (string), risk (info|low|medium|high|critical), recommendation (string), reasoning (array of objects with issue, source_ids, why_it_matters, confidence), and required_actions (array of strings). Every reasoning item must cite one or more source IDs from the evidence packet or answer keys. Distinguish reported facts, potential implications, and items requiring verification. Do not claim that rights are forfeited, determine inventorship, or make a legal or publication decision. Project title: ${proj?.title || ''}. Description: ${proj?.description || ''}. Answers: ${JSON.stringify(d.data.answers ?? {})}\nEvidence packet:\n${formatIpEvidenceForPrompt(evidenceSources)}`;
-      const providerResult = await generateWithAssistantReviewer(aiPrompt);
-      if (providerResult) {
-        let aiOutput: any = null;
-        try { aiOutput = JSON.parse(providerResult.text); } catch { aiOutput = { summary: providerResult.text }; }
-        await db.from('ip_disclosure_findings').insert({
-          disclosure_id: disclosureId, author_id: actorId, author_role: 'Assistant reviewer',
-          category: 'ai', title: 'Assistant reviewer advisory screening result',
-          body: formatIpReviewerFinding(aiOutput, evidenceSources, d.data.answers ?? {}),
-          severity: ['info', 'low', 'medium', 'high', 'critical'].includes(aiOutput?.risk) ? aiOutput.risk : 'info',
-          source_type: 'ai', visibility: 'internal', is_preliminary: true,
-        });
-        await recordAiDecision({ decision_type: 'ip_advisory_screening', subject_id: disclosureId, provider: providerResult.provider, model: providerResult.model, prompt_version: 'ip-disclosure-v2', result: { ...aiOutput, evidence_sources: evidenceSources } });
-      }
+      const aiPrompt = buildIpScreenPrompt({ title: proj?.title, description: proj?.description, answers: d.data.answers ?? {}, sources: evidenceSources });
+      const screen = await runAssistantReviewerScreen({
+        db, disclosureId, authorId: actorId, category: 'ai', answers: d.data.answers ?? {},
+        sources: evidenceSources, prompt: aiPrompt, decisionType: 'ip_advisory_screening',
+      });
       try {
         await recordAiDecision({ decision_type: 'ip_advisory_screening', subject_id: disclosureId, provider: 'rules', model: 'ip-rules-v1', prompt_version: 'v1', result: { count: findings.length } });
       } catch {}
-      await writeIpEvent(db, { disclosure_id: disclosureId, actor_id: actorId, actor_role: String(role), action: 'ai_screen_completed', from_status: disclosure.status, to_status: disclosure.status, details: { count: findings.length } });
+      await writeIpEvent(db, { disclosure_id: disclosureId, actor_id: actorId, actor_role: String(role), action: 'ai_screen_completed', from_status: disclosure.status, to_status: disclosure.status, details: { count: findings.length, screening_escalation: screen.escalation, needs_human_review: screen.needsHumanReview } });
       return res.status(202).json({ disclosure, findings: findings.length, status: 'REVIEW_REQUIRED' });
     } catch (error: any) {
       return ipSendError(res, error, 'AI screening failed.');
