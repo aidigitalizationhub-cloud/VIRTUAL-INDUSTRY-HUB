@@ -80,6 +80,14 @@ Shared helpers: `lib/messageUtils.ts` (`isRevealRequestMessage`), `lib/constants
 - Use `translationService` only for dynamic or AI-generated text; never use it as a replacement for static UI keys.
 - English is the source key tree. The locale parity test prevents a locale from silently falling back because a key is missing.
 
+## Mobile Compatibility
+
+- Home hero and feature cards use responsive minimum heights instead of fixed content heights, and discovery metadata wraps on narrow screens.
+- Researcher overview statistics collapse to a single column on phones; project actions wrap; submitted-document rows allow metadata to shrink and download controls retain a touch-sized target.
+- Researcher project summaries are keyboard- and touch-activatable, and the active-project status timeline scrolls horizontally rather than clipping labels.
+- Mobile dashboard navigation is available to Admin and TTO roles as well as standard users. Administrative routes remain reachable through horizontally scrollable bottom navigation.
+- Dashboard header controls use minimum 44px touch targets and bottom navigation accounts for the mobile safe-area inset.
+
 The locale bundles are loaded asynchronously for French, Twi, and Swahili. `LanguageGate` in `App.tsx` holds the initial route until the selected bundle is ready, preventing an English-first flash. The dashboard header/navigation and disclosure/access-request surfaces are currently wired to the shared `dashboard` namespace. `src/i18n/locales.test.ts` enforces leaf-key parity across all four bundles.
 
 `AppErrorBoundary` provides a localized recovery screen for render failures and logs the original error to the browser console for diagnosis.

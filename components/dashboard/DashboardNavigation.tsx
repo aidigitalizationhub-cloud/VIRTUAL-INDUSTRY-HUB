@@ -31,7 +31,16 @@ interface MobileNavProps {
 
 export const MobileNav: React.FC<MobileNavProps> = ({ role, activeTab, setActiveTab, unreadCount, onNavigate }) => {
   const { t } = useTranslation();
-  const tabs: Array<{ id: DashboardTab; icon: typeof LayoutGrid; label: string; path?: string }> = isTtoRole(role) ? [
+  const isAdmin = role === UserRole.Admin || role === 'Super Admin';
+  const tabs: Array<{ id: DashboardTab; icon: typeof LayoutGrid; label: string; path?: string }> = isAdmin ? [
+    { id: 'overview', icon: LayoutGrid, label: t('dashboard.overview'), path: '/dashboard/admin/overview' },
+    { id: 'overview', icon: Users, label: t('dashboard.users'), path: '/dashboard/admin/users' },
+    { id: 'overview', icon: ShieldCheck, label: t('dashboard.projectScreener'), path: '/dashboard/admin/projects' },
+    { id: 'overview', icon: Globe, label: t('dashboard.newsCurator'), path: '/dashboard/admin/news' },
+    { id: 'overview', icon: Activity, label: t('dashboard.governanceAudit'), path: '/dashboard/admin/audit' },
+    { id: 'overview', icon: ShieldCheck, label: t('dashboard.disclosures'), path: '/dashboard/admin/disclosures' },
+    { id: 'overview', icon: Scale, label: t('dashboard.publicationDecisions'), path: '/dashboard/admin/decisions' },
+  ] : isTtoRole(role) ? [
     { id: 'overview', icon: LayoutGrid, label: t('dashboard.overview') },
     { id: 'overview', icon: Scale, label: t('dashboard.ttoIpOffice'), path: '/dashboard/tto/disclosures' },
   ] : [
@@ -43,11 +52,11 @@ export const MobileNav: React.FC<MobileNavProps> = ({ role, activeTab, setActive
   ];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200/80 z-40 flex items-center justify-around px-2 py-2 shadow-[0_-4px_25px_rgba(0,0,0,0.06)]">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 w-full overflow-x-auto bg-white/95 backdrop-blur-md border-t border-gray-200/80 z-40 flex items-center justify-start px-2 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-4px_25px_rgba(0,0,0,0.06)]">
       {tabs.map((tab) => {
         const active = tab.path ? window.location.pathname.startsWith(tab.path) : activeTab === tab.id;
         return (
-          <button key={tab.path || tab.id} onClick={() => tab.path ? onNavigate(tab.path) : setActiveTab(tab.id)} className={`flex flex-1 flex-col items-center justify-center gap-1 py-1 px-1 rounded-2xl transition-all duration-200 relative ${active ? 'text-ug-teal' : 'text-gray-400 hover:text-gray-600'}`}>
+          <button key={tab.path || tab.id} onClick={() => tab.path ? onNavigate(tab.path) : setActiveTab(tab.id)} className={`flex min-w-[72px] flex-1 flex-col items-center justify-center gap-1 py-1 px-1 rounded-2xl transition-all duration-200 relative ${active ? 'text-ug-teal' : 'text-gray-400 hover:text-gray-600'}`}>
             {active && <motion.div layoutId="mobile-nav-active" className="absolute inset-0 bg-ug-teal/10 rounded-2xl -z-10" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
             <div className="relative flex items-center justify-center">
               <tab.icon size={20} strokeWidth={active ? 2.2 : 1.8} />

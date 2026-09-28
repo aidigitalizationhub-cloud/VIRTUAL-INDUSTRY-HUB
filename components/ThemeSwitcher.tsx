@@ -9,7 +9,7 @@ export const ThemeSwitcher: React.FC = () => {
     <button
       type="button"
       onClick={toggleTheme}
-      className="p-2 sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm flex items-center justify-center cursor-pointer group"
+      className="min-h-11 min-w-11 p-2 sm:p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm flex items-center justify-center cursor-pointer group"
       title={`Current Theme: ${effectiveTheme === 'dark' ? 'Dark' : 'Light'}. Click to toggle theme.`}
       aria-label="Toggle light and dark theme"
     >

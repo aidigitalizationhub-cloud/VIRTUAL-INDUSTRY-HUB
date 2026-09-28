@@ -239,7 +239,7 @@ export const ResearcherOverviewPage = ({
            onOpenModal(null);
          }} actionLabel={t('dashboard.newDisclosure')} />
         
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
            <StatCard label={t('dashboard.liveDisclosures')} value={projects.length} icon={FileText} />
            <StatCard label={t('dashboard.totalHubViews')} value={totalViews >= 1000 ? `${(totalViews/1000).toFixed(1)}k` : totalViews} icon={Eye} />
            <StatCard label={t('dashboard.interactions')} value={totalInteractions} icon={Handshake} />
@@ -281,7 +281,19 @@ export const ResearcherOverviewPage = ({
                 <div key={p.id} className="border border-gray-100 rounded-2xl bg-gray-50/20 hover:shadow-md transition duration-300 overflow-hidden">
                   {/* Summary row */}
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between p-5 md:p-6 gap-4">
-                    <div className="flex items-start gap-4 cursor-pointer flex-1 min-w-0" onClick={() => navigate(`/projects/${p.id}`)}>
+                     <div
+                       className="flex min-w-0 flex-1 cursor-pointer items-start gap-4 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ug-teal/60"
+                       onClick={() => navigate(`/projects/${p.id}`)}
+                       onKeyDown={(event) => {
+                         if (event.key === 'Enter' || event.key === ' ') {
+                           event.preventDefault();
+                           navigate(`/projects/${p.id}`);
+                         }
+                       }}
+                       role="button"
+                       tabIndex={0}
+                       aria-label={`Open project ${p.title}`}
+                     >
                       <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl overflow-hidden shadow-sm bg-gray-100 shrink-0">
                         <ImageWithFallback src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" />
                       </div>
@@ -327,7 +339,7 @@ export const ResearcherOverviewPage = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 justify-end shrink-0">
+                     <div className="flex w-full flex-wrap items-center gap-2 justify-start sm:justify-end lg:w-auto lg:shrink-0">
                       {/* Badge stats */}
                       <div className="flex items-center gap-2">
                         {msgCount > 0 && (
@@ -546,15 +558,15 @@ export const ResearcherOverviewPage = ({
                                 <p className="text-[11px] font-semibold text-ug-navy tracking-wider mb-3">ACTIVE SUBMITTED SUPPORT DOCUMENTS</p>
                                 <div className="space-y-2">
                                   {p.requested_documents?.filter((doc: any) => doc.url).map((doc: any, dIdx: number) => (
-                                    <div key={doc.id || dIdx} className="flex justify-between items-center p-2.5 bg-gray-50 rounded-lg text-[11px] font-bold text-gray-600 border border-gray-100 text-left">
-                                      <div className="flex items-center gap-2 truncate">
+                                      <div key={doc.id || dIdx} className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-gray-50 rounded-lg text-[11px] font-bold text-gray-600 border border-gray-100 text-left">
+                                       <div className="flex min-w-0 flex-1 items-center gap-2">
                                         <div className="h-4 w-4 rounded-full bg-green-50 border border-green-200 flex items-center justify-center shrink-0">
                                           <span className="text-[11px] font-bold text-green-600">✓</span>
                                         </div>
-                                        <span className="truncate font-bold">{doc.name}</span>
-                                        <span className="text-[10px] text-gray-400 font-medium">Uploaded by {doc.by || 'PI'}</span>
-                                      </div>
-                                      <a href={doc.url} target="_blank" rel="noreferrer" className="text-ug-teal hover:underline flex items-center gap-1 shrink-0 ml-1">
+                                         <span className="truncate font-bold">{doc.name}</span>
+                                         <span className="shrink-0 text-[10px] text-gray-400 font-medium">Uploaded by {doc.by || 'PI'}</span>
+                                       </div>
+                                       <a href={doc.url} target="_blank" rel="noreferrer" className="min-h-9 shrink-0 ml-auto text-ug-teal hover:underline flex items-center gap-1 rounded-lg px-2">
                                         <Download size={10} />
                                         DOWNLOAD
                                       </a>

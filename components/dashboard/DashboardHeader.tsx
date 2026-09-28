@@ -59,13 +59,13 @@ const DashboardHeaderContent: React.FC<DashboardHeaderProps> = ({ displayName, a
       </div>
     )}
     <div className="flex items-center gap-1.5 sm:gap-6">
-      {showMessages && <button onClick={onMessages} className={`p-2 transition-all relative rounded-xl hover:bg-white/10 ${activeTab === 'messages' ? 'text-ug-teal' : 'text-white/70 hover:text-white'}`} title={t('dashboard.messagesAndNotifications')} aria-label={t('dashboard.messagesAndNotifications')}>
+       {showMessages && <button onClick={onMessages} className={`min-h-11 min-w-11 p-2 transition-all relative rounded-xl hover:bg-white/10 ${activeTab === 'messages' ? 'text-ug-teal' : 'text-white/70 hover:text-white'}`} title={t('dashboard.messagesAndNotifications')} aria-label={t('dashboard.messagesAndNotifications')}>
         <Bell size={18} />
         {unreadCount > 0 && <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-ug-teal text-white text-[11px] font-semibold flex items-center justify-center rounded-full border border-ug-navy shadow-lg">{unreadCount > 9 ? '9+' : unreadCount}</span>}
       </button>}
       <ThemeSwitcher />
       <div className="flex items-center pl-2 sm:pl-6 border-l border-white/10">
-         <button onClick={onLogout} className="p-2 text-white/60 hover:text-red-400 transition-all rounded-xl hover:bg-white/10 flex items-center gap-1.5" title={t('nav.logout')} aria-label={t('nav.logout')}>
+         <button onClick={onLogout} className="min-h-11 min-w-11 p-2 text-white/60 hover:text-red-400 transition-all rounded-xl hover:bg-white/10 flex items-center justify-center gap-1.5" title={t('nav.logout')} aria-label={t('nav.logout')}>
            <LogOut size={18} /><span className="hidden md:inline text-xs font-bold">{t('nav.logout')}</span>
         </button>
       </div>

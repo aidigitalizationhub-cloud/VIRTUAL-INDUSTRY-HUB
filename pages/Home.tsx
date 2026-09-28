@@ -58,7 +58,7 @@ const Home: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       
       {/* HERO SECTION */}
-      <div className="relative bg-ug-navy overflow-hidden h-[500px] sm:h-[650px] md:h-[750px] flex items-center">
+      <div className="relative bg-ug-navy overflow-hidden min-h-[500px] sm:min-h-[650px] md:min-h-[750px] flex items-center py-16 sm:py-20">
         {HERO_IMAGES.map((img, index) => (
            <ImageWithFallback
               key={index}
@@ -105,7 +105,7 @@ const Home: React.FC = () => {
             {/* DIAGNOSTICS CARD */}
             <div 
               onClick={() => handleCategoryClick(ResearchArea.Diagnostics)}
-              className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer h-[320px] flex flex-col justify-end p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
+              className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer min-h-[320px] flex flex-col justify-end p-6 sm:p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
             >
                <ImageWithFallback src="https://images.unsplash.com/photo-1579154204601-01588f351167?auto=format&fit=crop&w=800&q=80" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-ug-navy via-ug-navy/85 to-ug-navy/40 mix-blend-multiply group-hover:via-ug-navy/90 transition-all duration-500"></div>
@@ -127,7 +127,7 @@ const Home: React.FC = () => {
             {/* PHARMACEUTICAL CARD */}
             <div 
               onClick={() => handleCategoryClick(ResearchArea.Pharmaceutical)}
-              className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer h-[320px] flex flex-col justify-end p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
+              className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer min-h-[320px] flex flex-col justify-end p-6 sm:p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
             >
                <ImageWithFallback src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=800&q=80" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-teal-950 via-teal-900/85 to-teal-800/40 mix-blend-multiply group-hover:via-teal-900/90 transition-all duration-500"></div>
@@ -149,7 +149,7 @@ const Home: React.FC = () => {
             {/* VACCINES CARD */}
             <div 
               onClick={() => handleCategoryClick(ResearchArea.Vaccines)}
-              className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer h-[320px] flex flex-col justify-end p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
+              className="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md cursor-pointer min-h-[320px] flex flex-col justify-end p-6 sm:p-7 group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl"
             >
                <ImageWithFallback src="https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=800&q=80" alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110" />
               <div className="absolute inset-0 bg-gradient-to-t from-cyan-950 via-cyan-950/85 to-cyan-900/40 mix-blend-multiply group-hover:via-cyan-950/90 transition-all duration-500"></div>
@@ -275,7 +275,7 @@ const Home: React.FC = () => {
                    </div>
                    <div className="p-6 flex-1 flex flex-col justify-between">
                      <div>
-                       <div className="flex items-center gap-3 mb-3">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
                          <span className="text-[11px] font-semibold bg-ug-navy/5 text-ug-navy px-2.5 py-1 rounded-full tracking-wider">
                            <Tr text={item.category} />
                          </span>

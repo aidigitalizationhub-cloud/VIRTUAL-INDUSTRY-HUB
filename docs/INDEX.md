@@ -12,6 +12,7 @@ IP disclosure is implemented in code + additive SQL migrations, not design-only.
 - `API.md` — complete REST reference: auth, profiles, projects, storage, disclosure workspace, findings/links/files, access requests, matches/EOI/challenges/AI.
 - `BACKEND.md` — Express architecture, Better Auth, middleware, `server/ip/*` domain services, data model, RLS, storage/signed URLs, AI provenance, errors, deployment.
 - `FRONTEND.md` — React/Vite routing, dashboard tabs, IP workspaces, services, types, project-creation hook, UX rules, verification.
+- `AI_ENGINEERING_FINE_TUNING_TASKS.md` — concise model fine-tuning tasks, output contract, safety rules, evaluation criteria, and delivery checklist.
 - `database/` — Supabase SQL setup, RLS verification, security patch, and Better Auth migration scripts.
 - `implementation.md` — single practical IP disclosure, Admin, TTO, access, and implementation design.
 - `ip_disclosure_workflow.md` — authoritative researcher, TTO/IP, opt-out Admin, AI, findings, and privacy workflow.
@@ -37,4 +38,4 @@ IP disclosure is implemented in code + additive SQL migrations, not design-only.
 - `pages/Dashboards.tsx` is now a route shell; role overviews live in `pages/dashboard/{ResearcherOverviewPage,StudentOverviewPage,PartnerOverviewPage,MatchesPage,MessagesPage,DisclosurePages,admin/*}`.
 - Shared UI lives in `components/dashboard/*`; toasts live in `contexts/ToastContext.tsx`.
 - Admin URLs are independent (`/dashboard/admin/*`); unified disclosures, TTO/IP review, authenticity review, and access have dedicated guarded pages.
-- `components/AdminDashboard.tsx` is retained as the implementation behind admin wrappers pending section-level extraction.
+- `components/AdminDashboard.tsx` remains the orchestration layer behind admin wrappers; rendered sections live under `components/admin/`.

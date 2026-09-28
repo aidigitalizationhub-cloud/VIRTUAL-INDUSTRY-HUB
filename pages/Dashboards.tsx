@@ -455,9 +455,7 @@ const Dashboards: React.FC<DashboardsProps> = ({ role, user, initialThreadId, on
         </div>
       </main>
 
-      {!hasDashboardCapability(role, 'reviewTto') && (
-        <DashboardMobileNav role={role} activeTab={activeTab} setActiveTab={setActiveTab} unreadCount={internalUnread} onNavigate={navigate} />
-      )}
+      <DashboardMobileNav role={role} activeTab={activeTab} setActiveTab={setActiveTab} unreadCount={internalUnread} onNavigate={navigate} />
     </div>
 
     {isProjectModalOpen && (
