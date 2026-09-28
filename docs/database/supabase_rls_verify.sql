@@ -14,7 +14,9 @@ BEGIN
     'profiles', 'projects', 'eois', 'student_profiles', 'researcher_profiles',
     'investor_profiles', 'industry_profiles', 'bookmarks', 'news',
     'industry_challenges', 'challenge_matches', 'interaction_logs',
-    'ai_decisions'
+    'ai_decisions', 'ip_disclosures', 'ip_disclosure_events',
+    'ip_disclosure_findings', 'ip_disclosure_links',
+    'ip_disclosure_decisions', 'ip_disclosure_files', 'ip_access_requests'
   ] LOOP
     IF NOT EXISTS (
       SELECT 1 FROM pg_class c
@@ -60,12 +62,51 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='eois' AND policyname='Recipients can manage received eois') THEN
     missing := array_append(missing, 'eois:Recipients can manage received eois');
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='ip_disclosures' AND policyname='Researchers can view own IP disclosures') THEN
+    missing := array_append(missing, 'ip_disclosures:Researchers can view own IP disclosures');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='ip_disclosure_files' AND policyname='Researchers can view own IP files') THEN
+    missing := array_append(missing, 'ip_disclosure_files:Researchers can view own IP files');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='ip_disclosure_findings' AND policyname='Researchers can view shared IP findings') THEN
+    missing := array_append(missing, 'ip_disclosure_findings:Researchers can view shared IP findings');
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname='public' AND tablename='ip_access_requests' AND policyname='Users create access requests') THEN
+    missing := array_append(missing, 'ip_access_requests:Users create access requests');
+  END IF;
 
   IF array_length(missing, 1) > 0 THEN
     RAISE EXCEPTION 'Missing required policies: %', array_to_string(missing, ', ');
   END IF;
 
   RAISE NOTICE 'RLS verification passed: RLS enabled and required policies present on all core tables.';
+END $$;
+
+-- 4. Disclosure reviewer/audit data is server-write-only. The only browser
+-- writes allowed by design are a researcher's own disclosure and access request.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename IN (
+        'ip_disclosure_events', 'ip_disclosure_findings',
+        'ip_disclosure_links', 'ip_disclosure_decisions', 'ip_disclosure_files'
+      )
+      AND cmd IN ('INSERT', 'UPDATE', 'DELETE')
+  ) THEN
+    RAISE EXCEPTION 'IP events, findings, links, decisions, and files must be server-write-only.';
+  END IF;
+  RAISE NOTICE 'IP reviewer/audit write boundary verified.';
+END $$;
+
+-- 5. The private project bucket must not be publicly readable.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'projects' AND public = true) THEN
+    RAISE EXCEPTION 'storage.projects must remain private; public images use the API route.';
+  END IF;
+  RAISE NOTICE 'Private project storage verified.';
 END $$;
 
 -- 3. Privilege-escalation guard: the role-protection trigger must exist on profiles.

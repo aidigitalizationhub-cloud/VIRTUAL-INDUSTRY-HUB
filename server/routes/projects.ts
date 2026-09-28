@@ -4,6 +4,15 @@ import { authenticateUser, isAdminRole, PROJECT_MUTABLE_FIELDS } from '../middle
 import { protectProjectPublication } from '../../lib/projectPublication';
 
 export const registerProjectsRoutes = (app: Express) => {
+  const publicImageUrl = (projectId: string, value: unknown, index: number): string => {
+    const image = String(value || '').trim();
+    if (!image) return '';
+    const isStorageObject = image.includes('/storage/v1/object/public/projects/')
+      || image.includes('/storage/v1/object/sign/projects/')
+      || (!image.includes('://') && !image.startsWith('/') && !image.startsWith('data:'));
+    return isStorageObject ? `/api/public-project-images/${encodeURIComponent(projectId)}/${index}` : image;
+  };
+
   app.get('/api/public-projects', async (_req, res) => {
     try {
       const db = getServiceClient();
@@ -33,6 +42,7 @@ export const registerProjectsRoutes = (app: Express) => {
           const profile = profileMap.get(project.owner_id);
           return {
             ...project,
+            image_url: String(project.image_url || '').split('|').map((value, index) => publicImageUrl(project.id, value, index)).filter(Boolean).join('|'),
             owner_name: profile?.name || 'University Researcher',
             owner_email: profile?.email || '',
             owner_avatar: profile?.avatar_url || '',

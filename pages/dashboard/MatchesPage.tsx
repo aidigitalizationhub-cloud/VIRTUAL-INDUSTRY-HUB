@@ -482,7 +482,7 @@ ${senderName}`
               <div className="flex items-start gap-3">
                  <div className="h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-ug-navy/5 text-ug-navy">
                   {proj.image_url && proj.image_url.trim() !== '' ?
-                    <ImageWithFallback src={proj.image_url.split('|')[0] || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" /> :
+                    <ImageWithFallback src={proj.image_url.split('|')[0]} fallbackSrc="" className="w-full h-full object-cover" alt="" /> :
                     <Globe size={20} />
                   }
                 </div>

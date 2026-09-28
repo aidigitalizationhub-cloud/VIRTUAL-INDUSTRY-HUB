@@ -39,9 +39,15 @@ const isStorageUrl = (url: string, bucket = 'projects'): boolean => {
   return url.includes(`/object/public/${bucket}/`) || url.includes(`/object/sign/${bucket}/`);
 };
 
-const normalizePublicImageUrl = (value: string): string => {
-  if (!value || value.startsWith('http://') || value.startsWith('https://') || value.startsWith('data:') || value.startsWith('/')) return value;
-  return supabase.storage.from('projects').getPublicUrl(value).data.publicUrl || value;
+const isProjectStorageValue = (value: string): boolean => Boolean(value) && (
+  value.includes('/storage/v1/object/public/projects/')
+  || value.includes('/storage/v1/object/sign/projects/')
+  || (!value.includes('://') && !value.startsWith('/') && !value.startsWith('data:'))
+);
+
+const normalizePublicImageUrl = (projectId: string, value: string, index: number, isPublic: boolean): string => {
+  if (!value || !isPublic || !isProjectStorageValue(value)) return value;
+  return `/api/public-project-images/${encodeURIComponent(projectId)}/${index}`;
 };
 
 export const StorageService = {
@@ -78,7 +84,12 @@ export const StorageService = {
 
     const publicImageProjects = projects.map((project) => ({
       ...project,
-      image_url: project.image_url?.split('|').map(normalizePublicImageUrl).join('|') || project.image_url,
+      image_url: project.image_url?.split('|').map((value, index) => normalizePublicImageUrl(
+        project.id,
+        value,
+        index,
+        project.visibility === 'Public' && ['Approved', 'Published'].includes(String(project.disclosure_status || '')),
+      )).join('|') || project.image_url,
     }));
 
     // Signing requires a session; guests get public URLs as-is without a
@@ -95,7 +106,7 @@ export const StorageService = {
       const requests: { projectId: string; path: string; kind: 'image' | 'brief' | 'document'; projectIndex: number; docIndex?: number }[] = [];
       mutableProjects.forEach((project, projectIndex) => {
         project.image_url?.split('|').forEach((part, partIndex) => {
-          if (isStorageUrl(part, 'projects') && !part.includes('/object/public/projects/')) {
+          if ((isStorageUrl(part, 'projects') || isProjectStorageValue(part)) && !part.startsWith('/api/public-project-images/')) {
             const path = getStorageFilePath(part, 'projects');
             if (path) requests.push({ projectId: project.id, path, kind: 'image', projectIndex, docIndex: partIndex });
           }
@@ -421,7 +432,7 @@ export const StorageService = {
       for (let idx = 0; idx < mutableNews.length; idx++) {
         const item = mutableNews[idx];
         if (item.image_url && !item.image_url.startsWith('http://') && !item.image_url.startsWith('https://') && !item.image_url.startsWith('/') && !item.image_url.startsWith('data:')) {
-          item.image_url = normalizePublicImageUrl(item.image_url);
+          item.image_url = supabase.storage.from('projects').getPublicUrl(item.image_url).data.publicUrl || item.image_url;
         } else if (item.image_url && isStorageUrl(item.image_url, 'projects')) {
           const filePath = getStorageFilePath(item.image_url, 'projects');
           if (filePath) {

@@ -23,6 +23,7 @@
 | **1.0.0** | 2026 | IAST Systems Governance Committee | Production release documentation & enterprise operational sign-off |
 | **1.1.0** | August 2026 | IAST Systems Governance Committee | Documentation realigned to the deployed codebase: Groq-primary AI provider, actual API surface, actual schema, RLS and security posture |
 | **1.2.0** | August 2026 | Senior Frontend / AI Engineering Team | Documentation moved to `docs/`; Gemini-primary/Groq-fallback AI, Better Auth co-existence, server-backed profile/match routes, compact match UI, and clean production build documented |
+| **1.3.0** | September 2026 | IAST Engineering Team | Added the implemented TTO/IP evidence workflow, project-linked reviewer communications, private-bucket signed image delivery, current test baseline, and phased delivery timeline |
 
 ### 2.2 Review & Approval
 
@@ -46,7 +47,11 @@
 7. [Stakeholder Analysis](#7-stakeholder-analysis)
 8. [User Roles and Permissions](#8-user-roles-and-permissions)
 9. [Functional Modules](#9-functional-modules)
+   - [IP Disclosure, TTO/IP and Super Admin Review](#99-ip-disclosure-ttoip-and-super-admin-review)
+   - [Evidence and Project-Linked Communication](#910-evidence-and-project-linked-communication)
+   - [Project Images and Private Storage](#911-project-images-and-private-storage)
 10. [System Architecture](#10-system-architecture)
+   - [Implemented Request and Review Flow](#101-implemented-request-and-review-flow)
 11. [Technology Stack](#11-technology-stack)
 12. [Data Model](#12-data-model)
 13. [API Reference](#13-api-reference)
@@ -56,6 +61,7 @@
 17. [Environment Configuration](#17-environment-configuration)
 18. [Testing & Quality Assurance](#18-testing-quality-assurance)
 19. [Operations & Maintenance](#19-operations-maintenance)
+   - [Delivery Timeline and Acceptance Gates](#191-delivery-timeline-and-acceptance-gates)
 20. [Appendices](#20-appendices)
 
 ---
@@ -74,6 +80,10 @@ Key capabilities delivered by the system:
 6. **Industry Challenges** module letting partners publish challenges matched against researchers and projects.
 7. **Role-based portals** (Researcher, Student, Partner, Investor, Admin) with tailored dashboards.
 8. **Multilingual UI** (English, Français, Twi, Kiswahili) and light/dark theming.
+9. **TTO/IP Office evidence review** with a role-scoped queue, disclosure answers, AI advisory findings, human specialist findings, evidence links, file approval, signed URLs, and audit events.
+10. **Super Admin publication review** with project-level review records and human decisions for publish, restrict, confidential hold, request information, or reject.
+11. **Project-linked communication** through the EOI/message inbox. Shared TTO findings and relevant review decisions are delivered to the researcher in the thread for the affected project.
+12. **Uploaded project media handling** where project images are limited to stored image assets; public images are delivered through a signed server route while the `projects` storage bucket remains private.
 
 Security is enforced at three layers: Supabase Row-Level Security (RLS) in the database, a server-side Node/Express API that holds all privileged keys, and hardened HTTP response headers on every request.
 
@@ -108,17 +118,18 @@ Provide secure, multilingual, role-based tools that accelerate disclosure-to-par
 
 ### 6.1 In Scope
 
-- Researcher disclosures and document uploads (`.txt`, `.doc`, `.docx`, ≤ 15 MB).
+- Researcher disclosures and document uploads (`.txt`, `.doc`, `.docx`, `.pdf`, `.png`, `.jpg`, `.jpeg`, `.jfif`, `.webp`, `.gif`, `.svg`, ≤ 15 MB, subject to the upload type).
 - Partner/investor EOI submission and admin review.
 - AI chat assistant, AI profile extraction, AI news scout, AI matching — all provider-traceable.
 - Industry challenges CRUD + challenge matching + submission tracking.
 - Role-based dashboards, notifications, bookmarks.
 - Localization (EN/FR/Twi/Swahili) and theming.
 - Supabase schema provisioning and RLS enforcement.
+- TTO/IP and Super Admin evidence review, file approval, signed file/image URLs, findings visibility, project-linked messages, and disclosure audit history.
 
 ### 6.2 Out of Scope
 
-- Outbound email/notification delivery infrastructure (notifications are in-app).
+- Outbound email/SMS notification delivery infrastructure (notifications are currently in-app and project-linked inbox messages).
 - Real-time multi-party document co-editing.
 - Payments, escrow, or licensing transactions.
 - KMS-backed server-side message encryption (documented as a later-phase target; see §15).
@@ -133,7 +144,8 @@ Provide secure, multilingual, role-based tools that accelerate disclosure-to-par
 | Student innovators | Find labs, internships, funding signals | Student portal |
 | Industry partners | Publish challenges, browse disclosures, submit EOIs | Partner portal |
 | Investors | Pipeline discovery, EOI submission | Investor portal |
-| TTO / Admin | Govern disclosures, review EOIs, audit AI decisions | Admin portal |
+| TTO / Admin | Govern disclosures, review EOIs, audit AI decisions, review evidence | Admin/TTO portal |
+| Super Admin | Make final publication, restriction, confidentiality, or rejection decisions | Super Admin publication review |
 
 ---
 
@@ -148,9 +160,12 @@ Authentication uses **Better Auth** for application login and protected API sess
 | Industry Partner | `industry_partner` | Publish challenges, browse disclosures, submit EOIs |
 | Investor | `investor` | Browse pipelines, submit EOIs |
 | Admin | `admin` | Elevate roles, review disclosures, approve EOIs, run extraction, view decision ledger |
+| TTO / IP Office | `TTO`, `TTO/IP`, or `IP Office` | Review routed disclosures, approve evidence files, record specialist findings, share findings, and queue final review |
+| Super Admin | `Super Admin` | Review TTO/IP findings and evidence, approve clean files, and record final publication decisions |
 
 - `get_user_role()` SQL function maps authenticated Supabase JWTs to roles; Better Auth API requests resolve role through the server service client.
 - The server authorizes admin endpoints via `requireRole('Admin')`; role elevation is only possible through an existing admin session.
+- IP workflow authorization is enforced by `server/ip/ipAuthz.ts`; TTO/IP and Super Admin access is checked independently on every disclosure, finding, file, signed URL, and transition endpoint.
 
 ---
 
@@ -193,6 +208,28 @@ Authentication uses **Better Auth** for application login and protected API sess
 - `NotificationCenter` surfaces in-app notifications tied to `interaction_logs`/saved-search matches.
 - `LanguageSwitcher` loads translation bundles on demand via `loadLanguageAsync`.
 
+### 9.9 IP Disclosure, TTO/IP and Super Admin Review
+
+- Researcher disclosure records are stored separately from legacy project publication fields in `ip_disclosures`.
+- The workflow is authoritative in `lib/ipWorkflow.ts`: `draft → submitted → admin_review → ai_screening → tto_review → tto_completed → super_admin_review → published/restricted/confidential_hold/rejected`.
+- `components/tto/TtoQueue.tsx` and `components/tto/TtoReviewPanel.tsx` provide the TTO/IP queue, review answers, AI advisory findings, specialist findings, evidence links, file approval, and the **Complete review → queue Super Admin** action.
+- `components/superadmin/PublicationDecision.tsx` provides the final review record and requires a written reason before publication decisions.
+- `server/routes/ip.ts` enforces role checks, versioned transitions, finding visibility, file scan state, signed URLs, and audit events.
+
+### 9.10 Evidence and Project-Linked Communication
+
+- Disclosure files are registered as `pending`; only authorized TTO/IP or Super Admin reviewers can approve files as `clean`.
+- Clean files receive five-minute signed URLs through `/api/ip/files/:id/signed-url`.
+- Findings marked `shared_researcher` appear in the researcher disclosure workspace and create a message in the EOI thread for the related project.
+- Super Admin update requests, declines, and final decisions are linked to the researcher’s project conversation where applicable.
+
+### 9.11 Project Images and Private Storage
+
+- Project image uploads are validated by `lib/uploadGuard.ts` and stored in the private `projects` bucket.
+- Public project responses rewrite stored image values to `/api/public-project-images/:projectId/:index`.
+- The route verifies `visibility = Public` and `disclosure_status IN ('Approved', 'Published')`, then redirects to a one-hour signed storage URL.
+- No fixed stock image is used as a project fallback. Missing or invalid uploaded images render as an empty/neutral image area.
+
 ---
 
 ## 10. System Architecture
@@ -200,15 +237,14 @@ Authentication uses **Better Auth** for application login and protected API sess
 ```
 ┌────────────────────────── Browser ──────────────────────────┐
 │ React 19 SPA (HashRouter)   components/   pages/  services/ │
-│   Auth: Supabase JS client (anon key)                      │
+│   Auth: Better Auth session + Supabase integration         │
 └───────────────┬────────────────────────────────────────────┘
                 │ REST (fetch via lib/api.ts postJson/getJson)
 ┌───────────────▼────────────────────────────────────────────┐
-│ Node.js + Express 5 server (server.ts)                      │
-│   • auth middleware → Supabase service-role client (RLS-free)│
-│   • /api/health, /api/translate, /api/gemini/*,             │
-│     /api/ai-*, /api/industry-challenges, /api/challenge-*,  │
-│     /api/ai-decisions, /api/admin/extract-document          │
+│ Node.js + Express 5 bootstrap + server/routes/*             │
+│   • session middleware, role checks, validation, rate limits │
+│   • projects, storage, eois, IP, AI, news, challenges,     │
+│     matching, profiles, admin, and health route modules     │
 │   • security headers + CORS allowlist + zod validation      │
 │   • throttling (e.g. /api/gemini/embed: 100 req/min/user)   │
 └───────┬──────────────────────────────┬─────────────────────┘
@@ -225,6 +261,32 @@ Authentication uses **Better Auth** for application login and protected API sess
 ```
 
 Dev mode: Vite middlewares served inside the Express app; production: `express.static` of the built app (or Vercel serverless export).
+
+### 10.1 Implemented Request and Review Flow
+
+```text
+Researcher browser
+      |
+      | project, disclosure answers, files, messages
+      v
+React pages/components --> services/* --> lib/api.ts
+                                      |
+                                      v
+                              Express route modules
+                    auth + role checks + Zod validation
+                                      |
+                 +--------------------+--------------------+
+                 v                    v                    v
+          Supabase Postgres     Supabase Storage       AI gateways
+          projects/eois/IP      private projects       Gemini first,
+          findings/events       and avatars buckets    Groq fallback
+                 |
+                 v
+      TTO/IP queue --> Super Admin review --> project projection
+                 |                                  |
+                 +--> researcher disclosure <-------+
+                 +--> project-linked inbox message
+```
 
 ---
 
@@ -246,7 +308,7 @@ Dev mode: Vite middlewares served inside the Express app; production: `express.s
 | Layer | Technology |
 |---|---|
 | Runtime | Node.js + Express **5** (^5.2.1), single `server.ts` |
-| Dev runner / bundler | `tsx` (dev), esbuild (production bundle `dist/server.cjs`) |
+ | Dev runner / bundler | `tsx` (dev), esbuild (production bundle `dist/server.mjs`) |
 | AI SDKs | `@google/genai` (primary + embeddings), `groq-sdk` (fallback) |
 | Validation | `zod` request schemas (`lib/requestSchemas.ts`, `lib/aiSchemas.ts`) |
 | Hosting | Any Node host; `0.0.0.0:3000`; Vercel serverless export supported |
@@ -283,6 +345,13 @@ Primary schema is provisioned by `docs/database/supabase_setup.sql`; `docs/datab
 | 12 | `news` | Scout feed with `fts_doc` tsvector (GIN indexed) |
 | 13 | `industry_challenges` | Partner-published challenges |
 | 14 | `challenge_matches` | Researcher/project ↔ challenge matches |
+| 15 | `ip_disclosures` | Structured researcher IP disclosure and workflow state |
+| 16 | `ip_disclosure_findings` | AI, Admin, and TTO/IP findings with visibility controls |
+| 17 | `ip_disclosure_links` | External evidence links attached to a disclosure |
+| 18 | `ip_disclosure_files` | Private evidence metadata, classification, and scan state |
+| 19 | `ip_disclosure_events` | Disclosure transitions and reviewer audit timeline |
+| 20 | `ip_disclosure_decisions` | Super Admin publication decisions and reasons |
+| 21 | `ip_access_requests` | Controlled evidence access requests when the Phase 2 migration is applied |
 
 ### 12.2 Functions & Triggers
 
@@ -321,6 +390,17 @@ All protected routes except `/api/health` are validated by `authenticateUser`, w
 | PUT | `/api/challenge-matches/:id` | user | Update a match record |
 | GET/POST | `/api/ai-decisions` | admin | Read / write provenance ledger |
 | POST | `/api/admin/extract-document` | admin | Document text extraction + AI structuring |
+| GET | `/api/ip/disclosures` | role-scoped | Researcher-owned records, TTO queue, or Admin/Super Admin review queue |
+| POST | `/api/ip/disclosures/:id/submit` | researcher | Submit answers and select the TTO/IP or opt-out route |
+| POST | `/api/ip/disclosures/:id/ai-screen` | admin | Create advisory screening findings and provenance records |
+| POST | `/api/ip/disclosures/:id/findings` | admin/TTO | Record a human or advisory finding with visibility |
+| POST | `/api/ip/disclosures/:id/share-findings` | admin/TTO | Share a finding with the researcher or Super Admin |
+| POST | `/api/ip/disclosures/:id/tto-complete` | TTO/IP | Mark TTO review complete |
+| POST | `/api/ip/disclosures/:id/send-to-super-admin` | TTO/IP/Admin | Queue the disclosure for final review |
+| POST | `/api/ip/files/:id/approve` | TTO/IP/Super Admin | Approve a pending evidence file as clean |
+| POST | `/api/ip/files/:id/signed-url` | authorized viewer | Issue a five-minute signed URL for a clean file |
+| POST | `/api/ip/disclosures/:id/publication-decision` | Super Admin | Record the final human publication/restriction decision |
+| GET | `/api/public-project-images/:projectId/:index` | public project only | Redirect to a one-hour signed URL for an uploaded image on an approved/public project |
 
 Better Auth endpoints are mounted under `/api/auth/*splat`; Supabase Auth remains available through the Supabase client SDK.
 
@@ -384,7 +464,8 @@ Every AI interaction records:
 ### 15.4 Input Validation & Uploads
 
 - All request bodies validated with zod (`validateBody`).
-- Upload guard: ≤ 15 MB, extension whitelist `.txt/.doc/.docx`, MIME whitelist — enforced client and server side.
+- Upload guard: ≤ 15 MB, extension and MIME whitelist — enforced client and server side. Text extraction accepts `.txt/.doc/.docx`; storage uploads also accept `.pdf/.png/.jpg/.jpeg/.jfif/.webp/.gif/.svg` where the feature requires them.
+- The private `projects` bucket is never made public for project images. Approved/public project images are served through a server-side signed-URL redirect.
 
 ### 15.5 Message/EOI Confidentiality
 
@@ -400,8 +481,8 @@ Every AI interaction records:
 | Step | Command |
 |---|---|
 | Dev server | `npm run dev` → `0.0.0.0:3000` |
-| Production build | `npm run build` (Vite static build + esbuild `dist/server.cjs`) |
-| Run production | `npm start` (`node dist/server.cjs`) |
+| Production build | `npm run build` (Vite static build + esbuild `dist/server.mjs`) |
+| Run production | `npm start` (`node dist/server.mjs`) |
 
 ### 16.2 Hosting Notes
 
@@ -443,10 +524,10 @@ CORS_ORIGINS=
 | Check | Command | Status |
 |---|---|---|
 | Type check | `npm run lint` (`tsc --noEmit`) | Passed locally |
-| Unit tests | `npm run test` (`vitest run`) | 100 passing in 18 files (local run, 10 September 2026) |
+| Unit tests | `npm run test` (`vitest run`) | 105 passing in 19 files (local run, September 2026) |
 | Build | `npm run build` | Passed locally |
 
-Test files cover `lib/**/*.test.ts`, `server/ip/**/*.test.ts`, `server/services/sourceVerification.test.ts` (syntactic + live-fetch verification), `server/newsCuration.test.ts` (universal publication evidence gate), and `server/app.test.ts`; the current run covered 18 files / 100 tests.
+Test files cover `lib/**/*.test.ts`, `server/ip/**/*.test.ts`, `server/services/sourceVerification.test.ts` (syntactic + live-fetch verification), `server/newsCuration.test.ts` (universal publication evidence gate), and `server/app.test.ts`; the current run covers 19 files / 105 tests.
 
 ---
 
@@ -457,6 +538,25 @@ Test files cover `lib/**/*.test.ts`, `server/ip/**/*.test.ts`, `server/services/
 - **Housekeeping:** review `ai_decisions.review_status` for flagged outputs; prune scout `news` via sync policy.
 - **Recovery:** DB restored from Supabase point-in-time backup; environment secrets rotate via hosting console.
 
+### 19.1 Delivery Timeline and Acceptance Gates
+
+The following timeline is the realistic implementation and hardening plan for the current codebase. “Implemented” means the feature exists in this repository; it does not mean production deployment or live Supabase verification is complete.
+
+| Phase | Duration | Concrete deliverables | Status |
+|---|---:|---|---|
+| 1. Foundation | 1 week | Express bootstrap, environment validation, Better Auth sessions, profiles, health endpoint, protected API middleware | Implemented; deployment verification pending |
+| 2. Project catalogue | 1 week | Project CRUD, ownership rules, public catalogue, project detail, TRL/status fields, images, briefs, requested documents, bookmarks | Implemented |
+| 3. Dashboards and messaging | 1 week | Researcher/student/partner/investor/Admin dashboards, EOI creation, inbox threads, replies, unread/read state | Implemented |
+| 4. Matching and challenges | 1 week | Vector/local matching, deterministic scoring, match explanations, challenge CRUD, challenge matches | Implemented; live provider tuning pending |
+| 5. News and AI services | 1 week | News scout, curation, chat, profile extraction, AI provenance records | Implemented; source freshness and quota monitoring pending |
+| 6. IP disclosure intake | 1 week | Disclosure questions, policy acceptance, route selection, file registration, Admin triage, advisory screening | Implemented |
+| 7. TTO/IP evidence review | 1 week | TTO queue, findings, evidence links, pending/clean file approval, signed URLs, audit events, researcher-linked findings | Implemented |
+| 8. Super Admin publication review | 3–5 days | Final review workspace, written decision rationale, project publication projection, researcher decision messages | Implemented |
+| 9. Production hardening | 2 weeks | KMS message encryption, antivirus integration, distributed rate limits, structured logging, monitoring, backup/restore rehearsal, migration verification | Not complete; required before production sign-off |
+| 10. Pilot acceptance | 1–2 weeks | TTO pilot cases, researcher communication checks, role acceptance tests, defect correction, operations handover | Planned |
+
+Acceptance requires a real researcher disclosure to reach TTO/IP and Super Admin queues, evidence files to remain inaccessible until approved, findings to appear in the correct project-linked inbox, unauthorized users to be denied, and uploaded project images to render without a stock fallback.
+
 ---
 
 ## 20. Appendices
@@ -465,7 +565,9 @@ Test files cover `lib/**/*.test.ts`, `server/ip/**/*.test.ts`, `server/services/
 
 | File | Contents |
 |---|---|
-| `server.ts` | All routes, providers, middleware |
+| `server.ts` | Application bootstrap and production server startup |
+| `server/routes/*.ts` | Current route implementations for projects, storage, EOI, IP, AI, news, challenges, and profiles |
+| `server/ip/ipAuthz.ts`, `server/ip/ipService.ts`, `server/ip/ipAudit.ts` | IP role checks, state transitions, and audit event helpers |
 | `docs/database/supabase_setup.sql` / `docs/database/supabase_rls_verify.sql` | Schema, RLS, functions |
 | `lib/scoring.ts`, `lib/aiSchemas.ts`, `lib/uploadGuard.ts` | Matching math, AI schemas, upload rules |
 | `docs/RAG_IMPLEMENTATION.md` | RAG pipeline deep-dive |
@@ -479,5 +581,10 @@ Test files cover `lib/**/*.test.ts`, `server/ip/**/*.test.ts`, `server/services/
 | Industry challenges + matching | **Realized** |
 | Multilingual UI (EN/FR/Twi/Sw) | **Realized** |
 | pgvector 768-d hybrid matching | **Realized** |
+| Researcher IP disclosure intake and route selection | **Realized** |
+| TTO/IP evidence queue, findings, file approval, signed URLs, and audit events | **Realized** |
+| Super Admin final publication decision workflow | **Realized** |
+| Project-linked researcher/TTO/Super Admin messages | **Realized** |
+| Private project image storage with signed public-project delivery | **Realized** |
 | KMS-backed server-side message encryption | **Required production remediation; not implemented** |
 | Outbound email/SMS notifications | **Planned** |

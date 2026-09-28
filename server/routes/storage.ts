@@ -46,6 +46,33 @@ export const registerStorageRoutes = (app: Express) => {
     }
   });
 
+  app.get('/api/public-project-images/:projectId/:index', async (req, res) => {
+    try {
+      const db = getServiceClient();
+      const projectId = String(req.params.projectId || '');
+      const index = Number.parseInt(String(req.params.index || ''), 10);
+      if (!db) return res.status(503).json({ error: serviceClientConfigError() });
+      if (!projectId || !Number.isInteger(index) || index < 0) return res.status(400).json({ error: 'Invalid project image request.' });
+      const { data: project, error: projectError } = await db
+        .from('projects')
+        .select('image_url')
+        .eq('id', projectId)
+        .eq('visibility', 'Public')
+        .in('disclosure_status', ['Approved', 'Published'])
+        .maybeSingle();
+      if (projectError) throw projectError;
+      const imageValue = String(project?.image_url || '').split('|')[index] || '';
+      const objectPath = getStoredObjectPath(imageValue, 'projects');
+      if (!objectPath || objectPath === imageValue && imageValue.includes('://')) return res.status(404).json({ error: 'Project image not found.' });
+      const { data, error } = await db.storage.from('projects').createSignedUrl(objectPath, 3600);
+      if (error || !data?.signedUrl) throw error || new Error('Project image could not be signed.');
+      return res.redirect(302, data.signedUrl);
+    } catch (error: any) {
+      console.error('Public project image error:', error);
+      return res.status(404).json({ error: 'Project image could not be opened.' });
+    }
+  });
+
   const getStoredObjectPath = (value: string, bucket: string): string => {
     if (!value) return '';
     const marker = `/object/public/${bucket}/`;

@@ -225,7 +225,7 @@ const Home: React.FC = () => {
                {showcaseProjects.map(project => (
                  <div key={project.id} className="bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition flex flex-col h-full group">
                    <div className="h-48 overflow-hidden relative shrink-0">
-                       <ImageWithFallback src={getThumbnail(project.image_url)} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                        <ImageWithFallback src={getThumbnail(project.image_url)} fallbackSrc="" alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                       <div className="absolute top-4 left-4 bg-ug-teal text-white text-[11px] font-semibold px-3 py-1 rounded-full tracking-wide">
                         <Tr text={project.status} />
                       </div>

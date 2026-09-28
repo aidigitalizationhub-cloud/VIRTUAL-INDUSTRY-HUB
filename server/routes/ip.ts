@@ -34,6 +34,28 @@ export const registerIpRoutes = (app: Express) => {
     return res.status(500).json({ error: fallback });
   };
 
+  const notifyResearcherOfFinding = async (db: any, disclosureId: string, senderId: string, title: string, body: string, senderName: string) => {
+    const disclosure = await db.from('ip_disclosures').select('project_id, researcher_id').eq('id', disclosureId).maybeSingle();
+    if (disclosure.error) throw disclosure.error;
+    if (!disclosure.data?.researcher_id || disclosure.data.researcher_id === senderId) return;
+    const project = disclosure.data.project_id
+      ? await db.from('projects').select('title').eq('id', disclosure.data.project_id).maybeSingle()
+      : { data: null, error: null };
+    if (project.error) throw project.error;
+    const projectTitle = project.data?.title || 'your project disclosure';
+    const message = `IP review finding for ${projectTitle}\n\n${title}\n\n${body}\n\nThis finding is linked to your project disclosure and is available in the IP review record.`;
+    const inserted = await db.from('eois').insert({
+      project_id: disclosure.data.project_id || null,
+      user_name: senderName || 'IP Review Office',
+      message,
+      read: false,
+      sender_id: senderId,
+      recipient_id: disclosure.data.researcher_id,
+      status: 'pending',
+    });
+    if (inserted.error) throw inserted.error;
+  };
+
   const projectObjectKey = (value: unknown): string | null => {
     const raw = String(value || '').trim();
     if (!raw) return null;
@@ -447,7 +469,7 @@ export const registerIpRoutes = (app: Express) => {
       const d = await db.from('ip_disclosures').select('id, researcher_id, status').eq('id', disclosureId).maybeSingle();
       if (d.error) throw d.error;
       if (!d.data) { const e: any = new Error('IP disclosure not found.'); e.status = 404; throw e; }
-      const input = req.body;
+       const input = req.body;
       const isTtoFinding = input.category === 'tto';
       const allowed = isTtoFinding ? canTtoReview(role) : canAdminReview(role) || canTtoReview(role);
       if (!allowed) return res.status(403).json({ error: 'Forbidden: reviewer role required.' });
@@ -457,8 +479,11 @@ export const registerIpRoutes = (app: Express) => {
         category: input.category, title: input.title, body: input.body,
         severity: input.severity, source_type: 'reviewer', visibility: input.visibility, is_preliminary: input.isPreliminary,
       }).select('*').single();
-      if (ins.error) throw ins.error;
-      await writeIpEvent(db, { disclosure_id: disclosureId, actor_id: actorId, actor_role: String(role), action: 'add_finding', from_status: d.data.status, to_status: d.data.status, details: { finding_id: ins.data.id, category: input.category } });
+       if (ins.error) throw ins.error;
+       if (input.visibility === 'shared_researcher') {
+         await notifyResearcherOfFinding(db, disclosureId, actorId, input.title, input.body, String((req as any).user?.name || role || 'IP Review Office'));
+       }
+       await writeIpEvent(db, { disclosure_id: disclosureId, actor_id: actorId, actor_role: String(role), action: 'add_finding', from_status: d.data.status, to_status: d.data.status, details: { finding_id: ins.data.id, category: input.category } });
       return res.status(201).json({ finding: ins.data });
     } catch (error: any) {
       return ipSendError(res, error, 'Finding could not be saved.');
@@ -621,10 +646,10 @@ export const registerIpRoutes = (app: Express) => {
       const disclosureId = typeof req.params.id === 'string' ? req.params.id : '';
       if (!isUuid(disclosureId)) return res.status(400).json({ error: 'Invalid disclosure ID.' });
       const input = req.body;
-      const f = await db.from('ip_disclosure_findings').select('id, disclosure_id').eq('id', input.findingId).eq('disclosure_id', disclosureId).maybeSingle();
+       const f = await db.from('ip_disclosure_findings').select('id, disclosure_id, title, body, visibility').eq('id', input.findingId).eq('disclosure_id', disclosureId).maybeSingle();
       if (f.error) throw f.error;
       if (!f.data) { const e: any = new Error('Finding not found.'); e.status = 404; throw e; }
-      const current = await db.from('ip_disclosures').select('status').eq('id', disclosureId).maybeSingle();
+       const current = await db.from('ip_disclosures').select('status').eq('id', disclosureId).maybeSingle();
       if (current.error) throw current.error;
       if (!current.data) { const e: any = new Error('IP disclosure not found.'); e.status = 404; throw e; }
       if (input.visibility === 'shared_super_admin' && !['ai_screening', 'tto_review', 'super_admin_review'].includes(current.data.status)) {
@@ -632,9 +657,12 @@ export const registerIpRoutes = (app: Express) => {
         e.status = 409;
         throw e;
       }
-      const upd = await db.from('ip_disclosure_findings').update({ visibility: input.visibility }).eq('id', input.findingId).select('*').single();
-      if (upd.error) throw upd.error;
-      await writeIpEvent(db, { disclosure_id: disclosureId, actor_id: actorId, actor_role: String(role), action: 'share_finding', details: { finding_id: input.findingId, visibility: input.visibility } });
+       const upd = await db.from('ip_disclosure_findings').update({ visibility: input.visibility }).eq('id', input.findingId).select('*').single();
+       if (upd.error) throw upd.error;
+       if (input.visibility === 'shared_researcher' && f.data.visibility !== 'shared_researcher') {
+         await notifyResearcherOfFinding(db, disclosureId, actorId, f.data.title, f.data.body, String((req as any).user?.name || role || 'IP Review Office'));
+       }
+       await writeIpEvent(db, { disclosure_id: disclosureId, actor_id: actorId, actor_role: String(role), action: 'share_finding', details: { finding_id: input.findingId, visibility: input.visibility } });
       let disclosure;
       if (input.visibility === 'shared_super_admin' && current.data.status !== 'super_admin_review') {
         ({ disclosure } = await applyTransition({
@@ -684,7 +712,7 @@ export const registerIpRoutes = (app: Express) => {
       };
       const action = actionMap[input.decision];
       if (!action) return res.status(400).json({ error: 'Invalid decision.' });
-      const cur = await db.from('ip_disclosures').select('id, project_id, status').eq('id', disclosureId).maybeSingle();
+       const cur = await db.from('ip_disclosures').select('id, project_id, researcher_id, status').eq('id', disclosureId).maybeSingle();
       if (cur.error) throw cur.error;
       if (!cur.data) { const e: any = new Error('IP disclosure not found.'); e.status = 404; throw e; }
       if (cur.data.status !== 'super_admin_review') { const e: any = new Error('Disclosure must be in final review before a publication decision.'); e.status = 409; throw e; }
@@ -694,7 +722,7 @@ export const registerIpRoutes = (app: Express) => {
         reason: input.reason, public_projection: input.publicProjection ?? null,
       }).select('*').single();
       if (dec.error) throw dec.error;
-      if (cur.data.project_id && (input.decision === 'publish' || input.decision === 'restrict')) {
+       if (cur.data.project_id && (input.decision === 'publish' || input.decision === 'restrict')) {
         try {
           await db.from('projects').update({
             disclosure_status: input.decision === 'publish' ? 'Published' : 'Approved',
@@ -703,8 +731,16 @@ export const registerIpRoutes = (app: Express) => {
         } catch (projErr) {
           console.warn('Linked project projection update failed:', projErr);
         }
-      }
-      return res.json({ disclosure, decision: dec.data });
+       }
+       const decisionMessage = input.decision === 'publish'
+         ? 'The disclosure was accepted for publication.'
+         : input.decision === 'restrict'
+           ? 'The disclosure was accepted for internal access.'
+           : input.decision === 'confidential_hold'
+             ? 'The disclosure was placed on confidential hold.'
+             : input.reason;
+       await notifyResearcherOfFinding(db, disclosureId, actorId, `Super Admin decision: ${input.decision.replaceAll('_', ' ')}`, decisionMessage, String((req as any).user?.name || role || 'Super Admin'));
+       return res.json({ disclosure, decision: dec.data });
     } catch (error: any) {
       return ipSendError(res, error, 'Publication decision failed.');
     }
@@ -799,12 +835,16 @@ export const registerIpRoutes = (app: Express) => {
       if (decision === 'request_update' && !String(req.body?.message || '').trim()) return res.status(400).json({ error: 'A request message is required.' });
       const action = decision === 'accept' ? 'accept_admin' : decision === 'request_update' ? 'request_researcher_action' : 'reject';
       const { disclosure } = await applyTransition({ db, disclosureId, actorId, actorRole: String(role), action: action as any, eventAction: `admin_${decision}`, eventDetails: { message: String(req.body?.message || '').trim() } });
-      if (decision === 'request_update') {
-        await db.from('ip_disclosure_findings').insert({ disclosure_id: disclosureId, author_id: actorId, author_role: String(role), category: 'admin', title: 'Update requested by Admin', body: String(req.body.message).trim(), severity: 'medium', source_type: 'reviewer', visibility: 'shared_researcher', is_preliminary: false });
-      }
-      if (decision === 'decline') {
-        await db.from('ip_disclosure_findings').insert({ disclosure_id: disclosureId, author_id: actorId, author_role: String(role), category: 'admin', title: 'Disclosure declined by Admin', body: String(req.body?.message || 'The disclosure was declined after administrative review.'), severity: 'high', source_type: 'reviewer', visibility: 'shared_researcher', is_preliminary: false });
-      }
+       if (decision === 'request_update') {
+         const message = String(req.body.message).trim();
+         await db.from('ip_disclosure_findings').insert({ disclosure_id: disclosureId, author_id: actorId, author_role: String(role), category: 'admin', title: 'Update requested by Admin', body: message, severity: 'medium', source_type: 'reviewer', visibility: 'shared_researcher', is_preliminary: false });
+         await notifyResearcherOfFinding(db, disclosureId, actorId, 'Update requested by Admin', message, String((req as any).user?.name || role || 'Admin'));
+       }
+       if (decision === 'decline') {
+         const message = String(req.body?.message || 'The disclosure was declined after administrative review.');
+         await db.from('ip_disclosure_findings').insert({ disclosure_id: disclosureId, author_id: actorId, author_role: String(role), category: 'admin', title: 'Disclosure declined by Admin', body: message, severity: 'high', source_type: 'reviewer', visibility: 'shared_researcher', is_preliminary: false });
+         await notifyResearcherOfFinding(db, disclosureId, actorId, 'Disclosure declined by Admin', message, String((req as any).user?.name || role || 'Admin'));
+       }
       return res.json({ disclosure });
     } catch (error: any) {
       return ipSendError(res, error, 'Admin disclosure decision failed.');

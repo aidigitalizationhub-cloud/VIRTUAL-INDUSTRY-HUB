@@ -230,7 +230,8 @@ const ResearcherPortfolio: React.FC = () => {
                 <Link key={p.id} to={`/projects/${p.id}`} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-700 group flex flex-col h-full">
                   <div className="h-56 overflow-hidden relative">
                     <ImageWithFallback
-                      src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} 
+                       src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : ''}
+                       fallbackSrc=""
                       className="w-full h-full object-cover group-hover:scale-110 transition duration-1000" 
                       alt=""
                     />

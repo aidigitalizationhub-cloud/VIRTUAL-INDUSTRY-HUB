@@ -47,6 +47,12 @@ describe('IP workflow transitions', () => {
     expect(transitionIpWorkflow('tto_completed', 'send_to_super_admin')).toEqual({ status: 'super_admin_review' });
   });
 
+  it('keeps the completed TTO queue handoff explicit', () => {
+    const completed = transitionIpWorkflow('tto_review', 'complete_tto_review');
+    expect(completed.status).toBe('tto_completed');
+    expect(transitionIpWorkflow(completed.status, 'send_to_super_admin')).toEqual({ status: 'super_admin_review' });
+  });
+
   it('requires Super Admin review before publication', () => {
     expect(() => transitionIpWorkflow('ai_screening', 'publish')).toThrow();
     expect(transitionIpWorkflow('super_admin_review', 'publish')).toEqual({ status: 'published' });

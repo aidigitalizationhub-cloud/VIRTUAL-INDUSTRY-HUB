@@ -58,8 +58,16 @@ export const PublicationDecision: React.FC = () => {
   };
 
   const openFile = async (fileId: string) => {
-    try { window.open(await IpDisclosureService.signedFileUrl(fileId), '_blank', 'noopener,noreferrer'); }
-    catch (e: any) { showToast(e.message || 'File is not available yet.', 'error'); }
+    const popup = window.open('about:blank', '_blank');
+    if (popup) popup.opener = null;
+    try {
+      const url = await IpDisclosureService.signedFileUrl(fileId);
+      if (popup) popup.location.href = url;
+      else window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (e: any) {
+      popup?.close();
+      showToast(e.message || 'File is not available yet.', 'error');
+    }
   };
 
   if (loading) return <p className="flex items-center gap-2 text-xs text-slate-400"><Loader2 size={14} className="animate-spin" /> Loading final review...</p>;

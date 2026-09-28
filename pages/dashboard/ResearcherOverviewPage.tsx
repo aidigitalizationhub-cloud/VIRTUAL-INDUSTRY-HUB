@@ -295,7 +295,7 @@ export const ResearcherOverviewPage = ({
                        aria-label={`Open project ${p.title}`}
                      >
                       <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl overflow-hidden shadow-sm bg-gray-100 shrink-0">
-                        <ImageWithFallback src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80'} className="w-full h-full object-cover" alt="" />
+                         <ImageWithFallback src={p.image_url && p.image_url.trim() !== '' ? p.image_url.split('|')[0] : ''} fallbackSrc="" className="w-full h-full object-cover" alt="" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">

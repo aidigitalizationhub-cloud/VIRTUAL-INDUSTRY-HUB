@@ -157,7 +157,7 @@ const Projects: React.FC = () => {
     }
   };
 
-  const getThumbnail = (urlStr: string) => urlStr && urlStr.trim() !== '' ? urlStr.split('|')[0] : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80';
+  const getThumbnail = (urlStr: string) => urlStr?.trim() ? urlStr.split('|')[0] : '';
 
   const activeFiltersCount = [
     selectedArea !== 'All',
@@ -415,7 +415,8 @@ const Projects: React.FC = () => {
                 <div key={project.id} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full border border-gray-100 group animate-fade-in-up">
                   <div className="h-64 relative overflow-hidden">
                       <ImageWithFallback
-                        src={getThumbnail(project.image_url)} 
+                         src={getThumbnail(project.image_url)}
+                         fallbackSrc=""
                         alt={project.title} 
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                      />

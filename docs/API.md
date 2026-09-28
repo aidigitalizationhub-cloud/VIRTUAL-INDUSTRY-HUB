@@ -47,6 +47,7 @@ Publication mapping: IP `publish` sets `projects.disclosure_status='Published'`,
 |---|---|---|
 | `POST` | `/api/storage/upload` | Buckets `projects`, `avatars` only; Base64 body; `validateStorageUpload`; owner metadata update (`server.ts:1188`) |
 | `POST` | `/api/storage/sign` | Batch ≤100; owner/Admin/brief-release checks (`server.ts:1237`) |
+| `GET` | `/api/public-project-images/:projectId/:index` | Public/Approved or Published project only; redirects to a one-hour signed image URL without making the private `projects` bucket public |
 
 IP files reuse the same buckets for bytes; metadata lives in `ip_disclosure_files`.
 

@@ -13,16 +13,20 @@ IP disclosure is implemented in code + additive SQL migrations, not design-only.
 - `BACKEND.md` — Express architecture, Better Auth, middleware, `server/ip/*` domain services, data model, RLS, storage/signed URLs, AI provenance, errors, deployment.
 - `FRONTEND.md` — React/Vite routing, dashboard tabs, IP workspaces, services, types, project-creation hook, UX rules, verification.
 - `AI_ENGINEERING_FINE_TUNING_TASKS.md` — concise model fine-tuning tasks, output contract, safety rules, evaluation criteria, and delivery checklist.
-- `database/` — Supabase SQL setup, RLS verification, security patch, and Better Auth migration scripts.
+- `database/` — Supabase SQL setup, RLS verification, production security patch, and Better Auth migration scripts.
 - `implementation.md` — single practical IP disclosure, Admin, TTO, access, and implementation design.
 - `ip_disclosure_workflow.md` — authoritative researcher, TTO/IP, opt-out Admin, AI, findings, and privacy workflow.
 - `audit_implementation.md` — implemented audit fixes, access model, persistence behavior, verification, and remaining non-goals.
 - `PRODUCTION_REMEDIATION.md` — required production migration order, environment/deployment gates, security limitations, and verification checklist.
 - `ip-workflow-simulator.html` — standalone browser simulation of the researcher, Admin, and TTO workflow.
 
-- `database/ip_disclosure_phase1.sql` — additive Phase 1 IP tables (disclosures, events, findings, links, decisions, files) + RLS; run manually first.
-- `database/ip_disclosure_phase2.sql` — additive Phase 2 access-request table; run after Phase 1.
-- `database/ip_disclosure_phase3.sql` — adds the explicit `tto_completed` handoff status; run after Phase 1.
+- `database/supabase_setup.sql` — complete fresh-install schema, including final IP disclosure tables and RLS. Do not run on an existing data-bearing database as a reset.
+- `database/supabase_production_security.sql` — non-destructive hardening patch for an existing database after the Better Auth policy migration.
+- `database/supabase_rls_verify.sql` — fail-fast RLS, storage, and IP write-boundary checks.
+- `database/ip_disclosure_phase1.sql` — legacy additive IP tables for existing databases only when absent.
+- `database/ip_disclosure_phase2.sql` — legacy access-request table migration.
+- `database/ip_disclosure_phase3.sql` — legacy `tto_completed` status migration.
+- `database/ip_disclosure_phase4.sql` — obsolete duplicate of Phase 3; do not run.
 
 ## Archive
 

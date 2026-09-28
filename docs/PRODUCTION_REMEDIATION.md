@@ -6,20 +6,28 @@ This document is the production gate for the current implementation. The applica
 
 Take a tested database backup before any step. Run each item in the Supabase SQL Editor and stop on errors.
 
-1. Run `supabase_setup.sql`.
-2. Run `supabase_security_patch.sql`.
-3. Run `supabase_rls_verify.sql` and record the result.
-4. Create Better Auth tables using exactly one method: `supabase_better_auth_tables_manual.sql` or the equivalent Better Auth CLI migration against the same `DATABASE_URL`. Do not run both.
-5. Run `supabase_better_auth_forced_reset.sql`. Existing Supabase password hashes are intentionally not copied; users must complete Better Auth password recovery.
-6. Run `better_auth_repair_credential_accounts.sql` if its preflight conditions require it.
-7. Verify the mapping and collision queries, then run `supabase_better_auth_linkage_migration.sql` to remap application ownership to Better Auth IDs. Stop if it reports duplicate mappings or both legacy and Better Auth profiles.
-8. Deploy the server-side Better Auth authorization path and verify login, reset, logout, role resolution, profile access, and protected API authorization.
-9. Run `supabase_better_auth_migration.sql` to replace `auth.uid()`-based policies/functions with Better Auth request-claim helpers. This follows the tables and linkage steps.
-10. Run `supabase_security_hardening.sql` after the Better Auth migration. Review existing rows before validating its `NOT VALID` constraints.
-11. Only after live verification, disable Supabase Auth as an application login path. Retain legacy rows only for rollback/data history as required by the migration plan.
-12. Run `supabase_advisor_security_fix.sql` for the former security-definer views/mapping table, then run `supabase_advisor_warning_fix.sql` for extension placement, unrestricted news writes, storage listing, and server-only RPC privileges. Migrate legacy browser matching calls before uncommenting the `match_profiles`/`match_projects` revokes in that file.
+### Fresh Supabase project
 
-The IP disclosure migrations are separate: run `ip_disclosure_phase1.sql`, then `ip_disclosure_backfill.sql` if needed, then `ip_disclosure_phase2.sql`, `ip_disclosure_phase3.sql`, and `ip_disclosure_phase4.sql` in that order.
+1. Run `database/supabase_setup.sql` once. It is the complete fresh-install schema, including the final IP disclosure tables and RLS.
+2. Run `database/supabase_rls_verify.sql` and record the result.
+
+### Existing database with users or data
+
+1. Take a tested backup and do not rerun the fresh-install setup as a reset.
+2. Run the legacy IP migrations only if their tables are absent: `ip_disclosure_phase1.sql`, `ip_disclosure_backfill.sql` if needed, `ip_disclosure_phase2.sql`, and `ip_disclosure_phase3.sql`. Do not run Phase 4; it duplicates Phase 3.
+
+### Shared Better Auth cutover
+
+1. Create Better Auth tables using exactly one method: `supabase_better_auth_tables_manual.sql` or the equivalent Better Auth CLI migration against the same `DATABASE_URL`. Do not run both.
+2. Run `supabase_better_auth_forced_reset.sql`. Existing Supabase password hashes are intentionally not copied; users must complete Better Auth password recovery.
+3. Run `better_auth_repair_credential_accounts.sql` if its preflight conditions require it.
+4. Verify the mapping and collision queries, then run `supabase_better_auth_linkage_migration.sql`. Stop if it reports duplicate mappings or both legacy and Better Auth profiles.
+5. Deploy the server-side Better Auth authorization path and verify login, reset, logout, role resolution, profile access, and protected API authorization.
+6. Run `supabase_better_auth_migration.sql` to replace `auth.uid()`-based policies/functions with Better Auth request-claim helpers.
+7. Run `supabase_production_security.sql`. This is the non-destructive hardening patch for existing data.
+8. Run `supabase_rls_verify.sql` again and stop on any exception.
+9. Only after live verification, disable Supabase Auth as an application login path.
+10. Run `supabase_advisor_security_fix.sql` and then `supabase_advisor_warning_fix.sql`. Migrate legacy browser matching calls before enabling the matching RPC revokes.
 
 The news strictness migration is separate: run `news_status_strict.sql` after backup to backfill NULL statuses to Draft, restrict public reads to explicit `Published`, and enforce `NOT NULL` + `Draft/Published` check. Re-run `supabase_rls_verify.sql` and the Advisor afterwards.
 

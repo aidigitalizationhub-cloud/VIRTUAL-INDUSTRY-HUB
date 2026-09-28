@@ -481,14 +481,11 @@ const ProjectDetail: React.FC = () => {
   }
 
   const images = (project.image_url || '').split('|').filter(Boolean);
-  if (images.length === 0) {
-    images.push('https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80');
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="relative min-h-[480px] md:h-[480px] w-full overflow-hidden flex items-end pb-8 md:pb-16 pt-24">
-         <ImageWithFallback src={images[0]} alt={project.title} className="absolute inset-0 w-full h-full object-cover" />
+          <ImageWithFallback src={images[0]} fallbackSrc="" alt={project.title} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ug-navy via-ug-navy/60 to-transparent"></div>
         <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -570,7 +567,7 @@ const ProjectDetail: React.FC = () => {
           {images[1] && (
             <section className="bg-white p-5 md:p-8 rounded-2xl md:rounded-2xl lg:rounded-2xl border border-gray-100 shadow-sm">
               <h2 className="text-2xl font-bold text-ug-navy mb-6 flex items-center gap-3"><ImageIcon className="text-ug-teal" /> <Tr text="Visual Disclosure" /></h2>
-               <ImageWithFallback src={images[1]} alt="Evidence" className="w-full rounded-xl md:rounded-2xl shadow-lg" />
+                <ImageWithFallback src={images[1]} fallbackSrc="" alt="Evidence" className="w-full rounded-xl md:rounded-2xl shadow-lg" />
             </section>
           )}
 
