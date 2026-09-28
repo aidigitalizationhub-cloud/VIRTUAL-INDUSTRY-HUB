@@ -78,7 +78,9 @@ const server = http.createServer(async (req, res) => {
       .join('\n\n');
 
     const forwarded = {
-      model: typeof payload.model === 'string' ? payload.model : undefined,
+      // Default to the locked reviewer when the client omits the model
+      // (Ollama's /v1 API returns 404 for a missing model name).
+      model: typeof payload.model === 'string' ? payload.model : 'ug-ip-reviewer',
       temperature: 0.1,
       response_format: { type: 'json_object' },
       messages: [
